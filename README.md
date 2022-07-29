@@ -2,6 +2,15 @@
 
 Summer Class Python Course Final Assignment
 
+## 开发须知
+
+main是主分支，完成稳定版本之后放到main。
+
+dev是开发分支，用于日常。
+
+每个人要写代码的话从dev新建一个分支，命名为"feature-xxx"，用于开发新的功能。
+feature写的比较完善了之后可以push到dev分支。可以在feature分支使用`git merge dev`将别人在dev的修改合并到feature分支。
+
 ## Getting started
 
 To make it easy for you to get started with GitLab, here's a list of recommended next steps.
