@@ -12,11 +12,11 @@ def registerUser(name: str, passwd: str):
 
 
 def usernameExists(username: str):
-    return True
+    return False
 
 
 def checkPassword(username: str, password: str):
-    return True
+    return False
 
 
 def loginUser(name: str, passwd: str):
