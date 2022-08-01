@@ -7,11 +7,13 @@
 '''
 import datetime
 import calendar
-from importance import Importance
-from state import State
+from src.backend.importance import Importance
+from src.backend.state import State
+
 
 class User:
     pass
+
 
 class Calendar:
     def __init__(self, year, month, user):
@@ -68,7 +70,3 @@ class Task:
         self.deadline = deadline
         self.importance = importance
         self.state = state
-
-
-
-
