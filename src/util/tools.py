@@ -1,0 +1,8 @@
+# -*- coding = utf-8 -*-
+# @Time :2022/8/2 13:59
+# @Author:banana889
+# @File : tools.py
+DEBUG_ = True
+def debugPrint(s : str):
+    if(DEBUG_):
+        print(s)
