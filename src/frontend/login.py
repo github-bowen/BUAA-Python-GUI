@@ -9,6 +9,9 @@ from src.backend.method import *
 
 class LoginWindow(QWidget):
     def __init__(self):
+        # 创建标题文字
+        self.title = QLabel('欢迎使用任务调度管理系统！')
+
         # 创建标签、文本框、按钮
         self.usernameLabel = QLabel('用户名：')
         self.passwordLabel = QLabel('密码：')
@@ -32,10 +35,11 @@ class LoginWindow(QWidget):
         # 布局用户名和密码的label和输入框
         grid = QGridLayout()
         grid.setSpacing(5)
-        grid.addWidget(self.usernameLabel, 0, 0)
-        grid.addWidget(self.usernameEdit, 0, 1, 1, 3)
-        grid.addWidget(self.passwordLabel, 1, 0)
-        grid.addWidget(self.passwordEdit, 1, 1, 1, 3)
+        grid.addWidget(self.title, 0, 1, 3, 2)
+        grid.addWidget(self.usernameLabel, 3, 0)
+        grid.addWidget(self.usernameEdit, 3, 1, 1, 3)
+        grid.addWidget(self.passwordLabel, 4, 0)
+        grid.addWidget(self.passwordEdit, 4, 1, 1, 3)
 
         # 布局登录和注册按钮
         hBox = QHBoxLayout()
@@ -54,7 +58,7 @@ class LoginWindow(QWidget):
         self.registerButton.clicked.connect(self.checkRegisterButton)
 
         # 布局整个窗口
-        grid.addLayout(vBox, 3, 2)
+        grid.addLayout(vBox, 6, 2)
         self.setLayout(grid)
         self.resize(300, 150)
         self.center()
