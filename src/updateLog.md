@@ -31,5 +31,6 @@ updateLog.md (本文档)
 - 第一次登录啥都没有
 - 信息保存在```.login.log```(可以删掉它测试第一次登录的情况)
 
-#### 搞了四个gitignore
-
+#### 搞了frontend目录的个gitignore(哦，这是本地的)
+还有根目录的
+本来要搞其他目录，但发现backend目录的.data文件夹不能删
