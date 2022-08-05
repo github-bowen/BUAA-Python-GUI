@@ -8,17 +8,19 @@ import os
 from src.util.tools import *
 
 ansUser: User
-user2Passwd : dict = None
-name2User :dict = {}
+user2Passwd: dict = None
+name2User: dict = {}
 
 DATAPATH = "../backend/.data/"
+
 
 def initialize():
     global user2Passwd
     with open(DATAPATH + "userList.json", "r") as f:
         user2Passwd = json.load(f)
 
-def removeUesr(name : str, passwd : str):
+
+def removeUesr(name: str, passwd: str):
     if (user2Passwd == None):
         initialize()
     assert name in user2Passwd.keys()
@@ -27,6 +29,7 @@ def removeUesr(name : str, passwd : str):
 
     with open(DATAPATH + "userList.json", "w") as f:
         json.dump(user2Passwd, f)
+
 
 def registerUser(name: str, passwd: str):
     if (user2Passwd == None):
@@ -38,9 +41,10 @@ def registerUser(name: str, passwd: str):
 
     os.mkdir(DATAPATH + name)
 
-    # todo ÃÜÂë¼ÓÃÜºóÔÙ´æ£¡
+    # todo ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Üºï¿½ï¿½Ù´æ£¡
     with open(DATAPATH + "userList.json", "w") as f:
         json.dump(user2Passwd, f)
+
 
 def usernameExists(username: str):
     if (user2Passwd == None):
@@ -49,6 +53,7 @@ def usernameExists(username: str):
         return True
     return False
 
+
 def checkPassword(username: str, password: str):
     if (not usernameExists(username)):
         return False
@@ -56,9 +61,9 @@ def checkPassword(username: str, password: str):
         return False
     return True
 
-'''
-·µ»Øuser¶ÔÏó£¬Í¨¹ıµ÷ÓÃUser¶ÔÏóµÄ·½·¨»ñÈ¡ÈÕÀúĞÅÏ¢µÈ
-'''
+"""
+è¿”å›Userå¯¹è±¡ï¼Œé€šè¿‡è°ƒç”¨Userå¯¹è±¡çš„æ–¹æ³•è·å–æ—¥å†ä¿¡æ¯ç­‰
+"""
 def loginUser(name: str, passwd: str):
     global ansUser
     if (name not in name2User.keys()):
