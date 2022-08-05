@@ -280,7 +280,8 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     loginWindow = LoginWindow()
     app.exec_()
-
+    app.closeAllWindows()
+    
     if loginWindow.loginSuccess:  # 程序结束是否是因为登录成功而结束
         # 临时存储用户名和密码，供calendar.py使用
         with open(".name_password.tmp", "w") as f:
