@@ -31,5 +31,5 @@ updateLog.md (本文档)
 - 第一次登录啥都没有
 - 信息保存在```.login.log```(可以删掉它测试第一次登录的情况)
 
-#### 搞了三个gitignore
+#### 搞了四个gitignore
 
