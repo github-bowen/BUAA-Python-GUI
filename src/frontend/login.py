@@ -1,14 +1,28 @@
 import sys
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QApplication, QDesktopWidget, \
-    QWidget, QMessageBox, QInputDialog
+    QWidget, QMessageBox, QInputDialog, QCheckBox
 
 from src.backend.method import *
 
 
 class LoginWindow(QWidget):
     def __init__(self):
+        super().__init__()
+
+        # 是否登录成功
+        self.loginSuccess = False
+
+        # 是否记住密码的勾选框
+        self.rememberPasswordBox = QCheckBox("记住密码")
+        self.rememberPasswordBox.toggle()
+
+        # 用户名密码
+        self.username = None
+        self.password = None
+
         # 创建标题文字
         self.title = QLabel('欢迎使用任务调度管理系统！')
 
@@ -28,8 +42,21 @@ class LoginWindow(QWidget):
         self.__button_exit = None
         self.__formerPassword = None
 
-        super().__init__()
+        self.checkIfRememberPassword()
         self.initUI()
+
+    def checkIfRememberPassword(self):
+        # 检查 上次登录的时候是否勾选了记住密码
+        self.usernameEdit.setText(formerUsername)
+        if rememberPasswordBefore:
+            self.passwordEdit.setText(formerPassword)
+
+    def changeRememberBox(self, state):
+        global rememberPasswordNow
+        if state == Qt.Checked:
+            rememberPasswordNow = True
+        else:
+            rememberPasswordNow = False
 
     def initUI(self):
         # 布局用户名和密码的label和输入框
@@ -40,6 +67,7 @@ class LoginWindow(QWidget):
         grid.addWidget(self.usernameEdit, 3, 1, 1, 3)
         grid.addWidget(self.passwordLabel, 4, 0)
         grid.addWidget(self.passwordEdit, 4, 1, 1, 3)
+        grid.addWidget(self.rememberPasswordBox, 5, 3)
 
         # 布局登录和注册按钮
         hBox = QHBoxLayout()
@@ -56,9 +84,11 @@ class LoginWindow(QWidget):
         self.loginButton.clicked.connect(self.checkLoginButton)
         # 设置"注册"Button点击后的事件
         self.registerButton.clicked.connect(self.checkRegisterButton)
+        # 设置"记住密码"勾选后的事件
+        self.rememberPasswordBox.stateChanged.connect(self.changeRememberBox)
 
         # 布局整个窗口
-        grid.addLayout(vBox, 6, 2)
+        grid.addLayout(vBox, 7, 2)
         self.setLayout(grid)
         self.resize(300, 150)
         self.center()
@@ -113,7 +143,9 @@ class LoginWindow(QWidget):
                 qApp.exit()
         else:  # 用户名存在且密码正确
             qApp.exit()
-            loginUser(inputUsername, inputPassword)
+            self.loginSuccess = True
+            self.username = inputUsername
+            self.password = inputPassword
 
     def checkRegisterButton(self, event):
         self.__messageBoxForUsername = QMessageBox()
@@ -230,6 +262,41 @@ class LoginWindow(QWidget):
 
 
 if __name__ == "__main__":
+    rememberPasswordBefore = False
+    # 判断是否勾选了"记住密码"，若是，则需要在文件".login.log"中记录
+    if not os.path.exists(".login.log"):
+        with open(".login.log", "w") as f:
+            print(False, file=f)  # 默认不记住密码
+            print("", file=f)  # 前一次选择自动登录的用户名为None
+            print("", file=f)  # 前一次选择自动登录的密码为None
+        formerUsername, formerPassword = "", ""
+    else:
+        with open(".login.log", "r") as f:
+            rememberPasswordBefore, formerUsername, formerPassword = f.readlines()
+            rememberPasswordBefore = eval(rememberPasswordBefore)
+    rememberPasswordNow = True
+    formerUsername, formerPassword = formerUsername.strip(), formerPassword.strip()
+
     app = QApplication(sys.argv)
     loginWindow = LoginWindow()
-    sys.exit(app.exec_())
+    app.exec_()
+
+    if loginWindow.loginSuccess:  # 程序结束是否是因为登录成功而结束
+        # 临时存储用户名和密码，供calendar.py使用
+        with open(".name_password.tmp", "w") as f:
+            print(loginWindow.username, file=f)
+            print(loginWindow.password, file=f)
+
+        # 判断是否勾选了"记住密码"，若是，则需要在文件".login.log"中记录
+        if rememberPasswordNow:  # 勾选了，记录用户名和密码
+            with open(".login.log", "w") as f:
+                print(True, file=f)
+                print(loginWindow.username, file=f)
+                print(loginWindow.password, file=f)
+        else:  # 没勾选，只记录用户名！！！
+            with open(".login.log", "w") as f:
+                print(False, file=f)
+                print(loginWindow.username, file=f)
+                print("", file=f)
+
+        os.system("python ./calendar.py")
