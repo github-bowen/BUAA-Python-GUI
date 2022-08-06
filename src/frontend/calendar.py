@@ -26,6 +26,7 @@ class CalenWindow(QMainWindow):
         grid.setSpacing(5)
         # 点击某个日期时使其在下方显示具体年月日
         self.calendar = QCalendarWidget(self)
+        self.setMinimumSize(600, 400)  # todo: 这么改大小感觉怪怪的
         self.calendar.setGridVisible(True)
         self.calendar.clicked[QDate].connect(self.dateDisplay)
         self.dateLabel = QLabel(self)
