@@ -1,6 +1,6 @@
 import sys
 
-from PyQt5.QtCore import QDate
+from PyQt5.QtCore import QDate, QDateTime
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QApplication, QDesktopWidget, \
@@ -61,6 +61,17 @@ class CalenWindow(QMainWindow):
         pass
 
 
+def checkDateExpired():
+    currentDate = QDate.currentDate()
+    # print("current: ", currentDate)
+    selectedDate = calWindow.calendar.selectedDate()
+    # print("selected: ", selectedDate)
+    if currentDate > selectedDate: # 选中日期 >= 当前日期，可添加任务
+        taskAddingWarning.show()
+    else:
+        addTaskDialog.show()
+
+
 # 添加任务的子窗口
 class AddTaskDialog(QWidget):
     def __init__(self):
@@ -74,8 +85,10 @@ class AddTaskDialog(QWidget):
 
         self.beginTimeLbl = QLabel('起始时间：')
         self.beginTimeLE = QDateTimeEdit()
+        self.beginTimeLE.setDateTime(QDateTime.currentDateTime())  # 设置一开始显示时的起始时间为当前时间
         self.endTimeLbl = QLabel('截止时间：')
         self.endTimeLE = QDateTimeEdit()
+        self.endTimeLE.setDateTime(QDateTime.currentDateTime())  # 设置一开始显示时的截止时间为当前时间
 
         self.importanceLbl = QLabel('重要性： ')
         # self.importanceLE = QLineEdit()
@@ -112,6 +125,17 @@ class AddTaskDialog(QWidget):
             self.importanceBtn.setText(item)
 
 
+class TaskAddingWarning(QMessageBox):
+    def __init__(self):
+        super().__init__()
+        self.setText("添加任务请求失败！\n不能在已经过了的日期添加任务哦！\n(*>﹏<*)")
+        self.setIcon(QMessageBox.Information)
+        self.setWindowTitle("提示")
+        self.setStandardButtons(QMessageBox.Yes)
+        button = self.button(QMessageBox.Yes)
+        button.setText("确定")
+
+
 if __name__ == "__main__":
     with open(".name_password.tmp", "r") as f:
         username, password = f.readlines()
@@ -119,6 +143,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     calWindow = CalenWindow(username, password)
     addTaskDialog = AddTaskDialog()
-    calWindow.addTaskButton.clicked.connect(addTaskDialog.show)
+    taskAddingWarning = TaskAddingWarning()
+    calWindow.addTaskButton.clicked.connect(checkDateExpired)
     addTaskDialog.sureBtn.clicked.connect(calWindow.addTask)
     sys.exit(app.exec_())
