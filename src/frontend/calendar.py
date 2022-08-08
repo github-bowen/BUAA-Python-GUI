@@ -1,17 +1,12 @@
-import sys
-
-from PyQt5.QtCore import QDate, QDateTime, QTime
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
-    QGridLayout, QVBoxLayout, QHBoxLayout, QApplication, QDesktopWidget, \
-    QWidget, QMessageBox, QInputDialog, QMainWindow, QCalendarWidget, QFormLayout, QDateTimeEdit, QTimeEdit
 
 from src.backend.method import *
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 # 星期x的对照表
 from src.frontend.addTask import *
 
 weekDayLis = ['一', '二', '三', '四', '五', '六', '日']
+
 
 
 # 主窗口（日历窗口）
@@ -35,19 +30,73 @@ class CalenWindow(QMainWindow):
         date = self.calendar.selectedDate()
         self.dateLabel.setText(self.dateToStr(date))
 
-        # 管理任务的添加，放到了主函数中，唤醒子窗口
-        self.addTaskButton = QPushButton(QIcon('hh.jpg'), '点击此处添加任务')
 
         # 设置控件的栅格布局
         grid.addWidget(self.calendar, 0, 0)
         grid.addWidget(self.dateLabel, 1, 0)
-        grid.addWidget(self.addTaskButton, 0, 1)
 
         # 由父类为QMainWindow
         tempWidget = QWidget()
         tempWidget.setLayout(grid)
+        self.initToolBar()
         self.setCentralWidget(tempWidget)
         self.show()
+
+    def initToolBar(self):
+        self.toolBar = QtWidgets.QToolBar(self)
+        self.toolBar.setObjectName("toolBar")
+        self.addToolBar(self.toolBar)
+
+        # 管理任务的添加，放到了主函数中，唤醒子窗口
+        self.addNewTask = QtWidgets.QAction(self)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("../Icon/新建方案.png"))
+        self.addNewTask.setIcon(icon)
+        self.addNewTask.setObjectName("addNewTask")
+        self.fliterTask = QtWidgets.QAction(self)
+        icon1 = QtGui.QIcon()
+        icon1.addPixmap(QtGui.QPixmap("../Icon/筛选.png"))
+        self.fliterTask.setIcon(icon1)
+        self.fliterTask.setObjectName("fliterTask")
+        self.refreshTask = QtWidgets.QAction(self)
+        icon2 = QtGui.QIcon()
+        icon2.addPixmap(QtGui.QPixmap("../Icon/刷新.png"))
+        self.refreshTask.setIcon(icon2)
+        self.refreshTask.setObjectName("refreshTask")
+        self.dispatchTask = QtWidgets.QAction(self)
+        icon3 = QtGui.QIcon()
+        icon3.addPixmap(QtGui.QPixmap("../Icon/调度.png"))
+        self.dispatchTask.setIcon(icon3)
+        self.dispatchTask.setObjectName("dispatchTask")
+        self.toolBar.addAction(self.addNewTask)
+        self.toolBar.addAction(self.fliterTask)
+        self.toolBar.addAction(self.refreshTask)
+        self.toolBar.addAction(self.dispatchTask)
+
+        self.retranslateUi()
+        QtCore.QMetaObject.connectSlotsByName(self)
+
+    def retranslateUi(self):
+        _translate = QtCore.QCoreApplication.translate
+        self.setWindowTitle(_translate("self", "self"))
+        self.toolBar.setWindowTitle(_translate("self", "toolBar"))
+        self.addNewTask.setText(_translate("self", "添加新代办"))
+        self.addNewTask.setToolTip(_translate("self",
+                                              "<html><head/><body><p><span style=\" font-weight:600;\">点击添加新的待办事项</span></p></body></html>"))
+        self.addNewTask.setShortcut(_translate("self", "Ctrl+N"))
+        self.fliterTask.setText(_translate("self", "筛选"))
+        self.fliterTask.setToolTip(_translate("self", "点击按时间过滤任务"))
+        self.fliterTask.setShortcut(_translate("self", "Ctrl+Shift+L"))
+        self.refreshTask.setText(_translate("self", "刷新"))
+        self.refreshTask.setToolTip(_translate("self", "点击刷新任务列表"))
+        self.refreshTask.setShortcut(_translate("self", "F5"))
+        self.dispatchTask.setText(_translate("self", "调度任务列表"))
+        self.dispatchTask.setToolTip(_translate("self", "点击自动调度任务"))
+        self.dispatchTask.setShortcut(_translate("self", "Ctrl+D"))
+
+    def taskDisplay(self,date):
+        taskLis=self.user.getTasksOfDay(date)
+
 
     def dateToStr(self, date):
         return \
@@ -89,7 +138,7 @@ if __name__ == "__main__":
 
     selectTaskDialog = SelectTaskDialog()  # 添加任务时的弹窗，选择日常任务还是一般任务
 
-    calWindow.addTaskButton.clicked.connect(checkDateExpired)
+    calWindow.addNewTask.triggered.connect(checkDateExpired)
 
     selectTaskDialog.button_dailyTask.clicked.connect(addDailyTaskDialog.show)
     addDailyTaskDialog.sureBtn.clicked.connect(addDailyTaskDialog.checkDate)
