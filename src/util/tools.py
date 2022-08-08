@@ -5,4 +5,10 @@
 DEBUG_ = True
 def debugPrint(s : str):
     if(DEBUG_):
-        print(s)
+        print("\033[34m" + s + "\033[0m")
+
+def debugWarning(s : str):
+    if (DEBUG_):
+        print("\033[35m" + s + "\033[0m")
+
+debugWarning("a")
