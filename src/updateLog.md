@@ -34,3 +34,17 @@ updateLog.md (本文档)
 #### 搞了frontend目录的个gitignore(哦，这是本地的)
 还有根目录的
 本来要搞其他目录，但发现backend目录的.data文件夹不能删
+
+
+
+### 2022-08-08
+
+转自微信群：
+
+- 我先把昨天写的commit后push上去
+
+- 我把原来的AddTaskDialog类分成两个类：ddDailyTaskDialog， AddNormalTaskDialog
+- 然后我发现现在可以在加代办时，起始时间大于截止时间，我再加一个警告上去
+- 然后就是我感觉可以把一些类放到别的文件里
+- 我这些东西弄完后再push一次？
+
