@@ -104,7 +104,7 @@ class AddDailyTaskDialog(QWidget):
         self.beginTimeLE.setTime(QTime.currentTime())  # 设置一开始显示时的起始时间为当前时间
         self.endTimeLbl = QLabel('截止时间：')
         self.endTimeLE = QTimeEdit()
-        self.endTimeLE.setDateTime(QTime.currentTime())  # 设置一开始显示时的截止时间为当前时间
+        self.endTimeLE.setTime(QTime.currentTime())  # 设置一开始显示时的截止时间为当前时间
 
         self.importanceLbl = QLabel('重要性： ')
         # self.importanceLE = QLineEdit()
