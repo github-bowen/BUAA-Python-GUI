@@ -7,9 +7,11 @@
 '''
 import datetime
 import calendar
+from src.backend.importModule import *
 from src.backend.importance import Importance
 from src.backend.state import State
 from src.util.tools import *
+import pickle as pk
 
 import tinydb
 # tinydb 的基本使用方法 ： https://blog.csdn.net/yangzm/article/details/82803746
@@ -19,11 +21,16 @@ class Calendar:
         self.y = year
         self.m = month
         self.user = user
-        # 从文件中读取数据 todo
+        self.monthTodoTable = user.todoDb.table(str(year) + str(month))
+        self.monthTodo = []
+        self.readFromDb()
 
-    # 设置月份，这个影响到日历缩略图
-    def setAnsMonth(self, y, m):
+    def readFromDb(self):
         pass
+
+    # # 设置月份，这个影响到日历缩略图
+    # def setAnsMonth(self, y, m):
+    #     pass
 
     def getCalendar(self):
         # 二维数组
@@ -51,15 +58,14 @@ class Calendar:
     def getTasksTodayAndAfter(self):
         pass
 
+    def addTask(self):
+        pass
 
 class User:
-
     def __init__(self, name):
         self.name = name
         self.calendarMap = {}
-
-    def changePassword(self, old, new):
-        pass
+        self.todoDb = db.TinyDB(DATAPATH + name + "todoDb.json")
 
     '''
     获取某个月的日历
@@ -98,3 +104,17 @@ class Task:
         self.deadline = deadline
         self.importance = importance
         self.state = state
+
+    def toDict(self):
+        dict = {"title" : self.title,
+                "content" : self.content,
+                "deadline" : {"y" : self.deadline.year, "m" : self.deadline.month, "d" : self.deadline.day},
+                "importance" : self.importance,
+                "state" : self.state}
+        return dict
+
+    def setStart(self):
+        self.state = State.inProgress
+
+    def setFinish(self):
+        self.state =State.finished
