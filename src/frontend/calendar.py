@@ -1,14 +1,16 @@
 import sys
 
-from PyQt5.QtCore import QDate, QDateTime
+from PyQt5.QtCore import QDate, QDateTime, QTime
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QApplication, QDesktopWidget, \
-    QWidget, QMessageBox, QInputDialog, QMainWindow, QCalendarWidget, QFormLayout, QDateTimeEdit
+    QWidget, QMessageBox, QInputDialog, QMainWindow, QCalendarWidget, QFormLayout, QDateTimeEdit, QTimeEdit
 
 from src.backend.method import *
 
 # 星期x的对照表
+from src.frontend.addTask import *
+
 weekDayLis = ['一', '二', '三', '四', '五', '六', '日']
 
 
@@ -57,83 +59,17 @@ class CalenWindow(QMainWindow):
     def dateDisplay(self, date):
         self.dateLabel.setText(self.dateToStr(date))
 
-    def addTask(self):
-        pass
-
 
 def checkDateExpired():
     currentDate = QDate.currentDate()
     # print("current: ", currentDate)
     selectedDate = calWindow.calendar.selectedDate()
     # print("selected: ", selectedDate)
-    if currentDate > selectedDate: # 选中日期 >= 当前日期，可添加任务
-        taskAddingWarning.show()
+    if currentDate > selectedDate:  # 选中日期 >= 当前日期，可添加任务
+        warningForExpiredDate.show()
     else:
-        addTaskDialog.show()
-
-
-# 添加任务的子窗口
-class AddTaskDialog(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.initUi()
-
-    def initUi(self):
-        dialogGrid = QGridLayout()
-        self.titleLbl = QLabel('待办名称：')
-        self.titleLE = QLineEdit()
-
-        self.beginTimeLbl = QLabel('起始时间：')
-        self.beginTimeLE = QDateTimeEdit()
-        self.beginTimeLE.setDateTime(QDateTime.currentDateTime())  # 设置一开始显示时的起始时间为当前时间
-        self.endTimeLbl = QLabel('截止时间：')
-        self.endTimeLE = QDateTimeEdit()
-        self.endTimeLE.setDateTime(QDateTime.currentDateTime())  # 设置一开始显示时的截止时间为当前时间
-
-        self.importanceLbl = QLabel('重要性： ')
-        # self.importanceLE = QLineEdit()
-        self.importanceBtn = QPushButton('选取')
-        self.importanceBtn.clicked.connect(self.getItem)
-
-        self.sureBtn = QPushButton('确认')
-        dialogGrid.addWidget(self.titleLbl, 1, 0)
-        dialogGrid.addWidget(self.titleLE, 1, 1)
-        dialogGrid.addWidget(self.beginTimeLbl, 2, 0)
-        dialogGrid.addWidget(self.beginTimeLE, 2, 1)
-        dialogGrid.addWidget(self.endTimeLbl, 3, 0)
-        dialogGrid.addWidget(self.endTimeLE, 3, 1)
-        dialogGrid.addWidget(self.importanceLbl, 4, 0)
-        # dialogGrid.addWidget(self.importanceLE, 4, 1)
-        dialogGrid.addWidget(self.importanceBtn, 4, 1)
-        dialogGrid.addWidget(self.sureBtn, 5, 2)
-        self.setLayout(dialogGrid)
-        self.setWindowTitle('创建新的待办')
-
-    def getItem(self):
-        # 创建元组并定义初始值
-        items = ('灰常重要！', '普通事项', '并不着急')
-        # 获取item输入的值，以及ok键的点击与否（True 或False）
-        # QInputDialog.getItem(self,标题,文本,元组,元组默认index,是否允许更改)
-        dialog = QInputDialog()
-        dialog.setOkButtonText('确定')
-        dialog.setCancelButtonText('取消')
-
-        item, ok = dialog.getItem(self, "选取事项重要性", '重要性列表', items, 0, False)
-
-        if ok and item:
-            # 满足条件时，设置选取的按钮
-            self.importanceBtn.setText(item)
-
-
-class TaskAddingWarning(QMessageBox):
-    def __init__(self):
-        super().__init__()
-        self.setText("添加任务请求失败！\n不能在已经过了的日期添加任务哦！\n(*>﹏<*)")
-        self.setIcon(QMessageBox.Information)
-        self.setWindowTitle("提示")
-        self.setStandardButtons(QMessageBox.Yes)
-        button = self.button(QMessageBox.Yes)
-        button.setText("确定")
+        selectTaskDialog.show()
+        # addNormalTaskDialog.show()
 
 
 if __name__ == "__main__":
@@ -142,8 +78,23 @@ if __name__ == "__main__":
     os.remove(".name_password.tmp")
     app = QApplication(sys.argv)
     calWindow = CalenWindow(username, password)
-    addTaskDialog = AddTaskDialog()
-    taskAddingWarning = TaskAddingWarning()
+
+    # 添加任务设计的widget和弹窗messagebox
+    addNormalTaskDialog = AddNormalTaskDialog()
+    addDailyTaskDialog = AddDailyTaskDialog()
+    # 在已过日期添加任务显示warning
+    warningForExpiredDate = TaskAddingWarning("添加任务请求失败！\n"
+                                              "不能在已经过了的日期添加任务哦！"
+                                              "\n(*>﹏<*)")
+
+    selectTaskDialog = SelectTaskDialog()  # 添加任务时的弹窗，选择日常任务还是一般任务
+
     calWindow.addTaskButton.clicked.connect(checkDateExpired)
-    addTaskDialog.sureBtn.clicked.connect(calWindow.addTask)
+
+    selectTaskDialog.button_dailyTask.clicked.connect(addDailyTaskDialog.show)
+    addDailyTaskDialog.sureBtn.clicked.connect(addDailyTaskDialog.checkDate)
+
+    selectTaskDialog.button_normalTask.clicked.connect(addNormalTaskDialog.show)
+    addNormalTaskDialog.sureBtn.clicked.connect(addNormalTaskDialog.checkDate)
+
     sys.exit(app.exec_())
