@@ -2,6 +2,8 @@
 # @Time :2022/8/1 14:33
 # @Author:banana889
 # @File : method.py
+import os
+
 import tinydb
 from src.backend.Module import *
 from src.backend.importModule import *
@@ -27,7 +29,7 @@ def removeUesr(name: str, passwd: str):
     q = db.Query()
     assert user2Passwd.contains(q.name == name)
     user2Passwd.remove(q.name == name)
-    os.rmdir(DATAPATH + name)
+    os.remove(DATAPATH + name)
 
 def registerUser(name: str, passwd: str):
     if (user2Passwd == None):
@@ -64,6 +66,8 @@ def checkPassword(username: str, password: str):
 """
 def loginUser(name: str, passwd: str):
     global ansUser
+    # name = name.strip()
+    debugPrint(name)
     if (not usernameExists(name)):
         debugWarning("you are logging in a unregistered User!")
     if (name not in name2User.keys()):
@@ -78,10 +82,10 @@ def setPasswd(name, new):
     user2Passwd.update({"passwd": new}, db.where('name') == name)
 
 if __name__ == "__main__":
-    # registerUser("ba", "na")
-    # removeUesr("ba", "na")
-    u = loginUser("ba", "na")
-    setPasswd("ba", "ba")
+    # registerUser("hi", "hi")
+    removeUesr("hi", "hi")
+    # u = loginUser("ba", "na")
+    # setPasswd("ba", "ba")
 
     # tb = db.TinyDB(DATAPATH + "ba/todoDb.json")
     # with open(DATAPATH + "userList.json") as f:
