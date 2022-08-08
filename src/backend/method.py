@@ -66,7 +66,7 @@ def checkPassword(username: str, password: str):
 """
 def loginUser(name: str, passwd: str):
     global ansUser
-    # name = name.strip()
+    name = name.strip()
     debugPrint(name)
     if (not usernameExists(name)):
         debugWarning("you are logging in a unregistered User!")
