@@ -300,4 +300,4 @@ if __name__ == "__main__":
                 print(loginWindow.username, file=f)
                 print("", file=f)
 
-        os.system("python ./calendar.py")
+        os.system("python ./calendarFront.py")

@@ -5,15 +5,17 @@
     添加normalTask的子窗口
     添加警告(在已过的日期添加)
 """
+import datetime
 import os
 import sys
 
+from src.backend.method import *
 from PyQt5 import QtGui, QtWidgets, QtCore
 from PyQt5.QtCore import QDate, QDateTime, QTime
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QApplication, QDesktopWidget, \
-    QWidget, QMessageBox, QInputDialog, QMainWindow, QCalendarWidget, QFormLayout, QDateTimeEdit, QTimeEdit
+    QWidget, QMessageBox, QInputDialog, QMainWindow, QCalendarWidget, QFormLayout, QDateTimeEdit, QTimeEdit, QTextEdit
 
 
 def showWarning(text: str):
@@ -21,16 +23,16 @@ def showWarning(text: str):
     warningForIllegalDate.exec_()
 
 
-def _checkDate(self, name: str, start, end, importance: str):
+def _checkDate(self, name: str, start, end, importance: str,dailyType:bool):
     if len(name.strip()) == 0:
         showWarning("代办名称为空，请重新输入！")
     elif importance.strip() == "选取":
         showWarning("代办重要性未选择，请重新选择！")
-    elif start < end:
+    elif start < end or dailyType:
         self.addDailyTask(name, start, end, importance)
         self.close()
     else:
-        showWarning("添加代办失败！\n截止时间不能在起始时间前哦！\n(*>﹏<*)")
+        showWarning("添加代办失败！\n截止时间不能在当前时间之前哦！\n(*>﹏<*)")
 
 
 class SelectTaskDialog(QMessageBox):  # 选择添加"日常任务"还是"一般任务"
@@ -48,32 +50,35 @@ class SelectTaskDialog(QMessageBox):  # 选择添加"日常任务"还是"一般�
         self.button_normalTask.setText("一般任务")
 
 class AddTaskDialog(QWidget):
-    def __init__(self):
+    def __init__(self,username, password):
         super().__init__()
+        self.user = loginUser(username, password)
         self.titleIcon = QLabel()
         self.titleIcon.setPixmap(QtGui.QPixmap("../Icon/名称.png").scaled(50,40))
-        self.titleIcon.setScaledContents(True)
+        #self.titleIcon.setScaledContents(True)
         self.titleLbl = QLabel('日常待办名称：')
         self.titleLE = QLineEdit()
 
-        self.beginTimeIcon = QLabel()
-        self.beginTimeIcon.setPixmap(QtGui.QPixmap("../Icon/时间.png").scaled(50,40))
-        self.beginTimeIcon.setScaledContents(True)
+        self.contentIcon = QLabel()
+        self.contentIcon.setPixmap(QtGui.QPixmap("../Icon/内容.png").scaled(50, 40))
+        #self.contentIcon.setScaledContents(True)
+        self.contentLbl = QLabel('待办详情(可为空)：')
+        self.contentTE = QTextEdit()
 
-        self.endTimeIcon = QLabel()
-        self.endTimeIcon.setPixmap(QtGui.QPixmap("../Icon/时间 (1).png").scaled(50,40))
-        self.endTimeIcon.setScaledContents(True)
+        self.timeIcon = QLabel()
+        self.timeIcon.setPixmap(QtGui.QPixmap("../Icon/时间.png").scaled(50,40))
+        #self.timeIcon.setScaledContents(True)
 
         self.importanceIcon = QLabel()
-        self.importanceIcon.setPixmap(QtGui.QPixmap("../Icon/等级.png").scaled(50,50))
-        self.importanceIcon.setScaledContents(True)
+        self.importanceIcon.setPixmap(QtGui.QPixmap("../Icon/等级.png").scaled(50,40))
+        #self.importanceIcon.setScaledContents(True)
         self.importanceLbl = QLabel('重要性： ')
         self.importanceBtn = QPushButton('选取')
         self.importanceBtn.clicked.connect(self.getItem)
 
         self.sortIcon = QLabel()
-        self.sortIcon.setPixmap(QtGui.QPixmap("../Icon/类别.png").scaled(30, 20))
-        self.sortIcon.setScaledContents(True)
+        self.sortIcon.setPixmap(QtGui.QPixmap("../Icon/类别.png").scaled(50,40))
+        #self.sortIcon.setScaledContents(True)
         self.sortLbl = QLabel('类别： ')
         self.sortLE = QLineEdit()
 
@@ -86,13 +91,13 @@ class AddTaskDialog(QWidget):
         dialogGrid.addWidget(self.titleLbl, 1, 1)
         dialogGrid.addWidget(self.titleLE, 1, 2)
 
-        dialogGrid.addWidget(self.beginTimeIcon, 2, 0)
-        dialogGrid.addWidget(self.beginTimeLbl, 2, 1)
-        dialogGrid.addWidget(self.beginTimeLE, 2, 2)
+        dialogGrid.addWidget(self.contentIcon, 2, 0)
+        dialogGrid.addWidget(self.contentLbl, 2, 1)
+        dialogGrid.addWidget(self.contentTE, 2, 2)
 
-        dialogGrid.addWidget(self.endTimeIcon, 3, 0)
-        dialogGrid.addWidget(self.endTimeLbl, 3, 1)
-        dialogGrid.addWidget(self.endTimeLE, 3, 2)
+        dialogGrid.addWidget(self.timeIcon, 3, 0)
+        dialogGrid.addWidget(self.timeLbl, 3, 1)
+        dialogGrid.addWidget(self.timeLE, 3, 2)
 
         dialogGrid.addWidget(self.importanceIcon, 4, 0)
         dialogGrid.addWidget(self.importanceLbl, 4, 1)
@@ -113,6 +118,7 @@ class AddTaskDialog(QWidget):
         dialog.setOkButtonText('确定')
         dialog.setCancelButtonText('取消')
 
+        # item 为 str类型
         item, ok = dialog.getItem(self, "选取事项重要性", '重要性列表', items, 0, False)
 
         if ok and item:
@@ -122,46 +128,48 @@ class AddTaskDialog(QWidget):
 
 # 添加"日常任务"的子窗口
 class AddDailyTaskDialog(AddTaskDialog):
-    def __init__(self):
-        super().__init__()
+    def __init__(self,username,password):
+        super().__init__(username,password)
         self.initUi()
         super().dialogLayOut()
 
     def initUi(self):
-        self.beginTimeLbl = QLabel('起始时间：')
-        self.beginTimeLE = QTimeEdit()
-        self.beginTimeLE.setTime(QTime.currentTime())  # 设置一开始显示时的起始时间为当前时间
-
-        self.endTimeLbl = QLabel('截止时间：')
-        self.endTimeLE = QTimeEdit()
-        self.endTimeLE.setTime(QTime.currentTime())  # 设置一开始显示时的截止时间为当前时间
+        self.timeLbl = QLabel('起始时间：')
+        self.timeLE = QTimeEdit()
+        self.timeLE.setTime(QTime.currentTime())  # 设置一开始显示时的起始时间为当前时间
         self.setWindowTitle('创建新的日常待办')
+    '''
+    def addTask(self, title: str, content: str, deadline: datetime.datetime,
+                importance=Importance.normal, state=State.notStarted):
 
-    def addDailyTask(self, taskName: str, taskBeginTime, taskEndTime, importance):
+    def addDailyTask(self):
+        name, start, end, importance,species = self.titleLE.text() \
+            , self.beginTimeLE.time(), self.endTimeLE.time(), self.importanceBtn.text()\
+            ,self.sortLE.text()
+        self.user.addTask(name,content,end)
+     '''
+    def addDailyTask(self):
         pass
 
     def checkDate(self):
         # importanceSelected = self.importanceBtn.is
-        name, start, end, importance = self.titleLE.text() \
-            , self.beginTimeLE.time(), self.endTimeLE.time(), self.importanceBtn.text()
-        _checkDate(self, name ,start, end, importance)
+        name, start, importance = self.titleLE.text() \
+            , self.timeLE.time(), self.importanceBtn.text()
+        end = 0
+        _checkDate(self, name ,start, end, importance,True)
 
 
 # 添加"一般任务"的子窗口
 class AddNormalTaskDialog(AddTaskDialog):
-    def __init__(self):
-        super().__init__()
+    def __init__(self,username,password):
+        super().__init__(username,password)
         self.initUi()
         super().dialogLayOut()
 
     def initUi(self):
-        self.beginTimeLbl = QLabel('起始日期和时间：')
-        self.beginTimeLE = QDateTimeEdit()
-        self.beginTimeLE.setDateTime(QDateTime.currentDateTime())  # 设置一开始显示时的起始时间为当前时间
-
-        self.endTimeLbl = QLabel('截止日期和时间：')
-        self.endTimeLE = QDateTimeEdit()
-        self.endTimeLE.setDateTime(QDateTime.currentDateTime())  # 设置一开始显示时的截止时间为当前时间
+        self.timeLbl = QLabel('截止日期和时间：')
+        self.timeLE = QDateTimeEdit()
+        self.timeLE.setDateTime(QDateTime.currentDateTime())  # 设置一开始显示时的截止时间为当前时间
         self.titleLbl = QLabel('普通待办名称：')
         self.setWindowTitle('创建新的普通待办')
 
@@ -169,9 +177,10 @@ class AddNormalTaskDialog(AddTaskDialog):
         pass
 
     def checkDate(self):
-        name, start, end, importance = self.titleLE.text() \
-            , self.beginTimeLE.dateTime(), self.endTimeLE.dateTime(), self.importanceBtn.text()
-        _checkDate(self, name ,start, end, importance)
+        name, end, importance = self.titleLE.text() \
+            , self.timeLE.dateTime(), self.importanceBtn.text()
+        start=datetime.datetime.now()
+        _checkDate(self, name ,start, end, importance,False)
 
 
 class TaskAddingWarning(QMessageBox):  # 可以传入警告信息！

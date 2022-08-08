@@ -1,6 +1,4 @@
 
-from src.backend.method import *
-from PyQt5 import QtCore, QtGui, QtWidgets
 
 # 星期x的对照表
 from src.frontend.addTask import *
@@ -81,8 +79,7 @@ class CalenWindow(QMainWindow):
         self.setWindowTitle(_translate("self", "self"))
         self.toolBar.setWindowTitle(_translate("self", "toolBar"))
         self.addNewTask.setText(_translate("self", "添加新代办"))
-        self.addNewTask.setToolTip(_translate("self",
-                                              "<html><head/><body><p><span style=\" font-weight:600;\">点击添加新的待办事项</span></p></body></html>"))
+        self.addNewTask.setToolTip(_translate("self","点击添加新的待办事项"))
         self.addNewTask.setShortcut(_translate("self", "Ctrl+N"))
         self.fliterTask.setText(_translate("self", "筛选"))
         self.fliterTask.setToolTip(_translate("self", "点击按时间过滤任务"))
@@ -129,8 +126,8 @@ if __name__ == "__main__":
     calWindow = CalenWindow(username, password)
 
     # 添加任务设计的widget和弹窗messagebox
-    addNormalTaskDialog = AddNormalTaskDialog()
-    addDailyTaskDialog = AddDailyTaskDialog()
+    addNormalTaskDialog = AddNormalTaskDialog(username, password)
+    addDailyTaskDialog = AddDailyTaskDialog(username, password)
     # 在已过日期添加任务显示warning
     warningForExpiredDate = TaskAddingWarning("添加任务请求失败！\n"
                                               "不能在已经过了的日期添加任务哦！"
