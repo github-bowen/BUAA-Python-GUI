@@ -70,9 +70,17 @@ class User:
     '''
     获取某个月的日历
     '''
-    def getCalendar(self, yy, mm) -> Calendar:
-        cal = Calendar(yy, mm, self)
-        return cal
+    # def getCalendar(self, yy, mm) -> Calendar:
+    #     cal = Calendar(yy, mm, self)
+    #     return cal
+
+    def addTask(self, title: str, content: str, deadline: datetime.datetime,
+                 importance=Importance.normal, state=State.notStarted):
+        pass
+
+    def getTasksOfDay(self, day : datetime.datetime):
+        return []
+
 
 class Date:
     def __init__(self, date : datetime.datetime):
@@ -92,8 +100,6 @@ class Date:
 
     def getTasks(self):
         return self.taskList
-
-
 
 
 class Task:
