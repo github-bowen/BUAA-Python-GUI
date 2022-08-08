@@ -11,7 +11,6 @@ ansUser = None
 user2Passwd : db.TinyDB = None
 name2User: dict = {}
 
-DATAPATH = "../backend/.data/"
 
 
 def initialize():
@@ -38,6 +37,8 @@ def registerUser(name: str, passwd: str):
     user2Passwd.insert({"name" : name, "passwd" : passwd})
 
     os.mkdir(DATAPATH + name)
+    with open(DATAPATH + name + "/todoDb.json", "w"):
+        pass
 
     # todo 数据加密储存
 
@@ -81,3 +82,7 @@ if __name__ == "__main__":
     # removeUesr("ba", "na")
     u = loginUser("ba", "na")
     setPasswd("ba", "ba")
+
+    # tb = db.TinyDB(DATAPATH + "ba/todoDb.json")
+    # with open(DATAPATH + "userList.json") as f:
+    #     print(f.readline())

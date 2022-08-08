@@ -65,7 +65,7 @@ class User:
     def __init__(self, name):
         self.name = name
         self.calendarMap = {}
-        self.todoDb = db.TinyDB(DATAPATH + name + "todoDb.json")
+        self.todoDb = db.TinyDB(DATAPATH + name + "/todoDb.json")
 
     '''
     获取某个月的日历
@@ -118,3 +118,9 @@ class Task:
 
     def setFinish(self):
         self.state =State.finished
+
+
+
+if __name__ == "__main__":
+
+    tb = db.TinyDB(DATAPATH + "ba/todoDb.json")
