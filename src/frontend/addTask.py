@@ -201,13 +201,8 @@ class TaskAddingWarning(QMessageBox):  # 可以传入警告信息！
     def __init__(self, text):
         super().__init__()
         self.setText(text)
-<<<<<<< HEAD
-        self.setIconPixmap(QtGui.QPixmap("../Icon/加载失败.png").scaled(150, 150))
-        # self.setIcon(QMessageBox.Information)
-=======
         self.setIconPixmap(QtGui.QPixmap("../Icon/不小心迷路了.png").scaled(250, 250))
-        #self.setIcon(QMessageBox.Information)
->>>>>>> dev
+        # self.setIcon(QMessageBox.Information)
         self.setWindowTitle("提示")
         self.setStandardButtons(QMessageBox.Yes)
         self.button = self.button(QMessageBox.Yes)
