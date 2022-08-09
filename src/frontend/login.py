@@ -1,6 +1,8 @@
+import re
 import sys
 
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QApplication, QDesktopWidget, \
     QWidget, QMessageBox, QInputDialog, QCheckBox
@@ -24,14 +26,22 @@ class LoginWindow(QWidget):
         self.password = None
 
         # 创建标题文字
-        self.title = QLabel('欢迎使用任务调度管理系统！')
+        self.title = QLabel('欢迎使用任务调度-管理系统！')
+        font = QFont()
+        font.setPointSize(16)
+        font.setBold(True)
+        font.setFamily("KaiTi")
+        self.title.setFont(font)
 
         # 创建标签、文本框、按钮
         self.usernameLabel = QLabel('用户名：')
         self.passwordLabel = QLabel('密码：')
 
         self.usernameEdit = QLineEdit()
+        self.usernameEdit.setPlaceholderText("用户名两侧的空格会自动忽略")
         self.passwordEdit = QLineEdit()
+        self.passwordEdit.setPlaceholderText("密码6-15位，只能有数字和字母，两侧空格会自动忽略")
+        self.passwordEdit.setEchoMode(QLineEdit.Password)  # 设置密码输入框，不显示输入字符，显示圆点
 
         self.loginButton = QPushButton('登录')
         self.registerButton = QPushButton('注册')
@@ -62,12 +72,12 @@ class LoginWindow(QWidget):
         # 布局用户名和密码的label和输入框
         grid = QGridLayout()
         grid.setSpacing(5)
-        grid.addWidget(self.title, 0, 1, 3, 2)
-        grid.addWidget(self.usernameLabel, 3, 0)
-        grid.addWidget(self.usernameEdit, 3, 1, 1, 3)
-        grid.addWidget(self.passwordLabel, 4, 0)
-        grid.addWidget(self.passwordEdit, 4, 1, 1, 3)
-        grid.addWidget(self.rememberPasswordBox, 5, 3)
+        grid.addWidget(self.title, 0, 2, 4, 2)
+        grid.addWidget(self.usernameLabel, 4, 0)
+        grid.addWidget(self.usernameEdit, 4, 1, 1, 3)
+        grid.addWidget(self.passwordLabel, 5, 0)
+        grid.addWidget(self.passwordEdit, 5, 1, 1, 3)
+        grid.addWidget(self.rememberPasswordBox, 6, 2)
 
         # 布局登录和注册按钮
         hBox = QHBoxLayout()
@@ -88,9 +98,9 @@ class LoginWindow(QWidget):
         self.rememberPasswordBox.stateChanged.connect(self.changeRememberBox)
 
         # 布局整个窗口
-        grid.addLayout(vBox, 7, 2)
+        grid.addLayout(vBox, 8, 3)
         self.setLayout(grid)
-        self.resize(300, 150)
+        self.resize(450, 200)
         self.center()
         self.setWindowTitle("任务调度器-登录")
         self.show()
@@ -100,6 +110,13 @@ class LoginWindow(QWidget):
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
+
+    @staticmethod
+    def __allAlphaOrDigit(s: str):
+        pattern = re.compile(r"^[a-zA-Z\d]+$")
+        if pattern.match(s):
+            return True
+        return False
 
     def checkLoginButton(self, event):
         messageBox = QMessageBox()
@@ -112,7 +129,7 @@ class LoginWindow(QWidget):
         button_exit.setText("退出")
 
         inputUsername = self.usernameEdit.text().strip()
-        inputPassword = self.passwordEdit.text()
+        inputPassword = self.passwordEdit.text().strip()
         if inputUsername == "":  # 输入的用户名为空或仅有空白符
             messageBox.setText("输入的用户名为空，请重新输入  ")
             messageBox.exec_()
@@ -181,9 +198,14 @@ class LoginWindow(QWidget):
 
     def __inputNewUsername(self):
         inputDialog = QInputDialog()
+        inputDialog.setInputMode(QInputDialog.TextInput)
         inputDialog.setOkButtonText("确认")
         inputDialog.setCancelButtonText("取消")
         inputDialog.setLabelText("请输入新用户名：")
+        lineEdit = inputDialog.findChild(QLineEdit)
+        lineEdit.setPlaceholderText("用户名两侧的空格会自动忽略")
+        inputDialog.resize(360, 200)
+
         while inputDialog.exec_():
             __inputNewUsername = inputDialog.textValue().strip()
             if __inputNewUsername == "":  # 输入的用户名为空或仅有空白符
@@ -211,11 +233,17 @@ class LoginWindow(QWidget):
 
     def __inputNewPassword(self):
         inputDialog = QInputDialog()
+        inputDialog.setInputMode(QInputDialog.TextInput)
         inputDialog.setOkButtonText("确认")
         inputDialog.setCancelButtonText("取消")
         inputDialog.setLabelText("请输入密码：")
+        lineEdit = inputDialog.findChild(QLineEdit)
+        lineEdit.setEchoMode(QLineEdit.Password)
+        lineEdit.setPlaceholderText("密码6-15位，只能有数字和字母，两侧空格会自动忽略")
+        inputDialog.resize(360, 200)
+
         while inputDialog.exec_():
-            __inputNewPassword = inputDialog.textValue()
+            __inputNewPassword = inputDialog.textValue().strip()
             if __inputNewPassword == "":  # 输入的密码为空
                 self.__messageBoxForUsername.setText("输入的密码为空，请重新输入  ")
                 self.__messageBoxForUsername.exec_()
@@ -225,6 +253,20 @@ class LoginWindow(QWidget):
                     self.__messageBoxForUsername.close()
                     inputDialog.close()
                     return None
+            elif not LoginWindow.__allAlphaOrDigit(__inputNewPassword):
+                self.__messageBoxForUsername.setText("输入的密码包含字母数字以外的字符，请重新输入  ")
+                self.__messageBoxForUsername.exec_()
+                if self.__messageBoxForUsername.clickedButton() == self.__button_inputAgain:
+                    self.__messageBoxForUsername.close()
+                else:
+                    qApp.quit()
+            elif not 6 <= len(__inputNewPassword) <= 15:
+                self.__messageBoxForUsername.setText("输入的密码长度不在6～15之间，请重新输入  ")
+                self.__messageBoxForUsername.exec_()
+                if self.__messageBoxForUsername.clickedButton() == self.__button_inputAgain:
+                    self.__messageBoxForUsername.close()
+                else:
+                    qApp.quit()
             else:
                 self.__messageBoxForUsername.close()
                 inputDialog.close()
@@ -232,9 +274,14 @@ class LoginWindow(QWidget):
 
     def __inputNewPassword_again(self):  # 再输一遍，确认密码
         inputDialog = QInputDialog()
+        inputDialog.setInputMode(QInputDialog.TextInput)
         inputDialog.setOkButtonText("确认")
         inputDialog.setCancelButtonText("取消")
         inputDialog.setLabelText("请再次输入密码：")
+        lineEdit = inputDialog.findChild(QLineEdit)
+        lineEdit.setEchoMode(QLineEdit.Password)
+        lineEdit.setPlaceholderText("请输入与上一次相同的密码")
+        inputDialog.resize(360, 200)
         while inputDialog.exec_():
             __inputNewPassword_again = inputDialog.textValue()
             if __inputNewPassword_again == "":  # 输入的密码为空
@@ -281,7 +328,7 @@ if __name__ == "__main__":
     loginWindow = LoginWindow()
     app.exec_()
     app.closeAllWindows()
-    
+
     if loginWindow.loginSuccess:  # 程序结束是否是因为登录成功而结束
         # 临时存储用户名和密码，供calendar.py使用
         with open(".name_password.tmp", "w") as f:
@@ -301,3 +348,5 @@ if __name__ == "__main__":
                 print("", file=f)
 
         os.system("python ./calendarFront.py")
+    else:
+        exit(0)
