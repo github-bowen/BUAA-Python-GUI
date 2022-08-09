@@ -25,9 +25,9 @@ def showWarning(text: str):
 
 def _checkDate(self, name: str, start, end, importance: str, dailyType: bool):
     if len(name.strip()) == 0:
-        showWarning("代办名称为空，请重新输入！")
+        showWarning("\n代办名称为空，\n请重新输入！")
     elif importance.strip() == "选取":
-        showWarning("代办重要性未选择，请重新选择！")
+        showWarning("\n代办重要性未选择，\n请重新选择！")
     elif start < end or dailyType:
         self.addDailyTask(name, start, end, importance)
         self.close()
@@ -43,7 +43,7 @@ class SelectTaskDialog(QMessageBox):  # 选择添加"日常任务"还是"一般�
         self.setText("请选择要新建代办的类型：\n"
                      "日常任务为每日固定的任务\n"
                      "(每天都会显示，任务时段需要在一天内)")
-        self.setIconPixmap(QtGui.QPixmap("../Icon/请先选择.png").scaled(150, 150))
+        self.setIconPixmap(QtGui.QPixmap("../Icon/记录.png").scaled(250, 250))
         self.button_dailyTask = self.button(QMessageBox.Yes)
         self.button_normalTask = self.button(QMessageBox.No)
         self.button_dailyTask.setText("日常任务")
@@ -75,13 +75,14 @@ class AddTaskDialog(QWidget):
         # self.importanceIcon.setScaledContents(True)
         self.importanceLbl = QLabel('重要性： ')
         self.importanceBtn = QPushButton('选取')
-        self.importanceBtn.clicked.connect(self.getItem)
+        self.importanceBtn.clicked.connect(self.getImportanceItem)
 
         self.sortIcon = QLabel()
         self.sortIcon.setPixmap(QtGui.QPixmap("../Icon/类别.png").scaled(50, 40))
         # self.sortIcon.setScaledContents(True)
         self.sortLbl = QLabel('类别： ')
-        self.sortLE = QLineEdit()
+        self.sortBtn = QPushButton('选取')
+        self.sortBtn.clicked.connect(self.getSortItem)
 
         self.sureBtn = QPushButton('确认')
 
@@ -106,25 +107,35 @@ class AddTaskDialog(QWidget):
 
         dialogGrid.addWidget(self.sortIcon, 5, 0)
         dialogGrid.addWidget(self.sortLbl, 5, 1)
-        dialogGrid.addWidget(self.sortLE, 5, 2)
+        dialogGrid.addWidget(self.sortBtn, 5, 2)
         dialogGrid.addWidget(self.sureBtn, 6, 3)
         self.setLayout(dialogGrid)
 
-    def getItem(self):
+    def getImportanceItem(self):
         # 创建元组并定义初始值
         items = ('灰常重要！', '普通事项', '并不着急')
         # 获取item输入的值，以及ok键的点击与否（True 或False）
         # QInputDialog.getItem(self,标题,文本,元组,元组默认index,是否允许更改)
-        dialog = QInputDialog()
-        dialog.setOkButtonText('确定')
-        dialog.setCancelButtonText('取消')
-
+        dialog = QInputDialog(self)
         # item 为 str类型
-        item, ok = dialog.getItem(self, "选取事项重要性", '重要性列表', items, 0, False)
+        item, ok = dialog.getItem(self, "重要性", '重要性列表', items, 0, False)
 
         if ok and item:
             # 满足条件时，设置选取的按钮
             self.importanceBtn.setText(item)
+
+    def getSortItem(self):
+        # 创建元组并定义初始值
+        items = ('工作', '学习', '娱乐','运动','其他')
+        # 获取item输入的值，以及ok键的点击与否（True 或False）
+        # QInputDialog.getItem(self,标题,文本,元组,元组默认index,是否允许更改)
+        dialog = QInputDialog()
+        # item 为 str类型
+        item, ok = dialog.getItem(self, "分类", '类别列表', items, 0, False)
+
+        if ok and item:
+            # 满足条件时，设置选取的按钮
+            self.sortBtn.setText(item)
 
 
 # 添加"日常任务"的子窗口
@@ -145,7 +156,7 @@ class AddDailyTaskDialog(AddTaskDialog):
                 importance=Importance.normal, state=State.notStarted):
 
     def addDailyTask(self):
-        name, start, end, importance,species = self.titleLE.text() \
+        name, time, content, importance,species = self.titleLE.text() \
             , self.beginTimeLE.time(), self.endTimeLE.time(), self.importanceBtn.text()\
             ,self.sortLE.text()
         self.user.addTask(name,content,end)
@@ -190,8 +201,13 @@ class TaskAddingWarning(QMessageBox):  # 可以传入警告信息！
     def __init__(self, text):
         super().__init__()
         self.setText(text)
+<<<<<<< HEAD
         self.setIconPixmap(QtGui.QPixmap("../Icon/加载失败.png").scaled(150, 150))
         # self.setIcon(QMessageBox.Information)
+=======
+        self.setIconPixmap(QtGui.QPixmap("../Icon/不小心迷路了.png").scaled(250, 250))
+        #self.setIcon(QMessageBox.Information)
+>>>>>>> dev
         self.setWindowTitle("提示")
         self.setStandardButtons(QMessageBox.Yes)
         self.button = self.button(QMessageBox.Yes)
