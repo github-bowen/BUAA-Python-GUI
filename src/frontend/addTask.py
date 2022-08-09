@@ -126,7 +126,7 @@ class AddTaskDialog(QWidget):
 
     def getSortItem(self):
         # 创建元组并定义初始值
-        items = ('工作', '学习', '娱乐','运动','其他')
+        items = ('工作', '学习', '娱乐', '运动', '其他')
         # 获取item输入的值，以及ok键的点击与否（True 或False）
         # QInputDialog.getItem(self,标题,文本,元组,元组默认index,是否允许更改)
         dialog = QInputDialog()
