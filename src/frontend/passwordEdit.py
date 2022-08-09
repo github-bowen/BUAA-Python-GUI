@@ -10,10 +10,10 @@ class PasswordEdit(QLineEdit):
         self.setPlaceholderText(text)
         self.setClearButtonEnabled(True)
         self.eyeOn, self.eyeOff = QIcon(), QIcon()
-        self.eyeOn.addPixmap(QPixmap(":/eyeOn"))  # todo: 这个眼睛图标怪怪的
-        self.eyeOff.addPixmap(QPixmap(":/eyeOff"))
-        # self.eyeOn.addPixmap(QPixmap("../../Icon/eyeOn.png"))
-        # self.eyeOff.addPixmap(QPixmap("../../Icon/eyeOff.png"))
+        # self.eyeOn.addPixmap(QPixmap(":/eyeOn"))  # todo: 这个眼睛图标怪怪的
+        # self.eyeOff.addPixmap(QPixmap(":/eyeOff"))
+        self.eyeOn.addPixmap(QPixmap("../../Icon/eyeOn.png"))
+        self.eyeOff.addPixmap(QPixmap("../../Icon/eyeOff.png"))
         action = QAction(self.eyeOn, "显示密码", self)
         self.addAction(action, QLineEdit.TrailingPosition)
         self.showPasswordButton = QToolButton(action.associatedWidgets()[-1])
