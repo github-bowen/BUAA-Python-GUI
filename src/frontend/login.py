@@ -2,12 +2,13 @@ import re
 import sys
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QIcon, QCursor
 from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QApplication, QDesktopWidget, \
-    QWidget, QMessageBox, QInputDialog, QCheckBox
+    QWidget, QMessageBox, QInputDialog, QCheckBox, QAction, QToolButton
 
 from src.backend.method import *
+from passwordEdit import PasswordEdit
 
 
 class LoginWindow(QWidget):
@@ -38,10 +39,10 @@ class LoginWindow(QWidget):
         self.passwordLabel = QLabel('密码：')
 
         self.usernameEdit = QLineEdit()
+        self.usernameEdit.setClearButtonEnabled(True)
         self.usernameEdit.setPlaceholderText("用户名两侧的空格会自动忽略")
-        self.passwordEdit = QLineEdit()
-        self.passwordEdit.setPlaceholderText("密码6-15位，只能有数字和字母，两侧空格会自动忽略")
-        self.passwordEdit.setEchoMode(QLineEdit.Password)  # 设置密码输入框，不显示输入字符，显示圆点
+
+        self.passwordEdit = PasswordEdit("密码6-15位，只能有数字和字母，两侧空格会自动忽略")
 
         self.loginButton = QPushButton('登录')
         self.registerButton = QPushButton('注册')
@@ -204,6 +205,7 @@ class LoginWindow(QWidget):
         inputDialog.setLabelText("请输入新用户名：")
         lineEdit = inputDialog.findChild(QLineEdit)
         lineEdit.setPlaceholderText("用户名两侧的空格会自动忽略")
+        lineEdit.setClearButtonEnabled(True)
         inputDialog.resize(360, 200)
 
         while inputDialog.exec_():
@@ -238,8 +240,9 @@ class LoginWindow(QWidget):
         inputDialog.setCancelButtonText("取消")
         inputDialog.setLabelText("请输入密码：")
         lineEdit = inputDialog.findChild(QLineEdit)
-        lineEdit.setEchoMode(QLineEdit.Password)
         lineEdit.setPlaceholderText("密码6-15位，只能有数字和字母，两侧空格会自动忽略")
+        lineEdit.setClearButtonEnabled(True)
+        lineEdit.setEchoMode(QLineEdit.Password)
         inputDialog.resize(360, 200)
 
         while inputDialog.exec_():
@@ -279,8 +282,9 @@ class LoginWindow(QWidget):
         inputDialog.setCancelButtonText("取消")
         inputDialog.setLabelText("请再次输入密码：")
         lineEdit = inputDialog.findChild(QLineEdit)
-        lineEdit.setEchoMode(QLineEdit.Password)
         lineEdit.setPlaceholderText("请输入与上一次相同的密码")
+        lineEdit.setClearButtonEnabled(True)
+        lineEdit.setEchoMode(QLineEdit.Password)
         inputDialog.resize(360, 200)
         while inputDialog.exec_():
             __inputNewPassword_again = inputDialog.textValue()
