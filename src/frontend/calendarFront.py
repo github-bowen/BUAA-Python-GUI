@@ -81,7 +81,7 @@ class CalenWindow(QMainWindow):
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("self", "self"))
         self.toolBar.setWindowTitle(_translate("self", "toolBar"))
-        self.addNewTask.setText(_translate("self", "添加新代办"))
+        self.addNewTask.setText(_translate("self", "添加新待办"))
         self.addNewTask.setToolTip(_translate("self", "点击添加新的待办事项"))
         self.addNewTask.setShortcut(_translate("self", "Ctrl+N"))
         self.fliterTask.setText(_translate("self", "筛选"))

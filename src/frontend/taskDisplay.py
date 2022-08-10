@@ -17,7 +17,7 @@ class DisplayWidget(QWidget):
         self.taskNum = len(todayTasks)
 
         if self.taskNum > 0:
-            widget = QLabel("今日代办如下：")
+            widget = QLabel("今日待办如下：")
             font = QFont()
             font.setPointSize(12)
             font.setBold(True)
@@ -43,7 +43,7 @@ class DisplayWidget(QWidget):
         self.show()
 
     def displayNoTaskToday(self):  # 显示下面的提示文字
-        label = QLabel("今日暂无代办哦～")
+        label = QLabel("今日暂无待办哦～")
         font = QFont()
         font.setPointSize(16)
         font.setBold(True)
@@ -61,7 +61,7 @@ class DisplayWidget(QWidget):
         # todo: 对每一个task生成相应的Widget以便显示
 
         # todo: 下面随便加一些东西，测试是否有滚动条
-        return QPushButton("假装这是代办(测试)")
+        return QPushButton("假装这是待办(测试)")
 
 
 """
