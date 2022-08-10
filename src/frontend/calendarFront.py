@@ -1,10 +1,8 @@
-
-
 # 星期x的对照表
 from src.frontend.addTask import *
+from taskDisplay import DisplayWidget
 
 weekDayLis = ['一', '二', '三', '四', '五', '六', '日']
-
 
 
 # 主窗口（日历窗口）
@@ -17,21 +15,26 @@ class CalenWindow(QMainWindow):
         self.initUI()
 
     def initUI(self):
+        displayWidget = DisplayWidget(self.user)  # 获取滚动条
+
+        displayWidget.layout = QVBoxLayout(displayWidget)
+        displayWidget.layout.addWidget(displayWidget.scroll)
+
         grid = QGridLayout(self)
         grid.setSpacing(5)
         # 点击某个日期时使其在下方显示具体年月日
         self.calendar = QCalendarWidget(self)
-        self.setMinimumSize(600, 400)  # todo: 这么改大小感觉怪怪的
+        self.setMinimumSize(700, 400)  # todo: 这么改大小感觉怪怪的
         self.calendar.setGridVisible(True)
         self.calendar.clicked[QDate].connect(self.dateDisplay)
         self.dateLabel = QLabel(self)
         date = self.calendar.selectedDate()
         self.dateLabel.setText(self.dateToStr(date))
 
-
         # 设置控件的栅格布局
-        grid.addWidget(self.calendar, 0, 0)
-        grid.addWidget(self.dateLabel, 1, 0)
+        grid.addWidget(self.calendar, 0, 0, 3, 3)
+        grid.addWidget(self.dateLabel, 3, 0, 1, 3)
+        grid.addLayout(displayWidget.layout, 0, 3, 3, 1)
 
         # 由父类为QMainWindow
         tempWidget = QWidget()
@@ -79,7 +82,7 @@ class CalenWindow(QMainWindow):
         self.setWindowTitle(_translate("self", "self"))
         self.toolBar.setWindowTitle(_translate("self", "toolBar"))
         self.addNewTask.setText(_translate("self", "添加新代办"))
-        self.addNewTask.setToolTip(_translate("self","点击添加新的待办事项"))
+        self.addNewTask.setToolTip(_translate("self", "点击添加新的待办事项"))
         self.addNewTask.setShortcut(_translate("self", "Ctrl+N"))
         self.fliterTask.setText(_translate("self", "筛选"))
         self.fliterTask.setToolTip(_translate("self", "点击按时间过滤任务"))
@@ -92,9 +95,8 @@ class CalenWindow(QMainWindow):
         self.dispatchTask.setShortcut(_translate("self", "Ctrl+D"))
 
     # TODO：所有回到日历主页面的按钮都应触发该函数，考虑引入缓存
-    def taskDisplay(self,date):
-        taskLis=self.user.getTasksOfDay(date)
-
+    def taskDisplay(self, date):
+        taskLis = self.user.getTasksOfDay(date)
 
     def dateToStr(self, date):
         return \
