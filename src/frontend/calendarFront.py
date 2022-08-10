@@ -91,6 +91,7 @@ class CalenWindow(QMainWindow):
         self.dispatchTask.setToolTip(_translate("self", "点击自动调度任务"))
         self.dispatchTask.setShortcut(_translate("self", "Ctrl+D"))
 
+    # TODO：所有回到日历主页面的按钮都应触发该函数，考虑引入缓存
     def taskDisplay(self,date):
         taskLis=self.user.getTasksOfDay(date)
 

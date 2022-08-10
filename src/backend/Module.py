@@ -10,6 +10,7 @@ import calendar
 from src.backend.importModule import *
 from src.backend.importance import Importance
 from src.backend.state import State
+from src.backend.species import Species
 from src.util.tools import *
 import pickle as pk
 
@@ -74,7 +75,7 @@ class User:
     #     cal = Calendar(yy, mm, self)
     #     return cal
 
-    def addTask(self, title: str, content: str, deadline: datetime.datetime,
+    def addTask(self, title: str, content: str, time: datetime.datetime,
                  importance=Importance.normal, state=State.notStarted):
         pass
 
@@ -90,31 +91,32 @@ class Date:
         self.taskList = []
 
     '''
-    taskName, taskDescribe, deadline, importance
+    taskName, taskDescribe, time, importance
     taskDescribe, importance can be None
     '''
-    def addTask(self, title, deadline: datetime.datetime, content="", importance=Importance.normal):
-        newTask = Task(title, content, deadline, importance)
+    def addTask(self, title, time: datetime.datetime, content="", importance=Importance.normal):
+        newTask = Task(title, content, time, importance)
         self.taskList.append(newTask)
         debugPrint("added task : " + title)
 
     def getTasks(self):
         return self.taskList
 
-
+# 暂且使用time 分别代表日常任务的起始时间和普通任务的结束时间
 class Task:
-    def __init__(self, title: str, content: str, deadline: datetime.datetime,
-                 importance=Importance.normal, state=State.notStarted):
+    def __init__(self, title: str, content: str, time: datetime.datetime,
+                 importance=Importance.normal, state=State.notStarted,speices=Species.work):
         self.title = title
         self.content = content
-        self.deadline = deadline
+        self.time = time
         self.importance = importance
         self.state = state
+        self.species = speices
 
     def toDict(self):
         dict = {"title" : self.title,
                 "content" : self.content,
-                "deadline" : {"y" : self.deadline.year, "m" : self.deadline.month, "d" : self.deadline.day},
+                "time" : {"y" : self.time.year, "m" : self.time.month, "d" : self.time.day},
                 "importance" : self.importance,
                 "state" : self.state}
         return dict

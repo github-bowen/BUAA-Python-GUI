@@ -23,7 +23,7 @@ def showWarning(text: str):
     warningForIllegalDate.exec_()
 
 
-def _checkDate(self, name: str, start, end, importance: str,dailyType:bool):
+def _checkDate(self, name: str, start, end, importance: str, dailyType: bool):
     if len(name.strip()) == 0:
         showWarning("\n代办名称为空，\n请重新输入！")
     elif importance.strip() == "选取":
@@ -49,36 +49,39 @@ class SelectTaskDialog(QMessageBox):  # 选择添加"日常任务"还是"一般�
         self.button_dailyTask.setText("日常任务")
         self.button_normalTask.setText("一般任务")
 
+
 class AddTaskDialog(QWidget):
-    def __init__(self,username, password):
+    def __init__(self, username, password):
         super().__init__()
+        self.timeLE = None
+        self.timeLbl = None
         self.user = loginUser(username, password)
         self.titleIcon = QLabel()
-        self.titleIcon.setPixmap(QtGui.QPixmap("../Icon/名称.png").scaled(50,40))
-        #self.titleIcon.setScaledContents(True)
+        self.titleIcon.setPixmap(QtGui.QPixmap("../Icon/名称.png").scaled(50, 40))
+        # self.titleIcon.setScaledContents(True)
         self.titleLbl = QLabel('日常待办名称：')
         self.titleLE = QLineEdit()
 
         self.contentIcon = QLabel()
         self.contentIcon.setPixmap(QtGui.QPixmap("../Icon/内容.png").scaled(50, 40))
-        #self.contentIcon.setScaledContents(True)
+        # self.contentIcon.setScaledContents(True)
         self.contentLbl = QLabel('待办详情(可为空)：')
         self.contentTE = QTextEdit()
 
         self.timeIcon = QLabel()
-        self.timeIcon.setPixmap(QtGui.QPixmap("../Icon/时间.png").scaled(50,40))
-        #self.timeIcon.setScaledContents(True)
+        self.timeIcon.setPixmap(QtGui.QPixmap("../Icon/时间.png").scaled(50, 40))
+        # self.timeIcon.setScaledContents(True)
 
         self.importanceIcon = QLabel()
-        self.importanceIcon.setPixmap(QtGui.QPixmap("../Icon/等级.png").scaled(50,40))
-        #self.importanceIcon.setScaledContents(True)
+        self.importanceIcon.setPixmap(QtGui.QPixmap("../Icon/等级.png").scaled(50, 40))
+        # self.importanceIcon.setScaledContents(True)
         self.importanceLbl = QLabel('重要性： ')
         self.importanceBtn = QPushButton('选取')
         self.importanceBtn.clicked.connect(self.getImportanceItem)
 
         self.sortIcon = QLabel()
-        self.sortIcon.setPixmap(QtGui.QPixmap("../Icon/类别.png").scaled(50,40))
-        #self.sortIcon.setScaledContents(True)
+        self.sortIcon.setPixmap(QtGui.QPixmap("../Icon/类别.png").scaled(50, 40))
+        # self.sortIcon.setScaledContents(True)
         self.sortLbl = QLabel('类别： ')
         self.sortBtn = QPushButton('选取')
         self.sortBtn.clicked.connect(self.getSortItem)
@@ -112,7 +115,7 @@ class AddTaskDialog(QWidget):
 
     def getImportanceItem(self):
         # 创建元组并定义初始值
-        items = ('灰常重要！', '普通事项', '并不着急')
+        items = ('灰常重要！', '普通事项', '不着急呢~')
         # 获取item输入的值，以及ok键的点击与否（True 或False）
         # QInputDialog.getItem(self,标题,文本,元组,元组默认index,是否允许更改)
         dialog = QInputDialog(self)
@@ -125,7 +128,7 @@ class AddTaskDialog(QWidget):
 
     def getSortItem(self):
         # 创建元组并定义初始值
-        items = ('工作', '学习', '娱乐','运动','其他')
+        items = ('工作', '学习', '娱乐', '运动', '其他')
         # 获取item输入的值，以及ok键的点击与否（True 或False）
         # QInputDialog.getItem(self,标题,文本,元组,元组默认index,是否允许更改)
         dialog = QInputDialog()
@@ -139,8 +142,8 @@ class AddTaskDialog(QWidget):
 
 # 添加"日常任务"的子窗口
 class AddDailyTaskDialog(AddTaskDialog):
-    def __init__(self,username,password):
-        super().__init__(username,password)
+    def __init__(self, username, password):
+        super().__init__(username, password)
         self.initUi()
         super().dialogLayOut()
 
@@ -148,7 +151,9 @@ class AddDailyTaskDialog(AddTaskDialog):
         self.timeLbl = QLabel('起始时间：')
         self.timeLE = QTimeEdit()
         self.timeLE.setTime(QTime.currentTime())  # 设置一开始显示时的起始时间为当前时间
+        self.timeLE.setDisplayFormat("hh:mm")
         self.setWindowTitle('创建新的日常待办')
+
     '''
     def addTask(self, title: str, content: str, deadline: datetime.datetime,
                 importance=Importance.normal, state=State.notStarted):
@@ -159,7 +164,8 @@ class AddDailyTaskDialog(AddTaskDialog):
             ,self.sortLE.text()
         self.user.addTask(name,content,end)
      '''
-    def addDailyTask(self):
+
+    def __addDailyTask(self):
         pass
 
     def checkDate(self):
@@ -167,13 +173,13 @@ class AddDailyTaskDialog(AddTaskDialog):
         name, start, importance = self.titleLE.text() \
             , self.timeLE.time(), self.importanceBtn.text()
         end = 0
-        _checkDate(self, name ,start, end, importance,True)
+        _checkDate(self, name, start, end, importance, True)
 
 
 # 添加"一般任务"的子窗口
 class AddNormalTaskDialog(AddTaskDialog):
-    def __init__(self,username,password):
-        super().__init__(username,password)
+    def __init__(self, username, password):
+        super().__init__(username, password)
         self.initUi()
         super().dialogLayOut()
 
@@ -181,17 +187,18 @@ class AddNormalTaskDialog(AddTaskDialog):
         self.timeLbl = QLabel('截止日期和时间：')
         self.timeLE = QDateTimeEdit()
         self.timeLE.setDateTime(QDateTime.currentDateTime())  # 设置一开始显示时的截止时间为当前时间
+        self.timeLE.setDisplayFormat("yyyy-mm-dd-hh:mm")
         self.titleLbl = QLabel('普通待办名称：')
         self.setWindowTitle('创建新的普通待办')
 
-    def addNormalTask(self, taskName: str, taskBeginTime, taskEndTime, importance):
+    def __addNormalTask(self, taskName: str, taskBeginTime, taskEndTime, importance):
         pass
 
     def checkDate(self):
         name, end, importance = self.titleLE.text() \
             , self.timeLE.dateTime(), self.importanceBtn.text()
-        start=datetime.datetime.now()
-        _checkDate(self, name ,start, end, importance,False)
+        start = datetime.datetime.now()
+        _checkDate(self, name, start, end, importance, False)
 
 
 class TaskAddingWarning(QMessageBox):  # 可以传入警告信息！
@@ -199,7 +206,7 @@ class TaskAddingWarning(QMessageBox):  # 可以传入警告信息！
         super().__init__()
         self.setText(text)
         self.setIconPixmap(QtGui.QPixmap("../Icon/不小心迷路了.png").scaled(250, 250))
-        #self.setIcon(QMessageBox.Information)
+        # self.setIcon(QMessageBox.Information)
         self.setWindowTitle("提示")
         self.setStandardButtons(QMessageBox.Yes)
         self.button = self.button(QMessageBox.Yes)
