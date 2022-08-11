@@ -7,6 +7,8 @@
 '''
 import datetime
 import calendar
+import time
+
 from src.backend.importModule import *
 from src.backend.importance import Importance
 from src.backend.state import State
@@ -18,16 +20,23 @@ import tinydb
 # tinydb 的基本使用方法 ： https://blog.csdn.net/yangzm/article/details/82803746
 
 class Calendar:
-    def __init__(self, year, month, user):
-        self.y = year
-        self.m = month
+    def __init__(self, time,  user):
+        self.time = time
         self.user = user
-        self.monthTodoTable = user.todoDb.table(str(year) + str(month))
-        self.monthTodo = []
+        self.ymStr = self.time.strftime("%Y%m")
+        self.monthTodoTable = user.todoDb.table(self.ymStr)
+        self.monthTodo = {}
         self.readFromDb()
 
     def readFromDb(self):
-        pass
+        # 从monthTodoTable中读取，存入 monthtodo中
+        for tt in self.monthTodoTable.all():
+            task = Task.parseTask(tt)
+            day = task.time.day
+
+            if day not in self.monthTodo.keys():
+                self.monthTodo[day] = []
+            self.monthTodo[day].append(task)
 
     # # 设置月份，这个影响到日历缩略图
     # def setAnsMonth(self, y, m):
@@ -46,8 +55,11 @@ class Calendar:
     获取某一天的任务列表
     '''
 
-    def getTasks(self, date: datetime.datetime):
-        pass
+    def getTasksOfDay(self, date: datetime.datetime):
+        # return self.monthTodoTable
+        if date.day in self.monthTodo.keys():
+            return self.monthTodo[date.day]
+        return []
 
     # datetime.datetime.now()
     def getTasksToday(self):
@@ -59,15 +71,22 @@ class Calendar:
     def getTasksTodayAndAfter(self):
         pass
 
-    def addTask(self):
-        pass
+    def addTask(self, task):
+        self.monthTodoTable.insert(task.toDict())
+        day = task.time.day
+        if day not in self.monthTodo.keys():
+            self.monthTodo[day] = []
+        self.monthTodo[day].append(task)
+        debugPrint("add task " + task.title)
+
 
 class User:
     def __init__(self, name):
         self.name = name
         self.calendarMap = {}
+        # 一个月的代办对应一个table
         self.todoDb = db.TinyDB(DATAPATH + name + "/todoDb.json")
-
+        # self.initCalendarMap(
     '''
     获取某个月的日历
     '''
@@ -75,12 +94,29 @@ class User:
     #     cal = Calendar(yy, mm, self)
     #     return cal
 
+    # done
     def addTask(self, title: str, content: str, time: datetime.datetime,
                  importance=Importance.normal, state=State.notStarted):
-        pass
+        task = Task(title, content, time, importance, state)
+        ymStr = time.strftime("%Y%m")
 
+        if ymStr not in self.calendarMap.keys():
+            newCalender = Calendar(time, self)
+            self.calendarMap[ymStr] = newCalender
+        calendar_ : Calendar = self.calendarMap.get(ymStr)
+        calendar_.addTask(task)
+
+    # done
     def getTasksOfDay(self, day : datetime.datetime):
-        return []
+        ymStr = day.strftime("%Y%m")
+        if self.todoDb.table(ymStr) != None:
+            self.calendarMap[ymStr] = Calendar(day, self)
+
+        if ymStr in self.calendarMap:
+            calendar_:Calendar = self.calendarMap.get(ymStr)
+            return calendar_.getTasksOfDay(day)
+        else:
+            return []
 
 
 class Date:
@@ -113,12 +149,22 @@ class Task:
         self.state = state
         self.species = speices
 
+    @staticmethod
+    def parseTask(dict):
+        # dict -> Task
+        time = datetime.datetime.fromtimestamp(dict["time"])
+        task = Task(dict["title"], dict["content"], time, Importance(dict["importance"]),
+                    State(dict["state"]), Species(dict["species"]))
+        return task
+
     def toDict(self):
         dict = {"title" : self.title,
                 "content" : self.content,
-                "time" : {"y" : self.time.year, "m" : self.time.month, "d" : self.time.day},
-                "importance" : self.importance,
-                "state" : self.state}
+                "time" : self.time.timestamp(),
+                "importance" : self.importance.value,
+                "state" : self.state.value,
+                "species" : self.species.value
+                }
         return dict
 
     def setStart(self):
@@ -127,8 +173,14 @@ class Task:
     def setFinish(self):
         self.state =State.finished
 
-
-
 if __name__ == "__main__":
+    u = User("ba")
+    # u.addTask("qc", "learn qc", datetime.datetime.now())
+    task = u.getTasksOfDay(datetime.datetime.now())
 
-    tb = db.TinyDB(DATAPATH + "ba/todoDb.json")
+    print(u.calendarMap)
+
+    for _ in task:
+        print(_.toDict())
+
+    # task.clear()
