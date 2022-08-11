@@ -41,11 +41,11 @@ class Calendar:
     # # 设置月份，这个影响到日历缩略图
     # def setAnsMonth(self, y, m):
     #     pass
-
-    def getCalendar(self):
-        # 二维数组
-        MonthCal = calendar.monthcalendar(self.y, self.m)
-        return MonthCal
+    #
+    # def getCalendar(self):
+    #     # 二维数组
+    #     MonthCal = calendar.monthcalendar(self.y, self.m)
+    #     return MonthCal
 
     def getTasksOfMonth(self):
         # 返回一个三维列表，前两个下标和getCalendar对应，第三个下标对应这个日期的任务列表
@@ -54,7 +54,6 @@ class Calendar:
     '''
     获取某一天的任务列表
     '''
-
     def getTasksOfDay(self, date: datetime.datetime):
         # return self.monthTodoTable
         if date.day in self.monthTodo.keys():
@@ -79,6 +78,12 @@ class Calendar:
         self.monthTodo[day].append(task)
         debugPrint("add task " + task.title)
 
+    def deleteTask(self, task):
+        day = task.time.day
+        # remove from cache
+        self.monthTodo[day].remove(task)
+        # remove from db
+        self.monthTodoTable.remove(db.where("id") == task.id)
 
 class User:
     def __init__(self, name):
@@ -118,7 +123,13 @@ class User:
         else:
             return []
 
+    # 删除任务
+    def deleteTask(self, task):
+        ymStr = task.time.strftime("%Y%m")
+        assert ymStr in self.calendarMap
+        self.calendarMap[ymStr].deleteTask(task)
 
+# 好像没什么用
 class Date:
     def __init__(self, date : datetime.datetime):
         self.yy = date.year
@@ -140,21 +151,27 @@ class Date:
 
 # 暂且使用time 分别代表日常任务的起始时间和普通任务的结束时间
 class Task:
+    counter = 0
     def __init__(self, title: str, content: str, time: datetime.datetime,
-                 importance=Importance.normal, state=State.notStarted,speices=Species.work):
+                 importance=Importance.normal, state=State.notStarted,speices=Species.work, id = -1):
         self.title = title
         self.content = content
         self.time = time
         self.importance = importance
         self.state = state
         self.species = speices
+        # 每个task有唯一的编号
+        if (id == -1):
+            self.id = Task.counter; Task.counter += 1
+        else:
+            self.id = id
 
     @staticmethod
     def parseTask(dict):
         # dict -> Task
         time = datetime.datetime.fromtimestamp(dict["time"])
         task = Task(dict["title"], dict["content"], time, Importance(dict["importance"]),
-                    State(dict["state"]), Species(dict["species"]))
+                    State(dict["state"]), Species(dict["species"]), dict["id"])
         return task
 
     def toDict(self):
@@ -163,7 +180,8 @@ class Task:
                 "time" : self.time.timestamp(),
                 "importance" : self.importance.value,
                 "state" : self.state.value,
-                "species" : self.species.value
+                "species" : self.species.value,
+                "id" : self.id
                 }
         return dict
 
@@ -174,13 +192,24 @@ class Task:
         self.state =State.finished
 
 if __name__ == "__main__":
-    u = User("ba")
-    # u.addTask("qc", "learn qc", datetime.datetime.now())
-    task = u.getTasksOfDay(datetime.datetime.now())
+    u = User("cnx")
+    u.addTask("qc", "learn chapter 4", datetime.datetime.today())
+    #
+    td = datetime.datetime.today()
+    # tasks = u.getTasksOfDay(td)
+    # for _ in tasks:
+    #     print(_.toDict())
+    #
+    u.addTask("py hw", "backend oid calendar", datetime.datetime.today())
 
-    print(u.calendarMap)
+    tasks = u.getTasksOfDay(td)
+    for _ in tasks:
 
-    for _ in task:
         print(_.toDict())
 
-    # task.clear()
+    u.deleteTask(tasks[0])
+    #
+    tasks = u.getTasksOfDay(td)
+    for _ in tasks:
+
+        print(_.toDict())
