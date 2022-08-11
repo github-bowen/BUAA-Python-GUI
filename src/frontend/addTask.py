@@ -1,5 +1,5 @@
 """
-添加代办时设计的类，包括
+添加待办时设计的类，包括
     选择任务类型的弹窗
     添加dailyTask的子窗口
     添加normalTask的子窗口
@@ -25,22 +25,22 @@ def showWarning(text: str):
 
 def _checkDate(self, name: str, start, end, importance: str, dailyType: bool):
     if len(name.strip()) == 0:
-        showWarning("\n代办名称为空，\n请重新输入！")
+        showWarning("\n待办名称为空，\n请重新输入！")
     elif importance.strip() == "选取":
-        showWarning("\n代办重要性未选择，\n请重新选择！")
+        showWarning("\n待办重要性未选择，\n请重新选择！")
     elif start < end or dailyType:
         self.addDailyTask(name, start, end, importance)
         self.close()
     else:
-        showWarning("添加代办失败！\n截止时间不能在当前时间之前哦！\n(*>﹏<*)")
+        showWarning("添加待办失败！\n截止时间不能在当前时间之前哦！\n(*>﹏<*)")
 
 
 class SelectTaskDialog(QMessageBox):  # 选择添加"日常任务"还是"一般任务"
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("代办类型选择")
+        self.setWindowTitle("待办类型选择")
         self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        self.setText("请选择要新建代办的类型：\n"
+        self.setText("请选择要新建待办的类型：\n"
                      "日常任务为每日固定的任务\n"
                      "(每天都会显示，任务时段需要在一天内)")
         self.setIconPixmap(QtGui.QPixmap("../Icon/记录.png").scaled(250, 250))
