@@ -85,6 +85,38 @@ class Calendar:
         # remove from db
         self.monthTodoTable.remove(db.where("id") == task.id)
 
+    '''
+    编辑任务
+    '''
+
+    def editTask(self, task, newTitle=None, newContent=None, newTime:datetime.datetime=None,
+                 newImportance:Importance=None, newSpices=None, newState = None):
+
+        refreshDict = {}
+
+        # 修改task对象，记录修改
+        if newTitle != None:
+            task.title = newTitle
+            refreshDict["title"] = newTitle
+        if newContent != None:
+            task.content = newContent
+            refreshDict["content"] = newContent
+        if newTime != None:
+            task.time = newTime
+            refreshDict["time"] = newTime.timestamp()
+        if newImportance != None:
+            task.importance = newImportance
+            refreshDict["importance"] = newImportance.value
+        if newSpices != None:
+            task.species = newSpices
+            refreshDict["species"] = newSpices.value
+        if newState != None:
+            task.state = newState
+            refreshDict["state"] = newState.value
+
+        # 修改数据库中的信息
+        self.monthTodoTable.update(refreshDict, db.where("id") == task.id)
+
 class User:
     def __init__(self, name):
         self.name = name
@@ -92,12 +124,6 @@ class User:
         # 一个月的代办对应一个table
         self.todoDb = db.TinyDB(DATAPATH + name + "/todoDb.json")
         # self.initCalendarMap(
-    '''
-    获取某个月的日历
-    '''
-    # def getCalendar(self, yy, mm) -> Calendar:
-    #     cal = Calendar(yy, mm, self)
-    #     return cal
 
     # done
     def addTask(self, title: str, content: str, time: datetime.datetime,
@@ -126,28 +152,33 @@ class User:
     # 删除任务
     def deleteTask(self, task):
         ymStr = task.time.strftime("%Y%m")
-        assert ymStr in self.calendarMap
+        assert ymStr in self.calendarMap.keys()
         self.calendarMap[ymStr].deleteTask(task)
 
-# 好像没什么用
-class Date:
-    def __init__(self, date : datetime.datetime):
-        self.yy = date.year
-        self.mm = date.month
-        self.dd = date.day
-        self.taskList = []
-
     '''
-    taskName, taskDescribe, time, importance
-    taskDescribe, importance can be None
+    编辑任务
+    使用实例：user.editTask(taskToBeEdit, newTime = t) 
     '''
-    def addTask(self, title, time: datetime.datetime, content="", importance=Importance.normal):
-        newTask = Task(title, content, time, importance)
-        self.taskList.append(newTask)
-        debugPrint("added task : " + title)
+    def editTask(self, task, newTitle = None, newContent = None, newTime = None,
+                 newImportance = None, newSpices = None):
 
-    def getTasks(self):
-        return self.taskList
+        ymStr = task.time.strftime("%Y%m")
+        assert ymStr in self.calendarMap.keys()
+
+        self.calendarMap[ymStr].editTask(task, newTitle, newContent, newTime, newImportance, newSpices)
+
+    def setTaskBegin(self, task):
+
+        ymStr = task.time.strftime("%Y%m")
+        assert ymStr in self.calendarMap.keys()
+        self.calendarMap[ymStr].editTask(task, newState=State.inProgress)
+
+    def setTaskEnd(self, task):
+
+        ymStr = task.time.strftime("%Y%m")
+        assert ymStr in self.calendarMap.keys()
+        self.calendarMap[ymStr].editTask(task, newState=State.finished)
+
 
 # 暂且使用time 分别代表日常任务的起始时间和普通任务的结束时间
 class Task:
@@ -162,7 +193,7 @@ class Task:
         self.species = speices
         # 每个task有唯一的编号
         if (id == -1):
-            self.id = Task.counter; Task.counter += 1
+            self.id = hash(title + content + str(time.timestamp()) + str(importance) + str(state) + str(speices))
         else:
             self.id = id
 
@@ -200,16 +231,27 @@ if __name__ == "__main__":
     # for _ in tasks:
     #     print(_.toDict())
     #
-    u.addTask("py hw", "backend oid calendar", datetime.datetime.today())
+    # u.addTask("py hw", "backend oid calendar", datetime.datetime.today())
 
     tasks = u.getTasksOfDay(td)
     for _ in tasks:
 
         print(_.toDict())
 
-    u.deleteTask(tasks[0])
+    # u.deleteTask(tasks[2])
+    # #
+    # tasks = u.getTasksOfDay(td)
+    # for _ in tasks:
     #
-    tasks = u.getTasksOfDay(td)
-    for _ in tasks:
+    #     print(_.toDict())
 
-        print(_.toDict())
+    # 测试修改任务
+    debugPrint("--测试修改任务--")
+    t = tasks[0]
+    print(t.toDict())
+    # u.editTask(t, newTitle="newTitlehaha")
+    u.setTaskEnd(t)
+    print(t.toDict())
+
+
+
