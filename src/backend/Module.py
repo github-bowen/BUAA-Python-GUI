@@ -234,6 +234,47 @@ class User:
         assert ymStr in self.calendarMap.keys()
         self.calendarMap[ymStr].editTask(task, newState=State.finished)
 
+    def setTaskExpired(self, task):
+        ymStr = task.time.strftime("%Y%m")
+        assert ymStr in self.calendarMap.keys()
+        self.calendarMap[ymStr].editTask(task, newState=State.expired)
+
+    # 根据任务的ddl和重要性调度任务，返回任务执行列表
+    def scheduleTasks(self):
+        ts = self.getUnstartedTasks()
+
+        '''
+        权重取决于任务的重要性和当前时间距离ddl的时间，公式暂时定为 power = importance / time
+        '''
+        def computePower(task):
+            return task.importance.value / (task.time.timestamp() - datetime.datetime.now().timestamp())
+
+        dict = {}
+        for t in ts:
+            if t.time < datetime.datetime.now():
+                self.setTaskExpired(t)
+                continue
+            dict[t] = computePower(t)
+        dict = sorted(dict.keys(), key=(lambda x : dict[x]), reverse=True)
+        return list(dict)
+
+    def getUnstartedTasks(self):
+        res = self.getTaskOfPeriod(datetime.datetime.today(), None)
+        res = [t for t in res if (t.state == State.notStarted)]
+        return res
+
+
+    def getUnfinishTasks(self):
+        res = self.getTaskOfPeriod(datetime.datetime.today(), None)
+        res = [t for t in res if (t.state == State.inProgress or t.state == State.notStarted)]
+        return res
+
+    # 获取这个用户曾经添加过并且没有删除的所有任务
+    def getAllTasks(self):
+        res = self.getTaskOfPeriod(None, datetime.datetime.today())
+        res += self.getTaskOfPeriod(datetime.datetime.today() + datetime.timedelta(days=+1), None)
+
+        return res
 
 # 暂且使用time 分别代表日常任务的起始时间和普通任务的结束时间
 class Task:
@@ -278,7 +319,9 @@ class Task:
 
 if __name__ == "__main__":
     u = User("cnx")
-    # u.addTask("qc", "learn chapter 4", datetime.datetime.now())
+    # u.addTask("qc", "learn chapter 5", datetime.datetime(2022, 8, 20))
+    # u.addTask("compiler", "final", datetime.datetime(2022, 8,20), importance=Importance.high)
+    # u.addTask("数学建模", "", datetime.datetime(2022, 9, 15), importance=Importance.high)
     #
     td = datetime.datetime.today()
     # tasks = u.getTasksOfDay(td)
@@ -287,7 +330,7 @@ if __name__ == "__main__":
     #
     # u.addTask("py hw", "backend oid calendar", datetime.datetime.today())
 
-    tasks = u.getTaskOfPeriod(datetime.datetime.now())
+    tasks = u.scheduleTasks()
     for _ in tasks:
 
         print(_.toDict())

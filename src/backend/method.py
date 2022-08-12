@@ -26,6 +26,7 @@ def removeUesr(name: str, passwd: str):
     if (user2Passwd == None):
         initialize()
 
+
     q = db.Query()
     assert user2Passwd.contains(q.name == name)
     user2Passwd.remove(q.name == name)
