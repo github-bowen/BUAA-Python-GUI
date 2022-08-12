@@ -2,25 +2,34 @@ import re
 import sys
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont, QIcon, QCursor
+from PyQt5.QtGui import QFont, QIcon, QCursor, QMovie
 from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QApplication, QDesktopWidget, \
     QWidget, QMessageBox, QInputDialog, QCheckBox, QAction, QToolButton
 
 from src.backend.method import *
 from passwordEdit import PasswordEdit
+import changeStyle
 
 
 class LoginWindow(QWidget):
     def __init__(self):
         super().__init__()
 
+        changeStyle.run(self, "login", 450, 200)
+
         # 是否登录成功
         self.loginSuccess = False
 
         # 是否记住密码的勾选框
         self.rememberPasswordBox = QCheckBox("记住密码")
-        self.rememberPasswordBox.toggle()
+        if rememberPasswordBefore:
+            self.rememberPasswordBox.toggle()
+
+        # 是否显示登录动画
+        self.displayGifBox = QCheckBox("显示欢迎动画")
+        if displayGif:
+            self.displayGifBox.toggle()
 
         # 用户名密码
         self.username = None
@@ -31,7 +40,7 @@ class LoginWindow(QWidget):
         font = QFont()
         font.setPointSize(16)
         font.setBold(True)
-        font.setFamily("KaiTi")
+        # font.setFamily("KaiTi")
         self.title.setFont(font)
 
         # 创建标签、文本框、按钮
@@ -69,6 +78,13 @@ class LoginWindow(QWidget):
         else:
             rememberPasswordNow = False
 
+    def changeDisplayGifBox(self, state):
+        global displayGif
+        if state == Qt.Checked:
+            displayGif = True
+        else:
+            displayGif = False
+
     def initUI(self):
         # 布局用户名和密码的label和输入框
         grid = QGridLayout()
@@ -79,6 +95,7 @@ class LoginWindow(QWidget):
         grid.addWidget(self.passwordLabel, 5, 0)
         grid.addWidget(self.passwordEdit, 5, 1, 1, 3)
         grid.addWidget(self.rememberPasswordBox, 6, 2)
+        grid.addWidget(self.displayGifBox, 6, 3)
 
         # 布局登录和注册按钮
         hBox = QHBoxLayout()
@@ -97,11 +114,13 @@ class LoginWindow(QWidget):
         self.registerButton.clicked.connect(self.checkRegisterButton)
         # 设置"记住密码"勾选后的事件
         self.rememberPasswordBox.stateChanged.connect(self.changeRememberBox)
+        self.displayGifBox.stateChanged.connect(self.changeDisplayGifBox)
 
         # 布局整个窗口
         grid.addLayout(vBox, 8, 3)
         self.setLayout(grid)
         self.resize(450, 200)
+        self.setFixedSize(450, 200)
         self.center()
         self.setWindowTitle("任务调度器-登录")
         self.show()
@@ -313,6 +332,10 @@ class LoginWindow(QWidget):
 
 
 if __name__ == "__main__":
+
+    with open(".welcome.log", "r") as f:
+        displayGif = eval(f.read().strip())
+
     rememberPasswordBefore = False
     # 判断是否勾选了"记住密码"，若是，则需要在文件".login.log"中记录
     if not os.path.exists(".login.log"):
@@ -350,6 +373,10 @@ if __name__ == "__main__":
                 print(False, file=f)
                 print(loginWindow.username, file=f)
                 print("", file=f)
+
+        # 更改下次打开时是否显示启动动画
+        with open(".welcome.log", "w") as f:
+            f.write(str(displayGif))
 
         os.system("python ./calendarFront.py")
     else:
