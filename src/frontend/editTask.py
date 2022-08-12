@@ -8,6 +8,23 @@ from src.backend.method import *
 from PyQt5.QtWidgets import QLabel, QDateTimeEdit, QTimeEdit
 import addTask
 
+def _checkDate(self, name: str, start, end, importance: str, dailyType: bool):
+    if len(name.strip()) == 0:
+        addTask.showWarning("\n待办名称为空，\n请重新输入！")
+    elif importance.strip() == "选取":
+        addTask.showWarning("\n待办重要性未选择，\n请重新选择！")
+    # TODO:后端需要提供日常任务排布时间的list，返回bool值，def dailyTimeSetted(time:datetime)
+    # elif dailyType and dailyTimeSetted(start):
+    # showWarning("\n 添加日常任务失败！\n 该时段已有任务哦！\n")
+    elif dailyType :
+        self.editDailyTask(name, start, end, importance)
+        self.close()
+    elif  start < end:
+        self.editNormalTask(name, start, end, importance)
+        self.close()
+    else:
+        addTask.showWarning("添加待办失败！\n截止时间不能在当前时间之前哦！\n(*>﹏<*)")
+
 class EditTaskDialog(addTask.AddTaskDialog):
     def __init__(self, username, password,task:Task):
         super().__init__(username, password)
@@ -29,6 +46,7 @@ class EditDailyTaskDialog(EditTaskDialog):
         self.timeLE.setTime(task.time.time())
         self.timeLE.setDisplayFormat("hh:mm")
         self.setWindowTitle('编辑日常待办')
+        self.sureBtn.clicked.connect(self.checkDate)
         addTask.AddTaskDialog.dialogLayOut(self)
 
     def editDailyTask(self):
@@ -41,7 +59,7 @@ class EditDailyTaskDialog(EditTaskDialog):
         name, start, importance = self.titleLE.text() \
             , self.timeLE.time(), self.importanceBtn.text()
         end = 0
-        addTask._checkDate(self, name, start, end, importance, True)
+        _checkDate(self, name, start, end, importance, True)
 
 
 # 添加"一般任务"的子窗口
@@ -54,8 +72,8 @@ class EditNormalTaskDialog(EditTaskDialog):
         self.timeLE.setDisplayFormat("yyyy-mm-dd-hh:mm")
         self.titleLbl = QLabel('普通待办名称：')
         self.setWindowTitle('编辑普通待办')
+        self.sureBtn.clicked.connect(self.checkDate)
         addTask.AddTaskDialog.dialogLayOut(self)
-
 
     def editNormalTask(self, taskName: str, taskBeginTime, taskEndTime, importance):
         # TODO:与上同理
@@ -65,4 +83,4 @@ class EditNormalTaskDialog(EditTaskDialog):
         name, end, importance = self.titleLE.text() \
             , self.timeLE.dateTime(), self.importanceBtn.text()
         start = datetime.datetime.now()
-        addTask._checkDate(self, name, start, end, importance, False)
+        _checkDate(self, name, start, end, importance, False)
