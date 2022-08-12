@@ -31,6 +31,8 @@ class Calendar:
         # 从monthTodoTable中读取，存入 monthtodo中
         for tt in self.monthTodoTable.all():
             task = Task.parseTask(tt)
+            if (task.time < datetime.datetime.now()):
+                self.editTask(task, newState=State.expired)
             day = task.time.day
 
             if day not in self.monthTodo.keys():
@@ -54,6 +56,7 @@ class Calendar:
     '''
     def getTasksOfDay(self, date: datetime.datetime):
         # return self.monthTodoTable
+        self.readFromDb() # 这里的read是为了刷新，将过期的任务标记为过期
         if date.day in self.monthTodo.keys():
             return self.monthTodo[date.day]
         return []
