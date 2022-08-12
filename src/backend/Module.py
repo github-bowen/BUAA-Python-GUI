@@ -6,7 +6,6 @@
 前端调用的主要模块
 '''
 import datetime
-import calendar
 import time
 
 from src.backend.importModule import *
@@ -48,8 +47,7 @@ class Calendar:
     #     return MonthCal
 
     def getTasksOfMonth(self):
-        # 返回一个三维列表，前两个下标和getCalendar对应，第三个下标对应这个日期的任务列表
-        pass
+        return self.monthTodo
 
     '''
     获取某一天的任务列表
@@ -60,15 +58,18 @@ class Calendar:
             return self.monthTodo[date.day]
         return []
 
-    # datetime.datetime.now()
-    def getTasksToday(self):
-        pass
 
-    def getTasksPeriod(self, date1, date2):
-        pass
+    # 获取一段时间内的任务
+    # def getTasksPeriod(self, date1, date2):
 
+    # 获取本月中今天以及之后的任务
     def getTasksTodayAndAfter(self):
-        pass
+        td = datetime.datetime.today().day
+        l = []
+        for k in self.monthTodo.keys():
+            if k >= td:
+                l = l + self.monthTodo[k]
+        return l
 
     def addTask(self, task):
         self.monthTodoTable.insert(task.toDict())
@@ -149,6 +150,62 @@ class User:
         else:
             return []
 
+    # 获取未完成的任务
+    # def getTaskUnfinished(self):
+    #     pass
+
+    # 获取 [start, end] （闭区间) 的所有代办
+    def getTaskOfPeriod(self, startDay:datetime.datetime = None, endDay:datetime.datetime = None):
+        tb = self.todoDb.tables()
+        tb = sorted(tb)
+        if (len(tb) == 0) :
+            return []
+        if (startDay == None):
+            res = []
+            i = endDay
+            assert endDay != None
+            while True:
+                if i.strftime("%Y%m") <tb[0]:
+                    break
+                res += self.getTasksOfDay(i)
+                i = i + datetime.timedelta(days=-1)
+            return res
+        elif endDay == None:
+            # 获取startDay之后的
+            res = []
+            i = startDay
+            while True:
+
+                if i.strftime("%Y%m") > tb[-1]:
+                    break
+                res += self.getTasksOfDay(i)
+                i = i + datetime.timedelta(days=+1)
+            return res
+        else:
+            if endDay < startDay:
+                return []
+            i = startDay
+            res = []
+            while i <= endDay:
+                if i.strftime("%Y%m") > tb[-1]:
+                    break
+                res += self.getTasksOfDay(i)
+                i = i + datetime.timedelta(days=+1)
+            return res
+
+    def getTaskToday(self):
+        return self.getTasksOfDay(datetime.datetime.today())
+
+
+    # 获取本月中今天以及之后的任务
+    def getTasksTodayAndAfter(self):
+        ymStr = time.strftime("%Y%m")
+        if ymStr not in self.calendarMap.keys():
+            newCalender = Calendar(time, self)
+            self.calendarMap[ymStr] = newCalender
+        calendar_ : Calendar = self.calendarMap.get(ymStr)
+        return calendar_.getTasksTodayAndAfter()
+
     # 删除任务
     def deleteTask(self, task):
         ymStr = task.time.strftime("%Y%m")
@@ -157,7 +214,7 @@ class User:
 
     '''
     编辑任务
-    使用实例：user.editTask(taskToBeEdit, newTime = t) 
+    使用示例：user.editTask(taskToBeEdit, newTime = t) 
     '''
     def editTask(self, task, newTitle = None, newContent = None, newTime = None,
                  newImportance = None, newSpices = None):
@@ -168,13 +225,11 @@ class User:
         self.calendarMap[ymStr].editTask(task, newTitle, newContent, newTime, newImportance, newSpices)
 
     def setTaskBegin(self, task):
-
         ymStr = task.time.strftime("%Y%m")
         assert ymStr in self.calendarMap.keys()
         self.calendarMap[ymStr].editTask(task, newState=State.inProgress)
 
     def setTaskEnd(self, task):
-
         ymStr = task.time.strftime("%Y%m")
         assert ymStr in self.calendarMap.keys()
         self.calendarMap[ymStr].editTask(task, newState=State.finished)
@@ -182,7 +237,6 @@ class User:
 
 # 暂且使用time 分别代表日常任务的起始时间和普通任务的结束时间
 class Task:
-    counter = 0
     def __init__(self, title: str, content: str, time: datetime.datetime,
                  importance=Importance.normal, state=State.notStarted,speices=Species.work, id = -1):
         self.title = title
@@ -224,7 +278,7 @@ class Task:
 
 if __name__ == "__main__":
     u = User("cnx")
-    u.addTask("qc", "learn chapter 4", datetime.datetime.today())
+    # u.addTask("qc", "learn chapter 4", datetime.datetime.now())
     #
     td = datetime.datetime.today()
     # tasks = u.getTasksOfDay(td)
@@ -233,7 +287,7 @@ if __name__ == "__main__":
     #
     # u.addTask("py hw", "backend oid calendar", datetime.datetime.today())
 
-    tasks = u.getTasksOfDay(td)
+    tasks = u.getTaskOfPeriod(datetime.datetime.now())
     for _ in tasks:
 
         print(_.toDict())
@@ -246,12 +300,14 @@ if __name__ == "__main__":
     #     print(_.toDict())
 
     # 测试修改任务
-    debugPrint("--测试修改任务--")
-    t = tasks[0]
-    print(t.toDict())
-    # u.editTask(t, newTitle="newTitlehaha")
-    u.setTaskEnd(t)
-    print(t.toDict())
+    # debugPrint("--测试修改任务--")
+    # t = tasks[0]
+    # print(t.toDict())
+    # # u.editTask(t, newTitle="newTitlehaha")
+    # u.setTaskEnd(t)
+    # print(t.toDict())
+
+
 
 
 
