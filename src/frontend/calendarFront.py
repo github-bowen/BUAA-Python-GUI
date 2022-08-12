@@ -1,4 +1,6 @@
 # 星期x的对照表
+from PyQt5.QtCore import QCoreApplication, Qt
+
 from src.frontend.addTask import *
 from taskDisplay import DisplayWidget
 import changeStyle
@@ -18,17 +20,19 @@ class CalenWindow(QMainWindow):
         self.initUI()
 
     def initUI(self):
+        QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+
         displayWidget = DisplayWidget(self.user)  # 获取滚动条
 
         displayWidget.layout = QVBoxLayout(displayWidget)
         displayWidget.layout.addWidget(displayWidget.scroll)
 
         grid = QGridLayout(self)
-        grid.setSpacing(5)
+        grid.setSpacing(20)
         # 点击某个日期时使其在下方显示具体年月日
         self.calendar = QCalendarWidget(self)
-        self.setMinimumSize(700, 400)  # todo: 这么改大小感觉怪怪的
-        self.setFixedSize(700, 400)
+        self.setMinimumSize(800, 500)  # todo: 这么改大小感觉怪怪的
+        self.setFixedSize(800, 500)
         self.calendar.setGridVisible(True)
         self.calendar.clicked[QDate].connect(self.dateDisplay)
         self.dateLabel = QLabel(self)
