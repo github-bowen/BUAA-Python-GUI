@@ -89,7 +89,8 @@ class LoginWindow(QWidget):
         # 布局用户名和密码的label和输入框
         grid = QGridLayout()
         grid.setSpacing(5)
-        grid.addWidget(self.title, 0, 2, 4, 2)
+        grid.setVerticalSpacing(40)
+        grid.addWidget(self.title, 2, 2, 2, 2)
         grid.addWidget(self.usernameLabel, 4, 0)
         grid.addWidget(self.usernameEdit, 4, 1, 1, 3)
         grid.addWidget(self.passwordLabel, 5, 0)
@@ -117,10 +118,10 @@ class LoginWindow(QWidget):
         self.displayGifBox.stateChanged.connect(self.changeDisplayGifBox)
 
         # 布局整个窗口
-        grid.addLayout(vBox, 8, 3)
+        grid.addLayout(vBox, 6, 3)
         self.setLayout(grid)
-        self.resize(450, 200)
-        self.setFixedSize(450, 200)
+        self.resize(600, 371)
+        self.setFixedSize(600, 371)
         self.center()
         self.setWindowTitle("任务调度器-登录")
         self.show()

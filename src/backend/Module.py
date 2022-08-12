@@ -199,7 +199,6 @@ class User:
     def getTaskToday(self):
         return self.getTasksOfDay(datetime.datetime.today())
 
-
     # 获取本月中今天以及之后的任务
     def getTasksTodayAndAfter(self):
         ymStr = time.strftime("%Y%m")
@@ -278,6 +277,8 @@ class User:
         res += self.getTaskOfPeriod(datetime.datetime.today() + datetime.timedelta(days=+1), None)
 
         return res
+
+
 
 # 暂且使用time 分别代表日常任务的起始时间和普通任务的结束时间
 class Task:
