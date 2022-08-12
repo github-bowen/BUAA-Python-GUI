@@ -18,13 +18,15 @@ name2User: dict = {}
 def initialize():
     global user2Passwd
     # with open(DATAPATH + "userList.json", "r") as f:
-
+    if not os.path.exists(DATAPATH):
+        os.mkdir(DATAPATH)
     user2Passwd = db.TinyDB(DATAPATH + "userList.json")
 
 
 def removeUesr(name: str, passwd: str):
     if (user2Passwd == None):
         initialize()
+
 
     q = db.Query()
     assert user2Passwd.contains(q.name == name)
