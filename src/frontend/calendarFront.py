@@ -1,6 +1,7 @@
 # 星期x的对照表
 from src.frontend.addTask import *
 from taskDisplay import DisplayWidget
+import changeStyle
 
 weekDayLis = ['一', '二', '三', '四', '五', '六', '日']
 
@@ -10,6 +11,8 @@ class CalenWindow(QMainWindow):
 
     def __init__(self, username, password):
         super().__init__()
+
+        changeStyle.run(self, "calendar", 700, 400)
 
         self.user = loginUser(username, password)
         self.initUI()
@@ -25,6 +28,7 @@ class CalenWindow(QMainWindow):
         # 点击某个日期时使其在下方显示具体年月日
         self.calendar = QCalendarWidget(self)
         self.setMinimumSize(700, 400)  # todo: 这么改大小感觉怪怪的
+        self.setFixedSize(700, 400)
         self.calendar.setGridVisible(True)
         self.calendar.clicked[QDate].connect(self.dateDisplay)
         self.dateLabel = QLabel(self)

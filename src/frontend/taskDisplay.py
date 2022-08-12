@@ -21,7 +21,7 @@ class DisplayWidget(QWidget):
             font = QFont()
             font.setPointSize(12)
             font.setBold(True)
-            font.setFamily("KaiTi")
+            # font.setFamily("KaiTi")
             widget.setFont(font)
             self.formLayout.addRow(widget)
 
