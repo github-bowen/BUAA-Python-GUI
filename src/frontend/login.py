@@ -1,7 +1,7 @@
 import re
 import sys
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QCoreApplication
 from PyQt5.QtGui import QFont, QIcon, QCursor, QMovie
 from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QApplication, QDesktopWidget, \
@@ -23,11 +23,17 @@ class LoginWindow(QWidget):
 
         # 是否记住密码的勾选框
         self.rememberPasswordBox = QCheckBox("记住密码")
+        font = QFont()
+        font.setPointSize(12)
+        self.rememberPasswordBox.setFont(font)
         if rememberPasswordBefore:
             self.rememberPasswordBox.toggle()
 
         # 是否显示登录动画
         self.displayGifBox = QCheckBox("显示欢迎动画")
+        font = QFont()
+        font.setPointSize(12)
+        self.displayGifBox.setFont(font)
         if displayGif:
             self.displayGifBox.toggle()
 
@@ -38,23 +44,43 @@ class LoginWindow(QWidget):
         # 创建标题文字
         self.title = QLabel('欢迎使用任务调度-管理系统！')
         font = QFont()
-        font.setPointSize(16)
+        font.setPointSize(20)
         font.setBold(True)
         # font.setFamily("KaiTi")
         self.title.setFont(font)
 
         # 创建标签、文本框、按钮
-        self.usernameLabel = QLabel('用户名：')
-        self.passwordLabel = QLabel('密码：')
+        self.usernameLabel = QLabel('用户名:')
+        font = QFont()
+        font.setPointSize(14)
+        self.usernameLabel.setFont(font)
+        self.passwordLabel = QLabel('密码:')
+        font = QFont()
+        font.setPointSize(14)
+        self.passwordLabel.setFont(font)
 
         self.usernameEdit = QLineEdit()
+        font = QFont()
+        font.setPointSize(14)
+        self.usernameEdit.setFont(font)
         self.usernameEdit.setClearButtonEnabled(True)
         self.usernameEdit.setPlaceholderText("用户名两侧的空格会自动忽略")
 
         self.passwordEdit = PasswordEdit("密码6-15位，只能有数字和字母，忽略两侧空格")
+        font = QFont()
+        font.setPointSize(14)
+        self.passwordEdit.setFont(font)
 
         self.loginButton = QPushButton('登录')
+        self.loginButton.setFixedSize(100, 50)
+        font = QFont()
+        font.setPointSize(12)
+        self.loginButton.setFont(font)
         self.registerButton = QPushButton('注册')
+        self.registerButton.setFixedSize(100, 50)
+        font = QFont()
+        font.setPointSize(12)
+        self.registerButton.setFont(font)
 
         # 以__开头的变量或函数为个人内部或临时的变量或函数，不用在意！！！
         self.__messageBoxForUsername = None
@@ -86,17 +112,21 @@ class LoginWindow(QWidget):
             displayGif = False
 
     def initUI(self):
+        QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+
         # 布局用户名和密码的label和输入框
         grid = QGridLayout()
-        grid.setSpacing(5)
-        grid.setVerticalSpacing(40)
-        grid.addWidget(self.title, 2, 2, 2, 2)
-        grid.addWidget(self.usernameLabel, 4, 0)
-        grid.addWidget(self.usernameEdit, 4, 1, 1, 3)
-        grid.addWidget(self.passwordLabel, 5, 0)
-        grid.addWidget(self.passwordEdit, 5, 1, 1, 3)
-        grid.addWidget(self.rememberPasswordBox, 6, 2)
-        grid.addWidget(self.displayGifBox, 6, 3)
+        grid.setSpacing(27)
+        # grid.setVerticalSpacing(40)
+        emptyLabel = QLabel()
+        grid.addWidget(emptyLabel, 0, 0, 3, 5)
+        grid.addWidget(self.title, 3, 1, 2, 4)
+        grid.addWidget(self.usernameLabel, 5, 0)
+        grid.addWidget(self.usernameEdit, 5, 1, 1, 4)
+        grid.addWidget(self.passwordLabel, 6, 0)
+        grid.addWidget(self.passwordEdit, 6, 1, 1, 4)
+        grid.addWidget(self.rememberPasswordBox, 7, 1)
+        grid.addWidget(self.displayGifBox, 7, 4)
 
         # 布局登录和注册按钮
         hBox = QHBoxLayout()
@@ -118,10 +148,10 @@ class LoginWindow(QWidget):
         self.displayGifBox.stateChanged.connect(self.changeDisplayGifBox)
 
         # 布局整个窗口
-        grid.addLayout(vBox, 6, 3)
+        grid.addLayout(vBox, 8, 4)
         self.setLayout(grid)
-        self.resize(600, 371)
-        self.setFixedSize(600, 371)
+        self.resize(600, 380)
+        self.setFixedSize(600, 380)
         self.center()
         self.setWindowTitle("任务调度器-登录")
         self.show()
