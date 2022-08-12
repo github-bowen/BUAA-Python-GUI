@@ -9,11 +9,11 @@ from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
     QWidget, QMessageBox, QInputDialog, QMainWindow, QCalendarWidget, QFormLayout, QDateTimeEdit, QTimeEdit, QTextEdit
 
 class TimeFliter(QWidget):
-    def __init__(self):
+    def __init__(self,username,password):
         super().__init__()
+        self.user = loginUser(username, password)
         self.initUi()
         self.timeFliterLayOut()
-        self.show()
 
     def initUi(self):
         self.titleLbl = QLabel('筛选相应时间段的任务')
@@ -32,6 +32,10 @@ class TimeFliter(QWidget):
         self.endIcon.setPixmap(QPixmap("../Icon/时间 (1).png").scaled(50, 40))
         self.endTE = QDateTimeEdit()
         self.endTE.setDateTime(QDateTime.currentDateTime())
+        self.sureBtn=QPushButton('确定')
+        # todo:显示一个taskDisplay
+        self.cancelBtn=QPushButton('取消')
+        self.cancelBtn.clicked.connect(self.close)
 
     def timeFliterLayOut(self):
         self.grid=QGridLayout()
@@ -43,10 +47,11 @@ class TimeFliter(QWidget):
         self.form.addRow(self.endIcon, self.endLbl)
         self.form.addRow(self.endTE)
         self.grid.addLayout(self.form,4,0)
+        self.hbox=QHBoxLayout()
+        self.hbox.addStretch(1)
+        self.hbox.addWidget(self.sureBtn)
+        self.hbox.addWidget(self.cancelBtn)
+        self.grid.addLayout(self.hbox,5,0)
         self.setLayout(self.grid)
 
 
-if __name__=="__main__":
-    app = QApplication(sys.argv)
-    timeFliter=TimeFliter()
-    app.exec_()

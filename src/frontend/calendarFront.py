@@ -2,6 +2,7 @@
 from PyQt5.QtCore import QCoreApplication, Qt
 
 from src.frontend.addTask import *
+from src.frontend.timeFliter import TimeFliter
 from taskDisplay import DisplayWidget
 import changeStyle
 
@@ -153,5 +154,9 @@ if __name__ == "__main__":
 
     selectTaskDialog.button_normalTask.clicked.connect(addNormalTaskDialog.show)
     addNormalTaskDialog.sureBtn.clicked.connect(addNormalTaskDialog.checkDate)
+
+    # 筛选任务的界面
+    timeFliter=TimeFliter(username, password)
+    calWindow.fliterTask.triggered.connect(timeFliter.show)
 
     sys.exit(app.exec_())
