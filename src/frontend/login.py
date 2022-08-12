@@ -40,7 +40,7 @@ class LoginWindow(QWidget):
         font = QFont()
         font.setPointSize(16)
         font.setBold(True)
-        font.setFamily("KaiTi")
+        # font.setFamily("KaiTi")
         self.title.setFont(font)
 
         # 创建标签、文本框、按钮
