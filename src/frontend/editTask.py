@@ -52,6 +52,7 @@ class EditDailyTaskDialog(EditTaskDialog):
     def editDailyTask(self):
         # 删去原有记录，添加新纪录
         # TODO：后端需添加接口
+        self.user.editTask()
         pass
 
     def checkDate(self):

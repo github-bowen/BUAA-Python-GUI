@@ -1,0 +1,11 @@
+QWidget
+{
+    color:#000;
+    background-color:#fff;
+ }
+
+QFont
+{
+    color:#000;
+    background-color:#fff;
+}
