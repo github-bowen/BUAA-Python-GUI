@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt, QCoreApplication
 from PyQt5.QtGui import QFont, QIcon, QCursor, QMovie
 from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QApplication, QDesktopWidget, \
-    QWidget, QMessageBox, QInputDialog, QCheckBox, QAction, QToolButton
+    QWidget, QMessageBox, QInputDialog, QCheckBox, QAction, QToolButton, QFrame, QSplitter, QSizePolicy
 
 from src.backend.method import *
 from passwordEdit import PasswordEdit
@@ -16,15 +16,17 @@ class LoginWindow(QWidget):
     def __init__(self):
         super().__init__()
 
-        changeStyle.run(self, "login", 450, 200)
+        self.width, self.height = 800, 450
+        changeStyle.run(self, "login", self.width, self.height)
 
         # 是否登录成功
         self.loginSuccess = False
 
+        self.fontSize = 12
         # 是否记住密码的勾选框
         self.rememberPasswordBox = QCheckBox("记住密码")
         font = QFont()
-        font.setPointSize(12)
+        font.setPointSize(self.fontSize)
         self.rememberPasswordBox.setFont(font)
         if rememberPasswordBefore:
             self.rememberPasswordBox.toggle()
@@ -32,7 +34,7 @@ class LoginWindow(QWidget):
         # 是否显示登录动画
         self.displayGifBox = QCheckBox("显示欢迎动画")
         font = QFont()
-        font.setPointSize(12)
+        font.setPointSize(self.fontSize)
         self.displayGifBox.setFont(font)
         if displayGif:
             self.displayGifBox.toggle()
@@ -42,44 +44,49 @@ class LoginWindow(QWidget):
         self.password = None
 
         # 创建标题文字
+        """
         self.title = QLabel('欢迎使用任务调度-管理系统！')
         font = QFont()
         font.setPointSize(20)
         font.setBold(True)
         # font.setFamily("KaiTi")
         self.title.setFont(font)
+        """
 
         # 创建标签、文本框、按钮
         self.usernameLabel = QLabel('用户名:')
         font = QFont()
-        font.setPointSize(14)
+        font.setPointSize(self.fontSize)
         self.usernameLabel.setFont(font)
         self.passwordLabel = QLabel('密码:')
         font = QFont()
-        font.setPointSize(14)
+        font.setPointSize(self.fontSize)
         self.passwordLabel.setFont(font)
 
         self.usernameEdit = QLineEdit()
+        lineEditWidth = self.usernameEdit.width()
+        self.usernameEdit.setFixedWidth(int(lineEditWidth / 2.6))
         font = QFont()
-        font.setPointSize(14)
+        font.setPointSize(self.fontSize)
         self.usernameEdit.setFont(font)
         self.usernameEdit.setClearButtonEnabled(True)
         self.usernameEdit.setPlaceholderText("用户名两侧的空格会自动忽略")
 
         self.passwordEdit = PasswordEdit("密码6-15位，只能有数字和字母，忽略两侧空格")
+        self.passwordEdit.setFixedWidth(int(lineEditWidth / 2.6))
         font = QFont()
-        font.setPointSize(14)
+        font.setPointSize(self.fontSize)
         self.passwordEdit.setFont(font)
 
         self.loginButton = QPushButton('登录')
         self.loginButton.setFixedSize(100, 50)
         font = QFont()
-        font.setPointSize(12)
+        font.setPointSize(self.fontSize)
         self.loginButton.setFont(font)
         self.registerButton = QPushButton('注册')
         self.registerButton.setFixedSize(100, 50)
         font = QFont()
-        font.setPointSize(12)
+        font.setPointSize(self.fontSize)
         self.registerButton.setFont(font)
 
         # 以__开头的变量或函数为个人内部或临时的变量或函数，不用在意！！！
@@ -114,20 +121,49 @@ class LoginWindow(QWidget):
     def initUI(self):
         QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 
+        hBox = QHBoxLayout(self)
+
+        left = QFrame(self)
+        left.setFrameShape(QFrame.StyledPanel)
+        left.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+        right = QFrame(self)
+        right.setFrameShape(QFrame.StyledPanel)
+        right.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+        farRight = QFrame(self)  # 最右边的分割，防止输入框超出白色格子
+        farRight.setFrameShape(QFrame.StyledPanel)
+
+        splitter = QSplitter(Qt.Horizontal)
+        # splitter.show()
+        splitter.addWidget(left)
+        splitter.addWidget(right)
+        splitter.addWidget(farRight)
+        splitter.setSizes((300, 200, 40))
+        # splitter.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding) #TODO：看看怎么不让拉伸
+
+        hBox.addWidget(splitter)
+        self.setLayout(hBox)
+
         # 布局用户名和密码的label和输入框
         grid = QGridLayout()
-        grid.setSpacing(27)
-        # grid.setVerticalSpacing(40)
-        emptyLabel = QLabel()
-        grid.addWidget(emptyLabel, 0, 0, 3, 5)
-        grid.addWidget(self.title, 3, 1, 2, 4)
-        grid.addWidget(self.usernameLabel, 5, 0)
-        grid.addWidget(self.usernameEdit, 5, 1, 1, 4)
-        grid.addWidget(self.passwordLabel, 6, 0)
-        grid.addWidget(self.passwordEdit, 6, 1, 1, 4)
-        grid.addWidget(self.rememberPasswordBox, 7, 1)
-        grid.addWidget(self.displayGifBox, 7, 4)
+        grid.setSpacing(10)
+        grid.setVerticalSpacing(10)
 
+        topEmpty = QLineEdit()
+        topEmpty.setFixedWidth(0)
+        # topEmptyLabel.setFixedHeight(100)
+        grid.addWidget(topEmpty, 0, 0)
+        grid.addWidget(self.usernameLabel, 1, 0)
+        grid.addWidget(self.usernameEdit, 1, 1, 1, 3)
+        grid.addWidget(self.passwordLabel, 2, 0)
+        grid.addWidget(self.passwordEdit, 2, 1, 1, 3)
+        grid.addWidget(self.rememberPasswordBox, 3, 0)
+        grid.addWidget(self.displayGifBox, 3, 1)
+        grid.addWidget(self.loginButton, 4, 1)
+        grid.addWidget(self.registerButton, 4, 2)
+
+        """
         # 布局登录和注册按钮
         hBox = QHBoxLayout()
         hBox.addStretch(1)
@@ -138,6 +174,11 @@ class LoginWindow(QWidget):
         vBox.addStretch(1)
         vBox.addLayout(hBox)
 
+        # 布局整个窗口
+        grid.addLayout(vBox, 9, 1)
+        """
+        right.setLayout(grid)
+
         # 设置事件
         # 设置"登录"Button点击后的事件
         self.loginButton.clicked.connect(self.checkLoginButton)
@@ -147,11 +188,8 @@ class LoginWindow(QWidget):
         self.rememberPasswordBox.stateChanged.connect(self.changeRememberBox)
         self.displayGifBox.stateChanged.connect(self.changeDisplayGifBox)
 
-        # 布局整个窗口
-        grid.addLayout(vBox, 8, 4)
-        self.setLayout(grid)
-        self.resize(600, 380)
-        self.setFixedSize(600, 380)
+        self.resize(self.width, self.height)
+        self.setFixedSize(self.width, self.height)
         self.center()
         self.setWindowTitle("任务调度器-登录")
         self.show()

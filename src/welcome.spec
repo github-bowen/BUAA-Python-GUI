@@ -14,7 +14,7 @@ a = Analysis(
     ['frontend/passwordEdit.py'],
     ['frontend/taskDisplay.py'],
     ['frontend/taskLabel.py'],
-    pathex=[],
+    pathex=['/home/normalller/data/files/ImportantFile/LearningFiles/2_3/python(全英文)/2022Python大作业/calendar],
     binaries=[],
     datas=[],
     hiddenimports=[],
