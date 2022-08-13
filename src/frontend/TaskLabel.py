@@ -19,9 +19,9 @@ from src.frontend.qssLoader import QSSLoader
 
 
 class TaskLabel(QWidget):
-    def __init__(self, task: Task, user):
+    def __init__(self, task: Task, user, calenWindow):
         super().__init__()
-
+        self.calenWindow = calenWindow
         # self.user = loginUser(username, password)
         self.user = user
         self.task = task
@@ -106,26 +106,27 @@ class TaskLabel(QWidget):
             self.finishMsg = finishWindow(self.task.title)
             self.finishMsg.show()
             self.finishMsg.button(QMessageBox.Yes).clicked.connect(self.canFinish)
-            
+            self.calenWindow.taskDisplay(None, False)
+
     def canFinish(self):
-            self.user.setTaskEnd(self.task)
-            self.stateLabel.setText(stateDict[self.task.state])
-            # todo
+        self.user.setTaskEnd(self.task)
+        self.stateLabel.setText(stateDict[self.task.state])
+        # todo
 
     def deleteThing(self):
         self.user.deleteTask(self.task)
-
+        self.calenWindow.taskDisplay(None, False)
 
 class finishWindow(QMessageBox):
-    def __init__(self,title:str):
+    def __init__(self, title: str):
         super().__init__()
         self.setWindowTitle("确认完成操作")
         self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        self.setText("确认完成待办\n \"%s\" 吗？"%title)
+        self.setText("确认完成待办\n \"%s\" 吗？" % title)
         self.setIconPixmap(QPixmap("../Icon/记录.png").scaled(250, 250))
-        self.sureBtn=self.button(QMessageBox.Yes)
+        self.sureBtn = self.button(QMessageBox.Yes)
         self.sureBtn.setText("确认")
-        self.cancelBtn=self.button(QMessageBox.No)
+        self.cancelBtn = self.button(QMessageBox.No)
         self.cancelBtn.setText("我再想想")
 
 

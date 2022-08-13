@@ -31,7 +31,7 @@ class CalenWindow(QMainWindow):
     def initUI(self):
         # QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 
-        self.displayWidget = DisplayWidget(self.user)  # 获取滚动条
+        self.displayWidget = DisplayWidget(self.user, self)  # 获取滚动条
         self.displayWidget.layout = QVBoxLayout(self.displayWidget)
         self.displayWidget.layout.addWidget(self.displayWidget.scroll)
 
@@ -113,8 +113,10 @@ class CalenWindow(QMainWindow):
     # 所有回到日历主页面的按钮都应触发该函数，考虑引入缓存
     # TODO: LBH: 缓存暂时没考虑，后端用hashmap存的，可能一般不需要？
     def taskDisplay(self, date, dateChange: bool):
-        formerDate = self.displayWidget.displayingDate
-        self.displayWidget.refreshAndDisplay(date=date, dateChanged=dateChange)
+        # self.displayWidget.close()
+        # self.displayWidget = DisplayWidget(self.user, self)
+        # self.displayWidget.refreshAndDisplay(date=date, dateChanged=dateChange)
+        pass
 
     def refreshEvent(self):  # 点击刷新后触发执行的方法
         self.taskDisplay(None, False)
@@ -128,6 +130,7 @@ class CalenWindow(QMainWindow):
 
     def dateDisplay(self, date):
         self.dateLabel.setText(self.dateToStr(date))
+        self.taskDisplay(date, True)
 
 
 def checkDateExpired():
