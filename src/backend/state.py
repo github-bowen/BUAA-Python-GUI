@@ -6,3 +6,5 @@ class State(Enum):
     inProgress = 2  # 进行中
     finished = 3  # 已完成
     expired = 4  # 过期
+
+    daily = 5 # 日常任务

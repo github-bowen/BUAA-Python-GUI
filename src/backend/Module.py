@@ -127,12 +127,19 @@ class User:
         self.calendarMap = {}
         # 一个月的代办对应一个table
         self.todoDb = db.TinyDB(DATAPATH + name + "/todoDb.json")
+        self.dailyTaskTable = self.todoDb.table("daily")
+        self.dailyTasks = []
+        self.initDailyTask()
         # self.initCalendarMap(
+
+    def initDailyTask(self):
+        for tt in self.dailyTaskTable.all():
+            self.dailyTasks.append(DailyTask.parseTask(tt))
 
     # done
     def addTask(self, title: str, content: str, time: datetime.datetime,
-                 importance=Importance.normal, state=State.notStarted):
-        task = Task(title, content, time, importance, state)
+                 importance=Importance.normal, state=State.notStarted, species = Species.other):
+        task = Task(title, content, time, importance, state, species)
         ymStr = time.strftime("%Y%m")
 
         if ymStr not in self.calendarMap.keys():
@@ -140,6 +147,12 @@ class User:
             self.calendarMap[ymStr] = newCalender
         calendar_ : Calendar = self.calendarMap.get(ymStr)
         calendar_.addTask(task)
+
+    def addDailyTask(self, title : str, content : str, startTime : datetime.datetime,
+                     importance = Importance.normal, species = Species.other):
+        dtask = DailyTask(title, content, startTime, importance, species)
+        self.dailyTaskTable.insert(dtask.toDict())
+        self.dailyTasks.append(dtask)
 
     # done
     def getTasksOfDay(self, day : datetime.datetime):
@@ -149,9 +162,10 @@ class User:
 
         if ymStr in self.calendarMap:
             calendar_:Calendar = self.calendarMap.get(ymStr)
-            return calendar_.getTasksOfDay(day)
+            res =  calendar_.getTasksOfDay(day)
         else:
-            return []
+            res = []
+        return res + self.dailyTasks
 
     # 获取未完成的任务
     # def getTaskUnfinished(self):
@@ -321,6 +335,22 @@ class Task:
     def setFinish(self):
         self.state =State.finished
 
+
+class DailyTask(Task):
+    def __init__(self, title: str, content: str, time: datetime.datetime,
+                 importance=Importance.normal, speices=Species.work, id = -1):
+        # super(DailyTask, self).__init__()
+        super().__init__(title, content, time,
+                                        importance, State.daily, speices, id)
+
+    @staticmethod
+    def parseTask(dict):
+        # dict -> Task
+        time = datetime.datetime.fromtimestamp(dict["time"])
+        task = DailyTask(dict["title"], dict["content"], time, Importance(dict["importance"]),
+                     Species(dict["species"]), dict["id"])
+        return task
+
 if __name__ == "__main__":
     u = User("cnx")
     # u.addTask("qc", "learn chapter 5", datetime.datetime(2022, 8, 20))
@@ -334,10 +364,10 @@ if __name__ == "__main__":
     #
     # u.addTask("py hw", "backend oid calendar", datetime.datetime.today())
 
-    tasks = u.scheduleTasks()
-    for _ in tasks:
-
-        print(_.toDict())
+    # tasks = u.scheduleTasks()
+    # for _ in tasks:
+    #
+    #     print(_.toDict())
 
     # u.deleteTask(tasks[2])
     # #
@@ -356,5 +386,12 @@ if __name__ == "__main__":
 
 
 
+    debugPrint("--测试dailyTask--")
+    # u.addDailyTask("get up", "leave the bed", datetime.datetime(2022,1,1,hour=8))
+    tasks = u.getTasksOfDay(td)
+
+    for _ in tasks:
+
+        print(_.toDict())
 
 
