@@ -1,3 +1,4 @@
+# 点击工具栏的刷新按钮所显示的页面
 import sys
 
 from src.backend.method import *
@@ -33,6 +34,7 @@ class TimeFliter(QWidget):
         self.endTE = QDateTimeEdit()
         self.endTE.setDateTime(QDateTime.currentDateTime())
         self.sureBtn=QPushButton('确定')
+        self.sureBtn.clicked.connect(self.display)
         # todo:显示一个taskDisplay
         self.cancelBtn=QPushButton('取消')
         self.cancelBtn.clicked.connect(self.close)
@@ -53,5 +55,9 @@ class TimeFliter(QWidget):
         self.hbox.addWidget(self.cancelBtn)
         self.grid.addLayout(self.hbox,5,0)
         self.setLayout(self.grid)
+
+    def display(self):
+        pass
+
 
 

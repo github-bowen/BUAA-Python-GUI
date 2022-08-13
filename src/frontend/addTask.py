@@ -1,3 +1,4 @@
+# 点击工具栏的添加按钮所显示的页面
 """
 添加待办时设计的类，包括
     选择任务类型的弹窗
@@ -5,10 +6,7 @@
     添加normalTask的子窗口
     添加警告(在已过的日期添加)
 """
-import datetime
-import os
-import sys
-
+from src.backend.importance import str2Importmance
 from src.backend.method import *
 from PyQt5 import QtGui, QtWidgets, QtCore
 from PyQt5.QtCore import QDate, QDateTime, QTime
@@ -16,6 +14,8 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QApplication, QDesktopWidget, \
     QWidget, QMessageBox, QInputDialog, QMainWindow, QCalendarWidget, QFormLayout, QDateTimeEdit, QTimeEdit, QTextEdit
+
+from src.backend.species import str2Species
 
 
 def showWarning(text: str):
@@ -28,18 +28,16 @@ def _checkDate(self, name: str, start, end, importance: str, dailyType: bool):
         showWarning("\n待办名称为空，\n请重新输入！")
     elif importance.strip() == "选取":
         showWarning("\n待办重要性未选择，\n请重新选择！")
-    # TODO:后端需要提供日常任务排布时间的list，返回bool值，def dailyTimeSetted(time:datetime)
-    # elif dailyType and dailyTimeSetted(start):
-    # showWarning("\n 添加日常任务失败！\n 该时段已有任务哦！\n")
-    elif dailyType:
-        self.addDailyTask(name, start, end, importance)
+    elif dailyType and self.user.isTimeBusy(datetime.datetime(2022,8,13,start.hour(),start.minute())):
+        showWarning("\n 添加日常任务失败！\n 该时段已有任务哦！\n")
+    elif dailyType :
+        self.addDailyTask()
         self.close()
-    elif start < end:
-        self.addNormalTask(name, start, end, importance)
+    elif  start < end:
+        self.addNormalTask()
         self.close()
     else:
         showWarning("添加待办失败！\n截止时间不能在当前时间之前哦！\n(*>﹏<*)")
-
 
 class SelectTaskDialog(QMessageBox):  # 选择添加"日常任务"还是"一般任务"
     def __init__(self):
@@ -160,19 +158,18 @@ class AddDailyTaskDialog(AddTaskDialog):
         self.timeLE.setDisplayFormat("hh:mm")
         self.setWindowTitle('创建新的日常待办')
 
-    '''
-    def addTask(self, title: str, content: str, deadline: datetime.datetime,
-                importance=Importance.normal, state=State.notStarted):
-
     def addDailyTask(self):
-        name, time, content, importance,species = self.titleLE.text() \
-            , self.beginTimeLE.time(), self.endTimeLE.time(), self.importanceBtn.text()\
-            ,self.sortLE.text()
-        self.user.addTask(name,content,end)
-     '''
-
-    def __addDailyTask(self):
-        pass
+        '''
+            def addDailyTask(self, title : str, content : str, startTime : datetime.datetime,
+                     importance = Importance.normal, species = Species.other):
+        '''
+        name, content,start, importanceStr,speciesStr = self.titleLE.text(), \
+            self.contentTE, self.timeLE.time(), self.importanceBtn.text(),self.sortBtn.text()
+        startTime=datetime.datetime(2022,8,13,start.hour(),start.minute())
+        importance = str2Importmance[importanceStr]
+        species = str2Species[speciesStr]
+        print('hhh')
+        self.user.addDailyTask(name,content,startTime,importance,species)
 
     def checkDate(self):
         # importanceSelected = self.importanceBtn.is
@@ -197,8 +194,15 @@ class AddNormalTaskDialog(AddTaskDialog):
         self.titleLbl = QLabel('普通待办名称：')
         self.setWindowTitle('创建新的普通待办')
 
-    def __addNormalTask(self, taskName: str, taskBeginTime, taskEndTime, importance):
-        pass
+    def addNormalTask(self):
+        name, content, end, importanceStr, speciesStr = self.titleLE.text(), self.contentTE \
+            , self.timeLE.dateTime(), self.importanceBtn.text(), self.sortBtn.text()
+        importance = str2Importmance[importanceStr]
+        species = str2Species[speciesStr]
+        date = end.date()
+        time = end.time()
+        newTime = datetime.datetime(date.year(), date.month(), date.day(), time.hour(), time.minute())
+        self.user.addTask(name, content, newTime, importance, species)
 
     def checkDate(self):
         name, end, importance = self.titleLE.text() \

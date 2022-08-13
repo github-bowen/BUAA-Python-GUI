@@ -10,7 +10,7 @@ import editTask
 
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import QLabel, QPushButton, QGridLayout, \
-    QApplication, QWidget, QCheckBox, QMessageBox
+    QApplication, QWidget, QCheckBox, QMessageBox, QTimeEdit
 
 from src.backend.method import loginUser
 from src.backend.species import Species
@@ -97,8 +97,7 @@ class taskLabel(QWidget):
         # todo 记录开始时间？
 
     def finshThing(self):
-        #TODO：将事件设置为完成状态，同时触发calenderFront的taskDisplay函数
-        # 如果还没选中开始按钮就已经按了结束
+        #TODO：同时触发calenderFront的taskDisplay函数
         if not self.beginBtn.isChecked():
             addTask.showWarning("\n 当前任务尚未开始\n 无法完成哦")
             self.finshBtn.setChecked(False)

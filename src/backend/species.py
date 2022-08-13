@@ -11,3 +11,6 @@ class Species(Enum):
 speciesDict={Species.work:'工作',Species.study:'学习',
               Species.sport:'运动',Species.fun:'娱乐',
               Species.other:'其他'}
+str2Species={'工作':Species.work,'学习':Species.study,
+             '运动':Species.sport,'娱乐':Species.fun,
+             '其他':Species.other}

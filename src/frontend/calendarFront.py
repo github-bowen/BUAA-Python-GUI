@@ -1,4 +1,6 @@
 # 星期x的对照表
+import sys
+
 from PyQt5.QtCore import QCoreApplication, Qt
 
 from src.frontend.addTask import *
@@ -106,7 +108,8 @@ class CalenWindow(QMainWindow):
 
     # TODO：所有回到日历主页面的按钮都应触发该函数，考虑引入缓存
     def taskDisplay(self, date):
-        taskLis = self.user.getTasksOfDay(date)
+        #taskLis = self.user.getTasksOfDay(date)
+        pass
 
     def dateToStr(self, date):
         return \
@@ -159,12 +162,19 @@ if __name__ == "__main__":
 
     selectTaskDialog.button_dailyTask.clicked.connect(addDailyTaskDialog.show)
     addDailyTaskDialog.sureBtn.clicked.connect(addDailyTaskDialog.checkDate)
+    #addDailyTaskDialog.sureBtn.clicked.connect(calWindow.taskDisplay)
+
 
     selectTaskDialog.button_normalTask.clicked.connect(addNormalTaskDialog.show)
     addNormalTaskDialog.sureBtn.clicked.connect(addNormalTaskDialog.checkDate)
+    #addNormalTaskDialog.sureBtn.clicked.connect(calWindow.taskDisplay)
 
     # 筛选任务的界面
     timeFliter=TimeFliter(username, password)
     calWindow.fliterTask.triggered.connect(timeFliter.show)
+
+    # 刷新任务
+    calWindow.refreshTask.triggered.connect(calWindow.taskDisplay)
+
 
     sys.exit(app.exec_())
