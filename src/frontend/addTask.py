@@ -28,19 +28,20 @@ def _checkDate(self, name: str, start, end, importance: str, dailyType: bool):
         showWarning("\n待办名称为空，\n请重新输入！")
     elif importance.strip() == "选取":
         showWarning("\n待办重要性未选择，\n请重新选择！")
-    elif dailyType and self.user.isTimeBusy(datetime.datetime(2022,8,13,start.hour(),start.minute())):
+    elif dailyType and self.user.isTimeBusy(datetime.datetime(2022, 8, 13, start.hour(), start.minute())):
         showWarning("\n 添加日常任务失败！\n 该时段已有任务哦！\n")
-    elif dailyType :
+    elif dailyType:
         self.addDailyTask()
         self.close()
-    elif  start < end:
+    elif start < end:
         self.addNormalTask()
         self.close()
     else:
         showWarning("添加待办失败！\n截止时间不能在当前时间之前哦！\n(*>﹏<*)")
 
+
 class SelectTaskDialog(QMessageBox):  # 选择添加"日常任务"还是"一般任务"
-    def __init__(self):
+    def __init__(self, calWindow):
         super().__init__()
         self.setWindowTitle("待办类型选择")
         self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
@@ -55,11 +56,11 @@ class SelectTaskDialog(QMessageBox):  # 选择添加"日常任务"还是"一般�
 
 
 class AddTaskDialog(QWidget):
-    def __init__(self, username, password):
+    def __init__(self, user, calWindow):
         super().__init__()
         self.timeLE = None
         self.timeLbl = None
-        self.user = loginUser(username, password)
+        self.user = user
         self.titleIcon = QLabel()
         self.titleIcon.setPixmap(QtGui.QPixmap("../Icon/名称.png").scaled(50, 40))
         # self.titleIcon.setScaledContents(True)
@@ -146,8 +147,8 @@ class AddTaskDialog(QWidget):
 
 # 添加"日常任务"的子窗口
 class AddDailyTaskDialog(AddTaskDialog):
-    def __init__(self, username, password):
-        super().__init__(username, password)
+    def __init__(self, user, calWindow):
+        super().__init__(user, calWindow)
         self.initUi()
         super().dialogLayOut()
 
@@ -163,13 +164,14 @@ class AddDailyTaskDialog(AddTaskDialog):
             def addDailyTask(self, title : str, content : str, startTime : datetime.datetime,
                      importance = Importance.normal, species = Species.other):
         '''
-        name, content,start, importanceStr,speciesStr = self.titleLE.text(), \
-            self.contentTE, self.timeLE.time(), self.importanceBtn.text(),self.sortBtn.text()
-        startTime=datetime.datetime(2022,8,13,start.hour(),start.minute())
+        name, content, start, importanceStr, speciesStr = self.titleLE.text()\
+            , self.contentTE, self.timeLE.time(), self.importanceBtn.text(), self.sortBtn.text()
+        startTime = datetime.datetime(2022, 8, 13, start.hour(), start.minute())
         importance = str2Importmance[importanceStr]
         species = str2Species[speciesStr]
         print('hhh')
-        self.user.addDailyTask(name,content,startTime,importance,species)
+        self.user.addDailyTask(name, content, startTime, importance, species)
+        calWindow.taskDisplay(date=None, dateChange=False)  # 加完dailyTask后调用该函数刷新显示(显示的日期不变）
 
     def checkDate(self):
         # importanceSelected = self.importanceBtn.is
@@ -181,8 +183,8 @@ class AddDailyTaskDialog(AddTaskDialog):
 
 # 添加"一般任务"的子窗口
 class AddNormalTaskDialog(AddTaskDialog):
-    def __init__(self, username, password):
-        super().__init__(username, password)
+    def __init__(self, user, calWindow):
+        super().__init__(user, calWindow)
         self.initUi()
         super().dialogLayOut()
 
@@ -203,6 +205,7 @@ class AddNormalTaskDialog(AddTaskDialog):
         time = end.time()
         newTime = datetime.datetime(date.year(), date.month(), date.day(), time.hour(), time.minute())
         self.user.addTask(name, content, newTime, importance, species)
+        calWindow.taskDisplay(date=None, dateChange=False)  # 加完dailyTask后调用该函数刷新显示(显示的日期不变）
 
     def checkDate(self):
         name, end, importance = self.titleLE.text() \

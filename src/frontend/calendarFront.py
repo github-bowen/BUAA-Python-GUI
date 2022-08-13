@@ -1,9 +1,13 @@
 # 星期x的对照表
+import os
 import sys
 
-from PyQt5.QtCore import QCoreApplication, Qt
+from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5.QtCore import QCoreApplication, Qt, QDate
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QGridLayout, QCalendarWidget, QLabel, QWidget, QApplication
 
-from src.frontend.addTask import *
+from src.backend.method import loginUser
+from src.frontend.addTask import AddNormalTaskDialog, TaskAddingWarning, SelectTaskDialog, AddDailyTaskDialog
 from src.frontend.qssLoader import QSSLoader
 from src.frontend.timeFliter import TimeFliter
 from taskDisplay import DisplayWidget
@@ -26,10 +30,9 @@ class CalenWindow(QMainWindow):
     def initUI(self):
         QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 
-        displayWidget = DisplayWidget(self.user)  # 获取滚动条
-
-        displayWidget.layout = QVBoxLayout(displayWidget)
-        displayWidget.layout.addWidget(displayWidget.scroll)
+        self.displayWidget = DisplayWidget(self.user)  # 获取滚动条
+        self.displayWidget.layout = QVBoxLayout(self.displayWidget)
+        self.displayWidget.layout.addWidget(self.displayWidget.scroll)
 
         grid = QGridLayout(self)
         grid.setSpacing(20)
@@ -46,7 +49,7 @@ class CalenWindow(QMainWindow):
         # 设置控件的栅格布局
         grid.addWidget(self.calendar, 0, 0, 3, 3)
         grid.addWidget(self.dateLabel, 3, 0, 1, 3)
-        grid.addLayout(displayWidget.layout, 0, 3, 3, 1)
+        grid.addLayout(self.displayWidget.layout, 0, 3, 3, 1)
 
         # 由父类为QMainWindow
         tempWidget = QWidget()
@@ -106,9 +109,11 @@ class CalenWindow(QMainWindow):
         self.dispatchTask.setToolTip(_translate("self", "点击调度未来任务列表"))
         self.dispatchTask.setShortcut(_translate("self", "Ctrl+D"))
 
-    # TODO：所有回到日历主页面的按钮都应触发该函数，考虑引入缓存
-    def taskDisplay(self, date):
-        #taskLis = self.user.getTasksOfDay(date)
+    # 所有回到日历主页面的按钮都应触发该函数，考虑引入缓存
+    # TODO: LBH: 缓存暂时没考虑，后端用hashmap存的，可能一般不需要？
+    def taskDisplay(self, date, dateChange: bool):
+        taskLis = self.user.getTasksOfDay(date)
+
         pass
 
     def dateToStr(self, date):
@@ -149,14 +154,14 @@ if __name__ == "__main__":
     '''
 
     # 添加任务设计的widget和弹窗messagebox
-    addNormalTaskDialog = AddNormalTaskDialog(username, password)
-    addDailyTaskDialog = AddDailyTaskDialog(username, password)
+    addNormalTaskDialog = AddNormalTaskDialog(calWindow.user, calWindow)
+    addDailyTaskDialog = AddDailyTaskDialog(calWindow.user, calWindow)
     # 在已过日期添加任务显示warning
     warningForExpiredDate = TaskAddingWarning("添加任务请求失败！\n"
                                               "不能在已经过了的日期添加任务哦！"
                                               "\n(*>﹏<*)")
 
-    selectTaskDialog = SelectTaskDialog()  # 添加任务时的弹窗，选择日常任务还是一般任务
+    selectTaskDialog = SelectTaskDialog(calWindow)  # 添加任务时的弹窗，选择日常任务还是一般任务
 
     calWindow.addNewTask.triggered.connect(checkDateExpired)
 

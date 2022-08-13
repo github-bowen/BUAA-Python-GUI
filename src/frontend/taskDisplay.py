@@ -1,8 +1,11 @@
+import datetime
 import sys
 
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QScrollArea, QVBoxLayout, \
     QGroupBox, QLabel, QPushButton, QFormLayout, QApplication
+
+from TaskLabel import TaskLabel
 
 
 class DisplayWidget(QWidget):
@@ -12,9 +15,48 @@ class DisplayWidget(QWidget):
         self.formLayout = QFormLayout()
         self.groupBox = QGroupBox()
         self.user = user
+        self.allTasks = None
+        self.displayingDate = datetime.datetime.now()
 
-        todayTasks = self.getTodayTask()
-        self.taskNum = len(todayTasks)
+        self.todayTasks = self.getTodayTask()
+        self.displayingTasks = self.todayTasks
+        self.taskNum = len(self.todayTasks)
+
+        if self.taskNum > 0:
+            widget = QLabel("%s待办如下：" % self.displayingDate)
+            font = QFont()
+            font.setPointSize(12)
+            font.setBold(True)
+            # font.setFamily("KaiTi")
+            widget.setFont(font)
+            self.formLayout.addRow(widget)
+
+            for task in self.todayTasks:
+                widget = self.generateTaskWidget(task)
+                self.formLayout.addRow(widget)
+            self.groupBox.setLayout(self.formLayout)
+        else:
+            self.displayNoTaskToday()
+
+        self.scroll = QScrollArea()
+        self.scroll.setWidget(self.groupBox)
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setFixedHeight(400)  # 对应CalenWindow高度
+        self.layout = QVBoxLayout(self)
+        self.layout.addWidget(self.scroll)
+        self.show()
+
+    def refreshAndDisplay(self, date, dateChanged: bool):
+        self.close()
+        self.formLayout = QFormLayout()
+        self.groupBox = QGroupBox()
+
+        if dateChanged:
+            self.displayingDate = date
+            self.displayingTasks = self.getTaskOfDate(date)
+        else:
+            self.displayingTasks = self.getTaskOfDate(self.displayingDate)
+        self.taskNum = len(self.todayTasks)
 
         if self.taskNum > 0:
             widget = QLabel("今日待办如下：")
@@ -25,11 +67,9 @@ class DisplayWidget(QWidget):
             widget.setFont(font)
             self.formLayout.addRow(widget)
 
-        for task in todayTasks:
-            widget = DisplayWidget.generateTaskWidget(task)
-            self.formLayout.addRow(widget)
-
-        if self.taskNum != 0:
+            for task in self.todayTasks:
+                widget = self.generateTaskWidget(task)
+                self.formLayout.addRow(widget)
             self.groupBox.setLayout(self.formLayout)
         else:
             self.displayNoTaskToday()
@@ -47,21 +87,23 @@ class DisplayWidget(QWidget):
         font = QFont()
         font.setPointSize(16)
         font.setBold(True)
-        font.setFamily("KaiTi")
+        # font.setFamily("KaiTi")
         label.setFont(font)
         self.formLayout.addWidget(label)
         self.groupBox.setLayout(self.formLayout)
 
     def getTodayTask(self) -> list:
-        # todo: 获东西取当日所有的任务(包括未完成的)
-        return [1] * 20  # todo：到时候换掉
+        return self.user.getTaskToday()
 
-    @staticmethod
-    def generateTaskWidget(task):
-        # todo: 对每一个task生成相应的Widget以便显示
+    def generateTaskWidget(self, task):
+        taskLabel = TaskLabel(task=task, user=self.user)
+        return taskLabel
 
-        # todo: 下面随便加一些东西，测试是否有滚动条
-        return QPushButton("假装这是待办(测试)")
+    def getAllDateTasks(self) -> list:
+        return self.user.getAllTasks()
+
+    def getTaskOfDate(self, date):
+        return self.user.getTasksOfDay(date)
 
 
 """

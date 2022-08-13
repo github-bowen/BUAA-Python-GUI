@@ -140,7 +140,7 @@ class LoginWindow(QWidget):
         splitter.addWidget(right)
         splitter.addWidget(farRight)
         splitter.setSizes((300, 200, 40))
-        # splitter.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding) #TODO：看看怎么不让拉伸
+        # splitter.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed) #TODO：看看怎么不让拉伸
 
         hBox.addWidget(splitter)
         self.setLayout(hBox)
