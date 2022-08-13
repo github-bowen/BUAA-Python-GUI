@@ -40,7 +40,8 @@ def registerUser(name: str, passwd: str):
 
     user2Passwd.insert({"name" : name, "passwd" : passwd})
 
-    os.mkdir(DATAPATH + name)
+    if (not os.path.exists(DATAPATH + name)):
+        os.mkdir(DATAPATH + name)
     with open(DATAPATH + name + "/todoDb.json", "w"):
         pass
 
