@@ -1,8 +1,9 @@
 import datetime
 
+from PyQt5.QtCore import Qt, QObject, QEvent
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QScrollArea, QVBoxLayout, \
-    QGroupBox, QLabel, QPushButton, QFormLayout, QApplication
+    QGroupBox, QLabel, QPushButton, QFormLayout, QApplication, QFrame, QSizePolicy
 
 from TaskLabel import TaskLabel
 
@@ -38,12 +39,34 @@ class DisplayWidget(QWidget):
             self.displayNoTaskToday()
 
         self.scroll = QScrollArea()
+        self.disableHorizontalScroll()
         self.scroll.setWidget(self.groupBox)
         self.scroll.setWidgetResizable(True)
         self.scroll.setFixedHeight(400)  # 对应CalenWindow高度
         self.layout = QVBoxLayout(self)
         self.layout.addWidget(self.scroll)
         # self.show()
+
+    def disableHorizontalScroll(self):
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setFrameStyle(QFrame.NoFrame)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+        self.m_scrollAreaWidgetContents = QWidget(self)
+        self.m_scrollAreaWidgetContents.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+
+        baseLayout = QVBoxLayout(self.m_scrollAreaWidgetContents)
+        self.scroll.setWidget(self.m_scrollAreaWidgetContents)
+        self.m_scrollAreaWidgetContents.installEventFilter(self)
+
+    def eventFilter(self, o: QObject, e: QEvent) -> bool:
+        if o == self.m_scrollAreaWidgetContents and e.type() == QEvent.Resize:
+            self.scroll.setMinimumWidth(
+                self.m_scrollAreaWidgetContents.minimumSizeHint().width() +
+                self.scroll.verticalScrollBar().width())
+
+        return super(DisplayWidget, self).eventFilter(o, e)
 
     @staticmethod
     def clearLayout(layout):

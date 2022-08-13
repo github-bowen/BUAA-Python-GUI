@@ -11,4 +11,4 @@ class State(Enum):
 
 
 stateDict = {State.notStarted: '未开始', State.inProgress: '进行中',
-             State.finished: '已完成', State.expired: '已过期'}
+             State.finished: '已完成', State.expired: '已过期', State.daily: '日常任务'}

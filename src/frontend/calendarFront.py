@@ -22,7 +22,8 @@ class CalenWindow(QMainWindow):
     def __init__(self, username, password):
         super().__init__()
 
-        changeStyle.run(self, "calendar", 700, 400)
+        self.width, self.height = 900, 500
+        changeStyle.run(self, "calendar", self.width, self.height)
 
         self.user = loginUser(username, password)
         self.initUI()
@@ -38,8 +39,8 @@ class CalenWindow(QMainWindow):
         grid.setSpacing(20)
         # 点击某个日期时使其在下方显示具体年月日
         self.calendar = QCalendarWidget(self)
-        self.setMinimumSize(800, 500)  # todo: 这么改大小感觉怪怪的
-        self.setFixedSize(800, 500)
+        self.setMinimumSize(self.width, self.height)  # todo: 这么改大小感觉怪怪的
+        self.setFixedSize(self.width, self.height)
         self.calendar.setGridVisible(True)
         self.calendar.clicked[QDate].connect(self.dateDisplay)
         self.dateLabel = QLabel(self)
