@@ -35,6 +35,8 @@ class DisplayWidget(QWidget):
             for task in self.todayTasks:
                 widget = self.generateTaskWidget(task)
                 self.formLayout.addRow(widget)
+
+
             self.groupBox.setLayout(self.formLayout)
         else:
             self.displayNoTaskToday()
@@ -80,17 +82,22 @@ class DisplayWidget(QWidget):
                 item.widget().deleteLater()
 
     def refreshAndDisplay(self, date, dateChanged: bool):
-        DisplayWidget.clearLayout(self.formLayout)
+        # DisplayWidget.clearLayout(self.formLayout)
+        print(0)
 
         if dateChanged:
-            self.displayingDate = date
-            self.displayingTasks = self.getTaskOfDate(date)
+            # print(date.__class__)
+            print(1)
+            dtdt = datetime.datetime(date.year(), date.month(), date.day(), 1,0,0)
+            self.displayingDate = dtdt
+            self.displayingTasks = self.getTaskOfDate(dtdt)
         else:
             self.displayingTasks = self.getTaskOfDate(self.displayingDate)
         self.taskNum = len(self.todayTasks)
 
+        print(2)
         if self.taskNum > 0:
-            widget = QLabel("今日待办如下：")
+            widget = QLabel("待办如下：")
             font = QFont()
             font.setPointSize(12)
             font.setBold(True)
@@ -98,7 +105,7 @@ class DisplayWidget(QWidget):
             widget.setFont(font)
             self.formLayout.addRow(widget)
 
-            for task in self.todayTasks:
+            for task in self.displayingTasks:
                 widget = self.generateTaskWidget(task)
                 self.formLayout.addRow(widget)
             # self.groupBox.setLayout(self.formLayout)

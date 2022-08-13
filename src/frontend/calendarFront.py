@@ -116,6 +116,11 @@ class CalenWindow(QMainWindow):
         # self.displayWidget.close()
         # self.displayWidget = DisplayWidget(self.user, self)
         # self.displayWidget.refreshAndDisplay(date=date, dateChanged=dateChange)
+        fl = self.displayWidget.formLayout
+        for i in range(len(fl)):
+            fl.removeRow(0)
+
+        self.displayWidget.refreshAndDisplay(date, dateChange)
         pass
 
     def refreshEvent(self):  # 点击刷新后触发执行的方法
@@ -146,9 +151,10 @@ def checkDateExpired():
 
 
 if __name__ == "__main__":
-    with open(".name_password.tmp", "r") as f:
-        username, password = f.readlines()
-    os.remove(".name_password.tmp")
+    # with open(".name_password.tmp", "r") as f:
+    #     username, password = f.readlines()
+    # os.remove(".name_password.tmp")
+    username, password = "1", "111111"
     app = QApplication(sys.argv)
     calWindow = CalenWindow(username, password)
 
