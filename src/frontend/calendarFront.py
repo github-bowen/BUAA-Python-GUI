@@ -116,7 +116,8 @@ class CalenWindow(QMainWindow):
     def taskDisplay(self, date, dateChange: bool):
         global dateToDisplay, closeBecauseOfRefresh
         if dateChange:
-            dateToDisplay = date
+            dtdt = datetime.datetime(date.year(), date.month(), date.day())
+            dateToDisplay = dtdt
         else:
             dateToDisplay = self.displayWidget.displayingDate
         closeBecauseOfRefresh = True
