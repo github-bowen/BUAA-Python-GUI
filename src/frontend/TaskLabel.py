@@ -60,10 +60,11 @@ class TaskLabel(QWidget):
         self.beginBtn.setCheckable(True)
         self.beginBtn.clicked[bool].connect(self.beginThing)
 
-        self.finshBtn = QCheckBox('完成', self)
-        self.finshBtn.toggle()
-        self.finshBtn.setChecked(False)
-        self.finshBtn.stateChanged.connect(self.finshThing)
+        self.finishBtn = QCheckBox('完成', self)
+        self.finishBtn.toggle()
+        self.finishBtn.setChecked(False)
+
+        self.finishBtn.clicked.connect(self.finishThing)
 
         '''
         下为按钮模式
@@ -100,14 +101,32 @@ class TaskLabel(QWidget):
         # TODO：同时触发calenderFront的taskDisplay函数
         if not self.beginBtn.isChecked():
             addTask.showWarning("\n 当前任务尚未开始\n 无法完成哦")
-            self.finshBtn.setChecked(False)
+            self.finishBtn.setChecked(False)
         else:
+            self.finishMsg = finishWindow(self.task.title)
+            self.finishMsg.show()
+            self.finishMsg.button(QMessageBox.Yes).clicked.connect(self.canFinish)
+            
+    def canFinish(self):
             self.user.setTaskEnd(self.task)
             self.stateLabel.setText(stateDict[self.task.state])
             # todo
 
     def deleteThing(self):
         self.user.deleteTask(self.task)
+
+
+class finishWindow(QMessageBox):
+    def __init__(self,title:str):
+        super().__init__()
+        self.setWindowTitle("确认完成操作")
+        self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        self.setText("确认完成待办\n \"%s\" 吗？"%title)
+        self.setIconPixmap(QPixmap("../Icon/记录.png").scaled(250, 250))
+        self.sureBtn=self.button(QMessageBox.Yes)
+        self.sureBtn.setText("确认")
+        self.cancelBtn=self.button(QMessageBox.No)
+        self.cancelBtn.setText("我再想想")
 
 
 class deletWindow(QMessageBox):
