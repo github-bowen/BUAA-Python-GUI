@@ -57,7 +57,8 @@ class DisplayWidget(QWidget):
 
     def refreshAndDisplay(self, date, dateChanged: bool):
         DisplayWidget.clearLayout(self.formLayout)
-        # self.groupBox.setLayout(self.formLayout)
+        self.groupBox.clearMask()
+        self.groupBox.clearFocus()
 
         if dateChanged:
             self.displayingDate = date
@@ -78,11 +79,11 @@ class DisplayWidget(QWidget):
             for task in self.todayTasks:
                 widget = self.generateTaskWidget(task)
                 self.formLayout.addRow(widget)
-            # self.groupBox.setLayout(self.formLayout)
+            self.groupBox.setLayout(self.formLayout)
         else:
-            self.displayNoTaskToday(False)
+            self.displayNoTaskToday()
 
-    def displayNoTaskToday(self, firstExec=True):  # 显示下面的提示文字
+    def displayNoTaskToday(self):  # 显示下面的提示文字
         label = QLabel("今日暂无待办哦～")
         font = QFont()
         font.setPointSize(16)
@@ -90,8 +91,7 @@ class DisplayWidget(QWidget):
         # font.setFamily("KaiTi")
         label.setFont(font)
         self.formLayout.addWidget(label)
-        if firstExec:  # 第一次执行，需要设置groupBox
-            self.groupBox.setLayout(self.formLayout)
+        self.groupBox.setLayout(self.formLayout)
 
     def getTodayTask(self) -> list:
         return self.user.getTaskToday()

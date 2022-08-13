@@ -167,7 +167,8 @@ class AddDailyTaskDialog(AddTaskDialog):
                      importance = Importance.normal, species = Species.other):
         '''
         name, content, start, importanceStr, speciesStr = self.titleLE.text()\
-            , self.contentTE, self.timeLE.time(), self.importanceBtn.text(), self.sortBtn.text()
+            , self.contentTE.toPlainText(), self.timeLE.time()\
+            , self.importanceBtn.text(), self.sortBtn.text()
         startTime = datetime.datetime(2022, 8, 13, start.hour(), start.minute())
         importance = str2Importmance[importanceStr]
         species = str2Species[speciesStr]
@@ -199,7 +200,7 @@ class AddNormalTaskDialog(AddTaskDialog):
         self.setWindowTitle('创建新的普通待办')
 
     def addNormalTask(self):
-        name, content, end, importanceStr, speciesStr = self.titleLE.text(), self.contentTE \
+        name, content, end, importanceStr, speciesStr = self.titleLE.text(), self.contentTE.toPlainText()\
             , self.timeLE.dateTime(), self.importanceBtn.text(), self.sortBtn.text()
         importance = str2Importmance[importanceStr]
         species = str2Species[speciesStr]

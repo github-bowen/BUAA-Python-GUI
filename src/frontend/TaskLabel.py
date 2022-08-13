@@ -88,7 +88,7 @@ class TaskLabel(QWidget):
         self.taskGrid.addWidget(self.timeLabel, 0, 3)
         self.taskGrid.addWidget(self.editBtn, 0, 4)
         self.taskGrid.addWidget(self.beginBtn, 0, 5)
-        self.taskGrid.addWidget(self.finshBtn, 0, 6)
+        self.taskGrid.addWidget(self.finishBtn, 0, 6)
         self.taskGrid.addWidget(self.deleteBtn, 0, 7)
         self.setLayout(self.taskGrid)
 
@@ -97,7 +97,7 @@ class TaskLabel(QWidget):
         self.stateLabel.setText(stateDict[self.task.state])
         # todo 记录开始时间？
 
-    def finshThing(self):
+    def finishThing(self):
         # TODO：同时触发calenderFront的taskDisplay函数
         if not self.beginBtn.isChecked():
             addTask.showWarning("\n 当前任务尚未开始\n 无法完成哦")
