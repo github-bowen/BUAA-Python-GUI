@@ -93,10 +93,17 @@ class taskLabel(QWidget):
 
     def finshThing(self):
         #TODO：将事件设置为完成状态，同时触发calenderFront的taskDisplay函数
-        pass
+        # 如果还没选中开始按钮就已经按了结束
+        if not self.beginBtn.isChecked():
+            addTask.showWarning("\n 当前任务尚未开始\n 无法完成哦")
+            self.finshBtn.setChecked(False)
+        else:
+            pass
 
     def deleteThing(self):
         pass
+
+
 
 class deletWindow(QMessageBox):
     def __init__(self,title:str):
@@ -126,7 +133,7 @@ class normalTaskLabel(taskLabel):
         self.editBtn.clicked.connct(self.editNormalTaskDialog.show)
         self.editNormalTaskDialog.sureBtn.clicked.connect(self.editNormalTaskDialog.checkDate)
 
-
+# 测试
 if __name__=="__main__":
     app = QApplication(sys.argv)
     date=datetime.now()

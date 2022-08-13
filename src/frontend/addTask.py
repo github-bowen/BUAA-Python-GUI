@@ -28,8 +28,14 @@ def _checkDate(self, name: str, start, end, importance: str, dailyType: bool):
         showWarning("\n待办名称为空，\n请重新输入！")
     elif importance.strip() == "选取":
         showWarning("\n待办重要性未选择，\n请重新选择！")
-    elif start < end or dailyType:
+    # TODO:后端需要提供日常任务排布时间的list，返回bool值，def dailyTimeSetted(time:datetime)
+    # elif dailyType and dailyTimeSetted(start):
+    # showWarning("\n 添加日常任务失败！\n 该时段已有任务哦！\n")
+    elif dailyType:
         self.addDailyTask(name, start, end, importance)
+        self.close()
+    elif start < end:
+        self.addNormalTask(name, start, end, importance)
         self.close()
     else:
         showWarning("添加待办失败！\n截止时间不能在当前时间之前哦！\n(*>﹏<*)")

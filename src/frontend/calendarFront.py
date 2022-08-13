@@ -2,6 +2,7 @@
 from PyQt5.QtCore import QCoreApplication, Qt
 
 from src.frontend.addTask import *
+from src.frontend.timeFliter import TimeFliter
 from taskDisplay import DisplayWidget
 import changeStyle
 
@@ -99,7 +100,7 @@ class CalenWindow(QMainWindow):
         self.refreshTask.setToolTip(_translate("self", "点击刷新任务列表"))
         self.refreshTask.setShortcut(_translate("self", "F5"))
         self.dispatchTask.setText(_translate("self", "调度任务列表"))
-        self.dispatchTask.setToolTip(_translate("self", "点击自动调度任务"))
+        self.dispatchTask.setToolTip(_translate("self", "点击调度未来任务列表"))
         self.dispatchTask.setShortcut(_translate("self", "Ctrl+D"))
 
     # TODO：所有回到日历主页面的按钮都应触发该函数，考虑引入缓存
@@ -153,5 +154,9 @@ if __name__ == "__main__":
 
     selectTaskDialog.button_normalTask.clicked.connect(addNormalTaskDialog.show)
     addNormalTaskDialog.sureBtn.clicked.connect(addNormalTaskDialog.checkDate)
+
+    # 筛选任务的界面
+    timeFliter=TimeFliter(username, password)
+    calWindow.fliterTask.triggered.connect(timeFliter.show)
 
     sys.exit(app.exec_())
