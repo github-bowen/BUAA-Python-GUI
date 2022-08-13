@@ -439,7 +439,7 @@ if __name__ == "__main__":
     #     print(_.toDict())
 
 
-    print(u.timeIsBusy(datetime.datetime(2222, 1,1,8,0)))
-    print(u.timeIsBusy(datetime.datetime(2222, 1,1,8,1)))
+    print(u.isTimeBusy(datetime.datetime(2222, 1,1,8,0)))
+    print(u.isTimeBusy(datetime.datetime(2222, 1,1,8,1)))
 
 
