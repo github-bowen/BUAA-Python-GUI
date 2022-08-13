@@ -228,9 +228,13 @@ class User:
 
     # 删除任务
     def deleteTask(self, task):
-        ymStr = task.time.strftime("%Y%m")
-        assert ymStr in self.calendarMap.keys()
-        self.calendarMap[ymStr].deleteTask(task)
+        if task.state == State.daily:
+            self.dailyTaskTable.remove(db.where("id") == task.id)
+            self.dailyTasks.remove(task)
+        else:
+            ymStr = task.time.strftime("%Y%m")
+            assert ymStr in self.calendarMap.keys()
+            self.calendarMap[ymStr].deleteTask(task)
 
     '''
     编辑任务
