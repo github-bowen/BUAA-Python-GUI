@@ -239,10 +239,31 @@ class User:
     def editTask(self, task, newTitle = None, newContent = None, newTime = None,
                  newImportance = None, newSpices = None):
 
-        ymStr = task.time.strftime("%Y%m")
-        assert ymStr in self.calendarMap.keys()
+        if task.state == State.daily:
+            refreshDict = {}
+            # 修改task对象，记录修改
+            if newTitle != None:
+                task.title = newTitle
+                refreshDict["title"] = newTitle
+            if newContent != None:
+                task.content = newContent
+                refreshDict["content"] = newContent
+            if newTime != None:
+                task.time = newTime
+                refreshDict["time"] = newTime.timestamp()
+            if newImportance != None:
+                task.importance = newImportance
+                refreshDict["importance"] = newImportance.value
+            if newSpices != None:
+                task.species = newSpices
+                refreshDict["species"] = newSpices.value
+            # 修改数据库中的信息
+            self.dailyTaskTable.update(refreshDict, db.where("id") == task.id)
 
-        self.calendarMap[ymStr].editTask(task, newTitle, newContent, newTime, newImportance, newSpices)
+        else:
+            ymStr = task.time.strftime("%Y%m")
+            assert ymStr in self.calendarMap.keys()
+            self.calendarMap[ymStr].editTask(task, newTitle, newContent, newTime, newImportance, newSpices)
 
     def setTaskBegin(self, task):
         ymStr = task.time.strftime("%Y%m")
@@ -398,9 +419,15 @@ if __name__ == "__main__":
     tasks = u.getTasksOfDay(datetime.datetime(2022, 8 , 13))
     # tasks = u.getTaskOfPeriod(None, datetime.datetime.today())
 
-    tasks = set(tasks)
-    for _ in tasks:
+    # tasks = set(tasks)
+    # for _ in tasks:
+    #     print(_.toDict())
+    dt = tasks[0]
+    u.editTask(dt, newTitle="起床起床")
 
+    tasks = u.getTasksOfDay(datetime.datetime(2022, 8, 12))
+    for _ in tasks:
         print(_.toDict())
+
 
 
