@@ -9,8 +9,9 @@ from TaskLabel import TaskLabel
 
 
 class DisplayWidget(QWidget):
-    def __init__(self, user):
+    def __init__(self, user, calenWindow):
         super().__init__()
+        self.calenWindow = calenWindow
         self.taskNum = 0
         self.formLayout = QFormLayout()
         self.groupBox = QGroupBox()
@@ -80,8 +81,6 @@ class DisplayWidget(QWidget):
 
     def refreshAndDisplay(self, date, dateChanged: bool):
         DisplayWidget.clearLayout(self.formLayout)
-        self.groupBox.clearMask()
-        self.groupBox.clearFocus()
 
         if dateChanged:
             self.displayingDate = date
@@ -102,11 +101,16 @@ class DisplayWidget(QWidget):
             for task in self.todayTasks:
                 widget = self.generateTaskWidget(task)
                 self.formLayout.addRow(widget)
-            self.groupBox.setLayout(self.formLayout)
+            # self.groupBox.setLayout(self.formLayout)
         else:
-            self.displayNoTaskToday()
+            self.displayNoTaskToday(False)
+        """
+        self.groupBox.repaint()
+        self.scroll.repaint()
+        self.repaint()
+        """
 
-    def displayNoTaskToday(self):  # 显示下面的提示文字
+    def displayNoTaskToday(self, first=True):  # 显示下面的提示文字
         label = QLabel("今日暂无待办哦～")
         font = QFont()
         font.setPointSize(16)
@@ -114,13 +118,14 @@ class DisplayWidget(QWidget):
         # font.setFamily("KaiTi")
         label.setFont(font)
         self.formLayout.addWidget(label)
-        self.groupBox.setLayout(self.formLayout)
+        if first:
+            self.groupBox.setLayout(self.formLayout)
 
     def getTodayTask(self) -> list:
         return self.user.getTaskToday()
 
     def generateTaskWidget(self, task):
-        taskLabel = TaskLabel(task=task, user=self.user)
+        taskLabel = TaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
         return taskLabel
 
     def getAllDateTasks(self) -> list:
