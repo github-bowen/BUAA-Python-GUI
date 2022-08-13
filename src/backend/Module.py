@@ -28,6 +28,7 @@ class Calendar:
         self.readFromDb()
 
     def readFromDb(self):
+        self.monthTodo = {}
         # 从monthTodoTable中读取，存入 monthtodo中
         for tt in self.monthTodoTable.all():
             task = Task.parseTask(tt)
@@ -154,6 +155,7 @@ class User:
         self.dailyTaskTable.insert(dtask.toDict())
         self.dailyTasks.append(dtask)
 
+    # def getTaskWithout
     # done
     def getTasksOfDay(self, day : datetime.datetime):
         ymStr = day.strftime("%Y%m")
@@ -165,6 +167,8 @@ class User:
             res =  calendar_.getTasksOfDay(day)
         else:
             res = []
+        # debugPrint(str(len(res)))
+
         return res + self.dailyTasks
 
     # 获取未完成的任务
@@ -178,37 +182,37 @@ class User:
         if (len(tb) == 0) :
             return []
         if (startDay == None):
-            res = []
+            res = set()
             i = endDay
             assert endDay != None
             while True:
                 if i.strftime("%Y%m") <tb[0]:
                     break
-                res += self.getTasksOfDay(i)
+                res = res.union( self.getTasksOfDay(i))
                 i = i + datetime.timedelta(days=-1)
-            return res
+            return list(res)
         elif endDay == None:
             # 获取startDay之后的
-            res = []
+            res = set()
             i = startDay
             while True:
 
                 if i.strftime("%Y%m") > tb[-1]:
                     break
-                res += self.getTasksOfDay(i)
+                res = res.union( self.getTasksOfDay(i))
                 i = i + datetime.timedelta(days=+1)
-            return res
+            return list(res)
         else:
             if endDay < startDay:
                 return []
             i = startDay
-            res = []
+            res = set()
             while i <= endDay:
                 if i.strftime("%Y%m") > tb[-1]:
                     break
-                res += self.getTasksOfDay(i)
+                res = res.union( self.getTasksOfDay(i))
                 i = i + datetime.timedelta(days=+1)
-            return res
+            return list(res)
 
     def getTaskToday(self):
         return self.getTasksOfDay(datetime.datetime.today())
@@ -310,6 +314,9 @@ class Task:
         else:
             self.id = id
 
+    def __hash__(self):
+        return hash(self.id)
+
     @staticmethod
     def parseTask(dict):
         # dict -> Task
@@ -388,8 +395,10 @@ if __name__ == "__main__":
 
     debugPrint("--测试dailyTask--")
     # u.addDailyTask("get up", "leave the bed", datetime.datetime(2022,1,1,hour=8))
-    tasks = u.getTasksOfDay(td)
+    tasks = u.getTasksOfDay(datetime.datetime(2022, 8 , 13))
+    # tasks = u.getTaskOfPeriod(None, datetime.datetime.today())
 
+    tasks = set(tasks)
     for _ in tasks:
 
         print(_.toDict())
