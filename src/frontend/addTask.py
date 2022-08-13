@@ -194,7 +194,7 @@ class AddNormalTaskDialog(AddTaskDialog):
         self.timeLbl = QLabel('截止日期和时间：')
         self.timeLE = QDateTimeEdit()
         self.timeLE.setDateTime(QDateTime.currentDateTime())  # 设置一开始显示时的截止时间为当前时间
-        self.timeLE.setDisplayFormat("yyyy-mm-dd-hh:mm")
+        self.timeLE.setDisplayFormat("yyyy-MM-dd-hh:mm")
         self.titleLbl = QLabel('普通待办名称：')
         self.setWindowTitle('创建新的普通待办')
 

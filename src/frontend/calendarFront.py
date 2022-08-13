@@ -28,7 +28,7 @@ class CalenWindow(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+        # QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 
         self.displayWidget = DisplayWidget(self.user)  # 获取滚动条
         self.displayWidget.layout = QVBoxLayout(self.displayWidget)

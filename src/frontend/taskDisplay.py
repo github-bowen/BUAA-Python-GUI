@@ -23,7 +23,7 @@ class DisplayWidget(QWidget):
         self.taskNum = len(self.todayTasks)
 
         if self.taskNum > 0:
-            widget = QLabel("%s待办如下：" % self.displayingDate)
+            widget = QLabel("今日待办如下：")
             font = QFont()
             font.setPointSize(12)
             font.setBold(True)
