@@ -42,6 +42,7 @@ def _checkDate(self, name: str, start, end, importance: str, dailyType: bool):
 
 class SelectTaskDialog(QMessageBox):  # 选择添加"日常任务"还是"一般任务"
     def __init__(self, calWindow):
+        self.calWindow = calWindow
         super().__init__()
         self.setWindowTitle("待办类型选择")
         self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
@@ -57,6 +58,7 @@ class SelectTaskDialog(QMessageBox):  # 选择添加"日常任务"还是"一般�
 
 class AddTaskDialog(QWidget):
     def __init__(self, user, calWindow):
+        self.calWindow = calWindow
         super().__init__()
         self.timeLE = None
         self.timeLbl = None
@@ -171,7 +173,7 @@ class AddDailyTaskDialog(AddTaskDialog):
         species = str2Species[speciesStr]
         print('hhh')
         self.user.addDailyTask(name, content, startTime, importance, species)
-        calWindow.taskDisplay(date=None, dateChange=False)  # 加完dailyTask后调用该函数刷新显示(显示的日期不变）
+        self.calWindow.taskDisplay(date=None, dateChange=False)  # 加完dailyTask后调用该函数刷新显示(显示的日期不变）
 
     def checkDate(self):
         # importanceSelected = self.importanceBtn.is
@@ -205,7 +207,7 @@ class AddNormalTaskDialog(AddTaskDialog):
         time = end.time()
         newTime = datetime.datetime(date.year(), date.month(), date.day(), time.hour(), time.minute())
         self.user.addTask(name, content, newTime, importance, species)
-        calWindow.taskDisplay(date=None, dateChange=False)  # 加完dailyTask后调用该函数刷新显示(显示的日期不变）
+        self.calWindow.taskDisplay(date=None, dateChange=False)  # 加完dailyTask后调用该函数刷新显示(显示的日期不变）
 
     def checkDate(self):
         name, end, importance = self.titleLE.text() \
