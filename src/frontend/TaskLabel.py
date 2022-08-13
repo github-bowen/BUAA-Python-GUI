@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import QLabel, QPushButton, QGridLayout, \
 
 from src.backend.method import loginUser
 from src.backend.species import Species
-from src.backend.state import stateDict
+from src.backend.state import stateDict, State
 from src.frontend.qssLoader import QSSLoader
 
 
@@ -93,34 +93,50 @@ class TaskLabel(QWidget):
         self.setLayout(self.taskGrid)
 
     def beginThing(self):
-        self.user.setTaskBegin(self.task)
-        self.stateLabel.setText(stateDict[self.task.state])
+        if self.task.state!=State.notStarted and self.task.state!=State.daily:
+            initial=self.beginBtn.isChecked()
+            stateStr=stateDict[self.task.state]
+            addTask.showWarning('当前待办状态为\n'+stateStr+'\n 无法开始待办哦')
+            self.beginBtn.setChecked(not initial)
+        else:
+            self.user.setTaskBegin(self.task)
+            self.stateLabel.setText(stateDict[self.task.state])
+
         # todo 记录开始时间？
 
     def finishThing(self):
         # TODO：同时触发calenderFront的taskDisplay函数
         if not self.beginBtn.isChecked():
+            # 保持按钮的原有状态
+            initial = self.finishBtn.isChecked()
             addTask.showWarning("\n 当前任务尚未开始\n 无法完成哦")
-            self.finishBtn.setChecked(False)
+            self.finishBtn.setChecked(not initial)
+        elif self.task.state!=State.inProgress:
+            initial = self.finishBtn.isChecked()
+            stateStr = stateDict[self.task.state]
+            addTask.showWarning('当前待办状态为\n' + stateStr + '\n 无法完成待办哦')
+            self.finishBtn.setChecked(not initial)
         else:
             self.finishMsg = finishWindow(self.task.title)
             self.finishMsg.show()
             self.finishMsg.button(QMessageBox.Yes).clicked.connect(self.canFinish)
             self.finishMsg.button(QMessageBox.No).clicked.connect(self.cancelFinish)
 
-
     def canFinish(self):
+        #self.calenWindow.taskDisplay(None, False)
         self.user.setTaskEnd(self.task)
         self.stateLabel.setText(stateDict[self.task.state])
 
     def cancelFinish(self):
-        self.calenWindow.taskDisplay(None, False)
-        self.finishBtn.setChecked(False)
+        initial = self.finishBtn.isChecked()
+        #self.calenWindow.taskDisplay(None, False)
+        self.finishBtn.setChecked(not initial)
 
 
     def deleteThing(self):
         self.user.deleteTask(self.task)
-        self.calenWindow.taskDisplay(None, False)
+        #self.calenWindow.taskDisplay(None, False)
+        self.calenWindow.refreshEvent()
 
 class finishWindow(QMessageBox):
     def __init__(self, title: str):

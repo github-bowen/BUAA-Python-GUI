@@ -68,6 +68,9 @@ class EditDailyTaskDialog(EditTaskDialog):
         species=str2Species[speciesStr]
         newTime=datetime.datetime(2022,8,13,start.hour(),start.minute())
         self.user.editTask(self.task,name,content,newTime,importance,species)
+        #self.calWindow.refreshEvent()
+        #self.calWindow.taskDisplay(date=None, dateChange=False)
+
 
     def checkDate(self):
         # importanceSelected = self.importanceBtn.is
@@ -99,6 +102,8 @@ class EditNormalTaskDialog(EditTaskDialog):
         time=end.time()
         newTime=datetime.datetime(date.year(),date.month(),date.day(),time.hour(),time.minute())
         self.user.editTask(name, content, newTime, importance, species)
+        #self.calWindow.refreshEvent()
+        #self.calWindow.taskDisplay(date=None, dateChange=False)
 
     def checkDate(self):
         name, end, importance = self.titleLE.text() \
