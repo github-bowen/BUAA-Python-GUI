@@ -1,10 +1,11 @@
 # 星期x的对照表
+import datetime
 import os
 import sys
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import QCoreApplication, Qt, QDate
-from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QGridLayout, QCalendarWidget, QLabel, QWidget, QApplication
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QGridLayout, QCalendarWidget, QLabel, QWidget, QApplication, qApp
 
 from src.backend.method import loginUser
 from src.frontend.addTask import AddNormalTaskDialog, TaskAddingWarning, SelectTaskDialog, AddDailyTaskDialog
@@ -31,7 +32,7 @@ class CalenWindow(QMainWindow):
     def initUI(self):
         # QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 
-        self.displayWidget = DisplayWidget(self.user, self)  # 获取滚动条
+        self.displayWidget = DisplayWidget(self.user, self, dateToDisplay)  # 获取滚动条
         self.displayWidget.layout = QVBoxLayout(self.displayWidget)
         self.displayWidget.layout.addWidget(self.displayWidget.scroll)
 
@@ -111,12 +112,16 @@ class CalenWindow(QMainWindow):
         self.dispatchTask.setShortcut(_translate("self", "Ctrl+D"))
 
     # 所有回到日历主页面的按钮都应触发该函数，考虑引入缓存
-    # TODO: LBH: 缓存暂时没考虑，后端用hashmap存的，可能一般不需要？
+    # TODO: 记录下要显示的date，然后销毁当前日历对象，重新new一个
     def taskDisplay(self, date, dateChange: bool):
-        # self.displayWidget.close()
-        # self.displayWidget = DisplayWidget(self.user, self)
-        # self.displayWidget.refreshAndDisplay(date=date, dateChanged=dateChange)
-        pass
+        global dateToDisplay, closeBecauseOfRefresh
+        if dateChange:
+            dateToDisplay = date
+        else:
+            dateToDisplay = self.displayWidget.displayingDate
+        closeBecauseOfRefresh = True
+        # print(date)  # debug用
+        qApp.exit()
 
     def refreshEvent(self):  # 点击刷新后触发执行的方法
         self.taskDisplay(None, False)
@@ -146,44 +151,63 @@ def checkDateExpired():
 
 
 if __name__ == "__main__":
+
     with open(".name_password.tmp", "r") as f:
         username, password = f.readlines()
     os.remove(".name_password.tmp")
+
     app = QApplication(sys.argv)
-    calWindow = CalenWindow(username, password)
 
-    '''
-    样式表的设置模板:
-    styleFile = './style.qss'
-    styleSheet = QSSLoader.readFile(styleFile)
-    calWindow.setStyleSheet(styleSheet)
-    '''
+    first = True  # 第一次打开程序
+    dateToDisplay = None  # 下一次要显示任务的日期
+    closeBecauseOfRefresh = True  # 记录窗口关闭是否是因为进行了refresh
+    while closeBecauseOfRefresh:
 
-    # 添加任务设计的widget和弹窗messagebox
-    addNormalTaskDialog = AddNormalTaskDialog(calWindow.user, calWindow)
-    addDailyTaskDialog = AddDailyTaskDialog(calWindow.user, calWindow)
-    # 在已过日期添加任务显示warning
-    warningForExpiredDate = TaskAddingWarning("添加任务请求失败！\n"
-                                              "不能在已经过了的日期添加任务哦！"
-                                              "\n(*>﹏<*)")
+        closeBecauseOfRefresh = False
+        if first:
+            first = False
+            dateToDisplay = datetime.datetime.today()
+            print(dateToDisplay)
 
-    selectTaskDialog = SelectTaskDialog(calWindow)  # 添加任务时的弹窗，选择日常任务还是一般任务
+        calWindow = CalenWindow(username, password)
 
-    calWindow.addNewTask.triggered.connect(checkDateExpired)
+        '''
+        样式表的设置模板:
+        styleFile = './style.qss'
+        styleSheet = QSSLoader.readFile(styleFile)
+        calWindow.setStyleSheet(styleSheet)
+        '''
 
-    selectTaskDialog.button_dailyTask.clicked.connect(addDailyTaskDialog.show)
-    addDailyTaskDialog.sureBtn.clicked.connect(addDailyTaskDialog.checkDate)
-    # addDailyTaskDialog.sureBtn.clicked.connect(calWindow.taskDisplay)
+        # 添加任务设计的widget和弹窗messagebox
+        addNormalTaskDialog = AddNormalTaskDialog(calWindow.user, calWindow)
+        addDailyTaskDialog = AddDailyTaskDialog(calWindow.user, calWindow)
+        # 在已过日期添加任务显示warning
+        warningForExpiredDate = TaskAddingWarning("添加任务请求失败！\n"
+                                                  "不能在已经过了的日期添加任务哦！"
+                                                  "\n(*>﹏<*)")
 
-    selectTaskDialog.button_normalTask.clicked.connect(addNormalTaskDialog.show)
-    addNormalTaskDialog.sureBtn.clicked.connect(addNormalTaskDialog.checkDate)
-    # addNormalTaskDialog.sureBtn.clicked.connect(calWindow.taskDisplay)
+        selectTaskDialog = SelectTaskDialog(calWindow)  # 添加任务时的弹窗，选择日常任务还是一般任务
 
-    # 筛选任务的界面
-    timeFliter = TimeFliter(username, password)
-    calWindow.fliterTask.triggered.connect(timeFliter.show)
+        calWindow.addNewTask.triggered.connect(checkDateExpired)
 
-    # 刷新任务
-    calWindow.refreshTask.triggered.connect(calWindow.refreshEvent)
+        selectTaskDialog.button_dailyTask.clicked.connect(addDailyTaskDialog.show)
+        addDailyTaskDialog.sureBtn.clicked.connect(addDailyTaskDialog.checkDate)
+        # addDailyTaskDialog.sureBtn.clicked.connect(calWindow.taskDisplay)
 
-    sys.exit(app.exec_())
+        selectTaskDialog.button_normalTask.clicked.connect(addNormalTaskDialog.show)
+        addNormalTaskDialog.sureBtn.clicked.connect(addNormalTaskDialog.checkDate)
+        # addNormalTaskDialog.sureBtn.clicked.connect(calWindow.taskDisplay)
+
+        # 筛选任务的界面
+        timeFliter = TimeFliter(username, password)
+        calWindow.fliterTask.triggered.connect(timeFliter.show)
+
+        # 刷新任务
+        calWindow.refreshTask.triggered.connect(calWindow.refreshEvent)
+
+        app.exec_()
+        app.closeAllWindows()
+        calWindow.close()
+        del calWindow
+
+    exit(0)
