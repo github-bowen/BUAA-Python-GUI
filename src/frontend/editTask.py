@@ -3,6 +3,7 @@
 与添加任务的大同小异
 区别在于页面应当显示原有信息
 """
+import datetime
 
 from src.backend import importance, species
 from src.backend.method import *
@@ -12,25 +13,26 @@ from PyQt5.QtWidgets import QLabel, QDateTimeEdit, QTimeEdit
 import addTask
 
 def _checkDate(self, name: str, start, end, importance: str, dailyType: bool):
+    dailyTime=datetime.datetime(2022,8,13,start.hour(),start.minute())
     if len(name.strip()) == 0:
         addTask.showWarning("\n待办名称为空，\n请重新输入！")
     elif importance.strip() == "选取":
         addTask.showWarning("\n待办重要性未选择，\n请重新选择！")
-    # TODO:后端需要提供日常任务排布时间的list，返回bool值，def dailyTimeSetted(time:datetime)
-    elif dailyType and self.user.isTimeBusy(datetime.datetime(2022,8,13,start.hour(),start.minute())):
+    elif dailyType and self.task.time.time()!=dailyTime.time() and \
+            self.user.isTimeBusy(dailyTime):
         addTask.showWarning("\n 添加日常任务失败！\n 该时段已有任务哦！\n")
     elif dailyType :
-        self.editDailyTask(name, start, end, importance)
+        self.editDailyTask()
         self.close()
-    elif  start < end:
-        self.editNormalTask(name, start, end, importance)
+    elif start < end:
+        self.editNormalTask()
         self.close()
     else:
         addTask.showWarning("添加待办失败！\n截止时间不能在当前时间之前哦！\n(*>﹏<*)")
 
 class EditTaskDialog(addTask.AddTaskDialog):
-    def __init__(self, username, password,task:Task):
-        super().__init__(username, password)
+    def __init__(self, user,calWindow,task:Task):
+        super().__init__(user,calWindow)
         self.initUi(task)
         self.task=task
 
@@ -43,8 +45,8 @@ class EditTaskDialog(addTask.AddTaskDialog):
 
 # 修改"日常任务"的子窗口
 class EditDailyTaskDialog(EditTaskDialog):
-    def __init__(self, username, password,task):
-        super().__init__(username, password,task)
+    def __init__(self, user, calenWindow, task: Task):
+        super().__init__(user, calenWindow, task)
         self.timeLbl = QLabel('起始时间：')
         self.timeLE = QTimeEdit()
         # print(type(task.time.time()))
@@ -60,7 +62,7 @@ class EditDailyTaskDialog(EditTaskDialog):
         def editTask(self, task, newTitle=None, newContent=None, newTime=None,
                      newImportance=None, newSpices=None):
         '''
-        name, content,start, importanceStr,speciesStr = self.titleLE.text(),self.contentTE \
+        name, content,start, importanceStr,speciesStr = self.titleLE.text(),self.contentTE.toPlainText() \
             , self.timeLE.time(), self.importanceBtn.text(),self.sortBtn.text()
         importance=str2Importmance[importanceStr]
         species=str2Species[speciesStr]
@@ -71,25 +73,25 @@ class EditDailyTaskDialog(EditTaskDialog):
         # importanceSelected = self.importanceBtn.is
         name, start, importance = self.titleLE.text() \
             , self.timeLE.time(), self.importanceBtn.text()
-        end = 0
-        _checkDate(self, name, start, end, importance, True)
+        newTime=datetime.datetime(2022,8,13,start.hour(),start.minute())
+        _checkDate(self, name, newTime,datetime.datetime.now(), importance, True)
 
 
 # 添加"一般任务"的子窗口
 class EditNormalTaskDialog(EditTaskDialog):
-    def __init__(self, username, password,task:Task):
-        super().__init__(username, password,task)
+    def __init__(self, user,calenWindow,task:Task):
+        super().__init__(user,calenWindow,task)
         self.timeLbl = QLabel('截止日期和时间：')
         self.timeLE = QDateTimeEdit()
         self.timeLE.setDateTime(task.time)
-        self.timeLE.setDisplayFormat("yyyy-mm-dd-hh:mm")
+        self.timeLE.setDisplayFormat("yyyy-MM-dd-hh:mm")
         self.titleLbl = QLabel('普通待办名称：')
         self.setWindowTitle('编辑普通待办')
         self.sureBtn.clicked.connect(self.checkDate)
         addTask.AddTaskDialog.dialogLayOut(self)
 
     def editNormalTask(self):
-        name, content, end, importanceStr, speciesStr = self.titleLE.text(), self.contentTE \
+        name, content, end, importanceStr, speciesStr = self.titleLE.text(), self.contentTE.toPlainText() \
             , self.timeLE.dateTime(), self.importanceBtn.text(), self.sortBtn.text()
         importance = str2Importmance[importanceStr]
         species = str2Species[speciesStr]
@@ -101,5 +103,8 @@ class EditNormalTaskDialog(EditTaskDialog):
     def checkDate(self):
         name, end, importance = self.titleLE.text() \
             , self.timeLE.dateTime(), self.importanceBtn.text()
+        date = end.date()
+        time = end.time()
+        newTime = datetime.datetime(date.year(), date.month(), date.day(), time.hour(), time.minute())
         start = datetime.datetime.now()
-        _checkDate(self, name, start, end, importance, False)
+        _checkDate(self, name, start, newTime, importance, False)

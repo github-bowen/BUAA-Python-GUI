@@ -148,19 +148,20 @@ class deletWindow(QMessageBox):
         self.cancelBtn.setText("我再想想")
 
 
-class dailyTaskLabel(TaskLabel):
-    def __init__(self, username, password, task: Task):
-        super().__init__(task, username, password)
-        self.editDailyTaskDialog = editTask.EditDailyTaskDialog(username, password, task)
-        self.editDailyTaskDialog.sureBtn.clicked.connect(self.editDailyTaskDialog.checkDate)
+class DailyTaskLabel(TaskLabel):
+    def __init__(self, task,user,calenWindow):
+        super().__init__(task, user,calenWindow)
+        self.editDailyTaskDialog = editTask.EditDailyTaskDialog(user,calenWindow,task)
         self.editBtn.clicked.connect(self.editDailyTaskDialog.show)
+        self.editDailyTaskDialog.sureBtn.clicked.connect(self.editDailyTaskDialog.checkDate)
 
 
-class normalTaskLabel(TaskLabel):
-    def __init__(self, username, password, task: Task):
-        super().__init__(task, username, password)
-        self.editNormalTaskDialog = editTask.EditNormalTaskDialog(username, password, task)
-        self.editBtn.clicked.connct(self.editNormalTaskDialog.show)
+
+class NormalTaskLabel(TaskLabel):
+    def __init__(self, task,user,calenWindow):
+        super().__init__(task, user,calenWindow)
+        self.editNormalTaskDialog = editTask.EditNormalTaskDialog(user,calenWindow,task)
+        self.editBtn.clicked.connect(self.editNormalTaskDialog.show)
         self.editNormalTaskDialog.sureBtn.clicked.connect(self.editNormalTaskDialog.checkDate)
 
 
@@ -169,5 +170,5 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     date = datetime.now()
     task = Task('检查', '', date, importance=Importance.normal, speices=Species.sport)
-    text = dailyTaskLabel('kl', 'zjtdbd', task)
+    #text = DailyTaskLabel(task)
     app.exec_()

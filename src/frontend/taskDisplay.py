@@ -5,7 +5,8 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QScrollArea, QVBoxLayout, \
     QGroupBox, QLabel, QPushButton, QFormLayout, QApplication, QFrame, QSizePolicy
 
-from TaskLabel import TaskLabel
+from TaskLabel import TaskLabel, DailyTaskLabel, NormalTaskLabel
+from src.backend.Module import DailyTask
 
 
 class DisplayWidget(QWidget):
@@ -124,7 +125,10 @@ class DisplayWidget(QWidget):
         return self.user.getTaskToday()
 
     def generateTaskWidget(self, task):
-        taskLabel = TaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
+        if isinstance(task,DailyTask):
+            taskLabel = DailyTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
+        else:
+            taskLabel=NormalTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
         return taskLabel
 
     def getAllDateTasks(self) -> list:
