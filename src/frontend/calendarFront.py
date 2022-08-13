@@ -2,6 +2,7 @@
 from PyQt5.QtCore import QCoreApplication, Qt
 
 from src.frontend.addTask import *
+from src.frontend.qssLoader import QSSLoader
 from src.frontend.timeFliter import TimeFliter
 from taskDisplay import DisplayWidget
 import changeStyle
@@ -136,6 +137,13 @@ if __name__ == "__main__":
     os.remove(".name_password.tmp")
     app = QApplication(sys.argv)
     calWindow = CalenWindow(username, password)
+
+    '''
+    样式表的设置模板:
+    styleFile = './style.qss'
+    styleSheet = QSSLoader.readFile(styleFile)
+    calWindow.setStyleSheet(styleSheet)
+    '''
 
     # 添加任务设计的widget和弹窗messagebox
     addNormalTaskDialog = AddNormalTaskDialog(username, password)

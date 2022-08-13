@@ -1,10 +1,3 @@
-'''
-    def addDailyTask(self):
-        name, time, content, importance,species = self.titleLE.text() \
-            , self.beginTimeLE.time(), self.endTimeLE.time(), self.importanceBtn.text()\
-            ,self.sortLE.text()
-        self.user.addTask(name,content,end)
-'''
 import sys
 from datetime import datetime
 
@@ -19,18 +12,27 @@ from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import QLabel, QPushButton, QGridLayout, \
     QApplication, QWidget, QCheckBox, QMessageBox
 
+from src.backend.method import loginUser
 from src.backend.species import Species
+from src.backend.state import stateDict
+from src.frontend.qssLoader import QSSLoader
+
 
 class taskLabel(QWidget):
-    def __init__(self,task:Task):
+    def __init__(self,task:Task,username,password):
         super().__init__()
-        self.initUi(task)
+        self.user = loginUser(username, password)
+        self.task=task
+        self.initUi()
 
-    def initUi(self,task:Task):
-        title=task.title
-        importance=task.importance
-        species=task.species
-        time=task.time
+
+    def initUi(self):
+        state=self.task.state
+        title=self.task.title
+        importance=self.task.importance
+        species=self.task.species
+        time=self.task.time
+        self.stateLabel=QLabel(stateDict[state])
         self.nameLabel=QLabel(title)
 
         #由重要性和种类得图标颜色
@@ -78,18 +80,21 @@ class taskLabel(QWidget):
 
     def taskLayOut(self):
         self.taskGrid=QGridLayout(self)
-        self.taskGrid.addWidget(self.icon, 0, 0)
-        self.taskGrid.addWidget(self.nameLabel, 0, 1)
-        self.taskGrid.addWidget(self.timeLabel, 0, 2)
-        self.taskGrid.addWidget(self.editBtn, 0, 3)
-        self.taskGrid.addWidget(self.beginBtn,0,4)
-        self.taskGrid.addWidget(self.finshBtn, 0, 5)
-        self.taskGrid.addWidget(self.deleteBtn,0,6)
+        self.taskGrid.addWidget(self.stateLabel,0,0)
+        self.taskGrid.addWidget(self.icon, 0, 1)
+        self.taskGrid.addWidget(self.nameLabel, 0, 2)
+        self.taskGrid.addWidget(self.timeLabel, 0, 3)
+        self.taskGrid.addWidget(self.editBtn, 0, 4)
+        self.taskGrid.addWidget(self.beginBtn,0,5)
+        self.taskGrid.addWidget(self.finshBtn, 0, 6)
+        self.taskGrid.addWidget(self.deleteBtn,0,7)
         self.setLayout(self.taskGrid)
 
 
     def beginThing(self):
-        pass
+        self.user.setTaskBegin(self.task)
+        self.stateLabel.setText(stateDict[self.task.state])
+        # todo 记录开始时间？
 
     def finshThing(self):
         #TODO：将事件设置为完成状态，同时触发calenderFront的taskDisplay函数
@@ -98,10 +103,12 @@ class taskLabel(QWidget):
             addTask.showWarning("\n 当前任务尚未开始\n 无法完成哦")
             self.finshBtn.setChecked(False)
         else:
-            pass
+            self.user.setTaskEnd(self.task)
+            self.stateLabel.setText(stateDict[self.task.state])
+            # todo
 
     def deleteThing(self):
-        pass
+        self.user.deleteTask(self.task)
 
 
 
@@ -120,7 +127,7 @@ class deletWindow(QMessageBox):
 
 class dailyTaskLabel(taskLabel):
     def __init__(self, username, password, task: Task):
-        super().__init__(task)
+        super().__init__(task,username,password)
         self.editDailyTaskDialog = editTask.EditDailyTaskDialog(username, password, task)
         self.editDailyTaskDialog.sureBtn.clicked.connect(self.editDailyTaskDialog.checkDate)
         self.editBtn.clicked.connect(self.editDailyTaskDialog.show)
@@ -128,7 +135,7 @@ class dailyTaskLabel(taskLabel):
 
 class normalTaskLabel(taskLabel):
     def __init__(self,username,password,task:Task):
-        super().__init__(task)
+        super().__init__(task,username,password)
         self.editNormalTaskDialog= editTask.EditNormalTaskDialog(username, password, task)
         self.editBtn.clicked.connct(self.editNormalTaskDialog.show)
         self.editNormalTaskDialog.sureBtn.clicked.connect(self.editNormalTaskDialog.checkDate)
@@ -138,7 +145,7 @@ if __name__=="__main__":
     app = QApplication(sys.argv)
     date=datetime.now()
     task=Task('检查','',date,importance=Importance.normal,speices=Species.sport)
-    text=dailyTaskLabel('匡莉','zjtdbd',task)
+    text=dailyTaskLabel('kl','zjtdbd',task)
     app.exec_()
 
 
