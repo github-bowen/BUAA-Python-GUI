@@ -78,7 +78,7 @@ class TaskLabel(QWidget):
         self.deleteMsg.button(QMessageBox.Yes).clicked.connect(self.deleteThing)
 
         self.taskLayOut()
-        self.show()
+        # self.show()
 
     def taskLayOut(self):
         self.taskGrid = QGridLayout(self)
@@ -112,9 +112,9 @@ class TaskLabel(QWidget):
     def canFinish(self):
         self.user.setTaskEnd(self.task)
         self.stateLabel.setText(stateDict[self.task.state])
-        self.calenWindow.taskDisplay(None, False)
 
     def cancelFinish(self):
+        self.calenWindow.taskDisplay(None, False)
         self.finishBtn.setChecked(False)
 
 

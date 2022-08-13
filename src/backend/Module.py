@@ -393,15 +393,18 @@ class DailyTask(Task):
         return task
 
 if __name__ == "__main__":
-    u = User("cnx")
+    u = User("1")
     # u.addTask("qc", "learn chapter 5", datetime.datetime(2022, 8, 20))
     # u.addTask("compiler", "final", datetime.datetime(2022, 8,20), importance=Importance.high)
     # u.addTask("数学建模", "", datetime.datetime(2022, 9, 15), importance=Importance.high)
     #
-    td = datetime.datetime.today()
-    # tasks = u.getTasksOfDay(td)
-    # for _ in tasks:
-    #     print(_.toDict())
+    # td = datetime.datetime.today()
+
+    day = datetime.datetime(2022, 8, 20)
+
+    tasks = u.getTasksOfDay(day)
+    for _ in tasks:
+        print(_.toDict())
     #
     # u.addTask("py hw", "backend oid calendar", datetime.datetime.today())
 
@@ -443,7 +446,7 @@ if __name__ == "__main__":
     #     print(_.toDict())
 
 
-    print(u.isTimeBusy(datetime.datetime(2222, 1,1,8,0)))
-    print(u.isTimeBusy(datetime.datetime(2222, 1,1,8,1)))
+    # print(u.isTimeBusy(datetime.datetime(2222, 1,1,8,0)))
+    # print(u.isTimeBusy(datetime.datetime(2222, 1,1,8,1)))
 
 

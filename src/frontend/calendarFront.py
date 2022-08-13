@@ -114,6 +114,7 @@ class CalenWindow(QMainWindow):
     # 所有回到日历主页面的按钮都应触发该函数，考虑引入缓存
     # TODO: 记录下要显示的date，然后销毁当前日历对象，重新new一个
     def taskDisplay(self, date, dateChange: bool):
+        """
         global dateToDisplay, closeBecauseOfRefresh
         if dateChange:
             dtdt = datetime.datetime(date.year(), date.month(), date.day())
@@ -123,6 +124,16 @@ class CalenWindow(QMainWindow):
         closeBecauseOfRefresh = True
         # print(date)  # debug用
         qApp.exit()
+        """
+        # self.displayWidget.close()
+        # self.displayWidget = DisplayWidget(self.user, self)
+        # self.displayWidget.refreshAndDisplay(date=date, dateChanged=dateChange)
+        fl = self.displayWidget.formLayout
+        for i in range(len(fl)):
+            fl.removeRow(0)
+
+        self.displayWidget.refreshAndDisplay(date, dateChange)
+        pass
 
     def refreshEvent(self):  # 点击刷新后触发执行的方法
         self.taskDisplay(None, False)

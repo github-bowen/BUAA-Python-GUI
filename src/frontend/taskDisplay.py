@@ -5,7 +5,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QScrollArea, QVBoxLayout, \
     QGroupBox, QLabel, QPushButton, QFormLayout, QApplication, QFrame, QSizePolicy
 
-from TaskLabel import TaskLabel, DailyTaskLabel, NormalTaskLabel
+from TaskLabel import TaskLabel, NormalTaskLabel, DailyTaskLabel
 from src.backend.Module import DailyTask
 
 
@@ -35,6 +35,8 @@ class DisplayWidget(QWidget):
             for task in self.displayingTasks:
                 widget = self.generateTaskWidget(task)
                 self.formLayout.addRow(widget)
+
+
             self.groupBox.setLayout(self.formLayout)
         else:
             self.displayNoTaskToday()
@@ -78,19 +80,24 @@ class DisplayWidget(QWidget):
             layout.removeItem(item)
             if item.widget():
                 item.widget().deleteLater()
-    """
+
     def refreshAndDisplay(self, date, dateChanged: bool):
-        DisplayWidget.clearLayout(self.formLayout)
+        # DisplayWidget.clearLayout(self.formLayout)
+        print(0)
 
         if dateChanged:
-            self.displayingDate = date
-            self.displayingTasks = self.getTaskOfDate(date)
+            # print(date.__class__)
+            print(1)
+            dtdt = datetime.datetime(date.year(), date.month(), date.day(), 1,0,0)
+            self.displayingDate = dtdt
+            self.displayingTasks = self.getTaskOfDate(dtdt)
         else:
             self.displayingTasks = self.getTaskOfDate(self.displayingDate)
         self.taskNum = len(self.displayingTasks)
 
+        print(2)
         if self.taskNum > 0:
-            widget = QLabel("今日待办如下：")
+            widget = QLabel("待办如下：")
             font = QFont()
             font.setPointSize(12)
             font.setBold(True)
@@ -108,7 +115,7 @@ class DisplayWidget(QWidget):
         self.groupBox.repaint()
         self.scroll.repaint()
         self.repaint()
-    """
+
 
     def displayNoTaskToday(self, first=True):  # 显示下面的提示文字
         label = QLabel("今日暂无待办哦～")
@@ -125,11 +132,11 @@ class DisplayWidget(QWidget):
         return self.user.getTaskToday()
 
     def generateTaskWidget(self, task):
-        if isinstance(task,DailyTask):
-            taskLabel = DailyTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
-        else:
-            taskLabel=NormalTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
-        return taskLabel
+            if isinstance(task, DailyTask):
+                taskLabel = DailyTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
+            else:
+                taskLabel = NormalTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
+            return taskLabel
 
     def getAllDateTasks(self) -> list:
         return self.user.getAllTasks()
