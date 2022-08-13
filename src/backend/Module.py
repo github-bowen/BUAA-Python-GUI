@@ -304,6 +304,15 @@ class User:
         res = [t for t in res if (t.state == State.notStarted)]
         return res
 
+    # 获取已经被排布的dailyTask时间
+    # def getTimeSetted(self):
+    #     l = [_.time for time in ]
+
+    def isTimeBusy(self, time : datetime.datetime):
+        busyTimes = [(_.time.hour, _.time.minute) for _ in self.dailyTasks]
+        if (time.hour, time.minute) in busyTimes:
+            return True
+        return False
 
     def getUnfinishTasks(self):
         res = self.getTaskOfPeriod(datetime.datetime.today(), None)
@@ -416,18 +425,21 @@ if __name__ == "__main__":
 
     debugPrint("--测试dailyTask--")
     # u.addDailyTask("get up", "leave the bed", datetime.datetime(2022,1,1,hour=8))
-    tasks = u.getTasksOfDay(datetime.datetime(2022, 8 , 13))
+    # tasks = u.getTasksOfDay(datetime.datetime(2022, 8 , 13))
     # tasks = u.getTaskOfPeriod(None, datetime.datetime.today())
 
     # tasks = set(tasks)
     # for _ in tasks:
     #     print(_.toDict())
-    dt = tasks[0]
-    u.editTask(dt, newTitle="起床起床")
+    # dt = tasks[0]
+    # u.editTask(dt, newTitle="起床起床")
+    #
+    # tasks = u.getTasksOfDay(datetime.datetime(2022, 8, 12))
+    # for _ in tasks:
+    #     print(_.toDict())
 
-    tasks = u.getTasksOfDay(datetime.datetime(2022, 8, 12))
-    for _ in tasks:
-        print(_.toDict())
 
+    print(u.timeIsBusy(datetime.datetime(2222, 1,1,8,0)))
+    print(u.timeIsBusy(datetime.datetime(2222, 1,1,8,1)))
 
 
