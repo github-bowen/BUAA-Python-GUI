@@ -1,5 +1,4 @@
 import datetime
-import sys
 
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QScrollArea, QVBoxLayout, \
@@ -44,12 +43,21 @@ class DisplayWidget(QWidget):
         self.scroll.setFixedHeight(400)  # 对应CalenWindow高度
         self.layout = QVBoxLayout(self)
         self.layout.addWidget(self.scroll)
-        self.show()
+        # self.show()
+
+    @staticmethod
+    def clearLayout(layout):
+        item_list = list(range(layout.count()))
+        item_list.reverse()  # 倒序删除，避免影响布局顺序
+        for i in item_list:
+            item = layout.itemAt(i)
+            layout.removeItem(item)
+            if item.widget():
+                item.widget().deleteLater()
 
     def refreshAndDisplay(self, date, dateChanged: bool):
-        self.close()
-        self.formLayout = QFormLayout()
-        self.groupBox = QGroupBox()
+        DisplayWidget.clearLayout(self.formLayout)
+        # self.groupBox.setLayout(self.formLayout)
 
         if dateChanged:
             self.displayingDate = date
@@ -70,19 +78,11 @@ class DisplayWidget(QWidget):
             for task in self.todayTasks:
                 widget = self.generateTaskWidget(task)
                 self.formLayout.addRow(widget)
-            self.groupBox.setLayout(self.formLayout)
+            # self.groupBox.setLayout(self.formLayout)
         else:
-            self.displayNoTaskToday()
+            self.displayNoTaskToday(False)
 
-        self.scroll = QScrollArea()
-        self.scroll.setWidget(self.groupBox)
-        self.scroll.setWidgetResizable(True)
-        self.scroll.setFixedHeight(400)  # 对应CalenWindow高度
-        self.layout = QVBoxLayout(self)
-        self.layout.addWidget(self.scroll)
-        self.show()
-
-    def displayNoTaskToday(self):  # 显示下面的提示文字
+    def displayNoTaskToday(self, firstExec=True):  # 显示下面的提示文字
         label = QLabel("今日暂无待办哦～")
         font = QFont()
         font.setPointSize(16)
@@ -90,7 +90,8 @@ class DisplayWidget(QWidget):
         # font.setFamily("KaiTi")
         label.setFont(font)
         self.formLayout.addWidget(label)
-        self.groupBox.setLayout(self.formLayout)
+        if firstExec:  # 第一次执行，需要设置groupBox
+            self.groupBox.setLayout(self.formLayout)
 
     def getTodayTask(self) -> list:
         return self.user.getTaskToday()

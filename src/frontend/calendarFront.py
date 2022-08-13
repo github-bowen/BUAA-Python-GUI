@@ -112,9 +112,11 @@ class CalenWindow(QMainWindow):
     # 所有回到日历主页面的按钮都应触发该函数，考虑引入缓存
     # TODO: LBH: 缓存暂时没考虑，后端用hashmap存的，可能一般不需要？
     def taskDisplay(self, date, dateChange: bool):
-        taskLis = self.user.getTasksOfDay(date)
+        formerDate = self.displayWidget.displayingDate
+        self.displayWidget.refreshAndDisplay(date=date, dateChanged=dateChange)
 
-        pass
+    def refreshEvent(self):  # 点击刷新后触发执行的方法
+        self.taskDisplay(None, False)
 
     def dateToStr(self, date):
         return \
@@ -167,19 +169,17 @@ if __name__ == "__main__":
 
     selectTaskDialog.button_dailyTask.clicked.connect(addDailyTaskDialog.show)
     addDailyTaskDialog.sureBtn.clicked.connect(addDailyTaskDialog.checkDate)
-    #addDailyTaskDialog.sureBtn.clicked.connect(calWindow.taskDisplay)
-
+    # addDailyTaskDialog.sureBtn.clicked.connect(calWindow.taskDisplay)
 
     selectTaskDialog.button_normalTask.clicked.connect(addNormalTaskDialog.show)
     addNormalTaskDialog.sureBtn.clicked.connect(addNormalTaskDialog.checkDate)
-    #addNormalTaskDialog.sureBtn.clicked.connect(calWindow.taskDisplay)
+    # addNormalTaskDialog.sureBtn.clicked.connect(calWindow.taskDisplay)
 
     # 筛选任务的界面
-    timeFliter=TimeFliter(username, password)
+    timeFliter = TimeFliter(username, password)
     calWindow.fliterTask.triggered.connect(timeFliter.show)
 
     # 刷新任务
-    calWindow.refreshTask.triggered.connect(calWindow.taskDisplay)
-
+    calWindow.refreshTask.triggered.connect(calWindow.refreshEvent)
 
     sys.exit(app.exec_())
