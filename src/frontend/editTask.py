@@ -72,7 +72,7 @@ class EditDailyTaskDialog(EditTaskDialog):
         importance=str2Importmance[importanceStr]
         species=str2Species[speciesStr]
         newTime=datetime.datetime(2022,8,13,start.hour(),start.minute())
-        self.user.editTask(self.task,name,content,newTime,importance,species)
+        self.user.editTask(self.task,name,content,newTime,importance,None, species)
         #self.calWindow.refreshEvent()
         self.calWindow.taskDisplay(date=None, dateChange=False)
 
@@ -106,7 +106,7 @@ class EditNormalTaskDialog(EditTaskDialog):
         date=end.date()
         time=end.time()
         newTime=datetime.datetime(date.year(),date.month(),date.day(),time.hour(),time.minute())
-        self.user.editTask(self.task,name, content, newTime, importance, species)
+        self.user.editTask(self.task,name, content, newTime, importance, None, species)
         #self.calWindow.refreshEvent()
         self.calWindow.taskDisplay(date=None, dateChange=False)
 
