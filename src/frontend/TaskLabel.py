@@ -81,10 +81,13 @@ class TaskLabel(QWidget):
         self.switchBtn.clicked.connect(self.switchThing)
 
         self.deleteBtn = QPushButton()
-        self.deleteBtn.setIcon(QIcon("../Icon/删除.png"))
+        self.deleteBtn.setIcon(QIcon("../Icon/删除1.png"))
         self.deleteMsg = deletWindow(title)
         self.deleteBtn.clicked.connect(self.deleteMsg.show)
         self.deleteMsg.button(QMessageBox.Yes).clicked.connect(self.deleteThing)
+        self.deleteBtn.setStyleSheet('''QWidget{
+                            border: none;
+                             }''')
 
         self.taskLayOut()
         # self.show()
