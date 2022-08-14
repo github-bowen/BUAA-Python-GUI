@@ -57,10 +57,6 @@ class DisplayWidget(QWidget):
             for task in self.displayingTasks:
                 widget = self.generateTaskWidget(task)
                 self.formLayout.addRow(widget)
-<<<<<<< HEAD
-=======
-
->>>>>>> 29307d1a0ecee4a41e149d0ff5d3c71cfbd310ab
             self.groupBox.setLayout(self.formLayout)
         else:
             self.displayNoTaskToday()

@@ -238,7 +238,7 @@ class User:
 
     # 删除任务
     def deleteTask(self, task):
-        if task.state == State.daily:
+        if isinstance(task, DailyTask):
             self.dailyTaskTable.remove(db.where("id") == task.id)
             self.dailyTasks.remove(task)
         else:
@@ -253,7 +253,7 @@ class User:
     def editTask(self, task, newTitle = None, newContent = None, newTime = None,
                  newImportance = None,newState = None,  newSpices = None):
 
-        if task is DailyTask:
+        if isinstance(task, DailyTask):
             refreshDict = {}
             # 修改task对象，记录修改
             if newTitle != None:
@@ -292,10 +292,13 @@ class User:
         # ymStr = task.time.strftime("%Y%m")
         # assert ymStr in self.calendarMap.keys()
         self.editTask(task, newState=State.finished)
-        if task is DailyTask:
+        if isinstance(task, DailyTask):
+            print(11)
             task.addFinishedDate(datetime.datetime.today())
             # self.dailyTaskTable.get()
+            print(12)
             self.dailyTaskTable.update({"fd": task.toDict()["fd"]}, db.where("id") == task.id)
+            print(13)
 
     def setTaskExpired(self, task):
         # ymStr = task.time.strftime("%Y%m")
@@ -412,6 +415,8 @@ class DailyTask(Task):
         time = datetime.datetime.fromtimestamp(dict["time"])
         task = DailyTask(dict["title"], dict["content"], time, Importance(dict["importance"]),
                      State(dict["state"]), Species(dict["species"]), dict["id"], dict["fd"])
+        print(task.__class__)
+        assert isinstance(task, DailyTask)
         return task
 
     def toDict(self):

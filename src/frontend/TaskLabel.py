@@ -31,8 +31,8 @@ class TaskLabel(QWidget):
 
     def initUi(self):
         state = self.task.state
-        if self.task is DailyTask:
-            state = self.task.getState()
+        if isinstance(self.task, DailyTask):
+            state = self.task.getState(datetime.today())
         title = self.task.title
         content=self.task.content
         importance = self.task.importance
@@ -99,13 +99,6 @@ class TaskLabel(QWidget):
         self.taskGrid.addWidget(self.deleteBtn, 0, 6)
         self.setLayout(self.taskGrid)
 
-    def beginThing(self):
-        if self.task.state!=State.notStarted and task is not DailyTask:
-            initial=self.beginBtn.isChecked()
-            stateStr=stateDict[self.task.state]
-            addTask.showWarning('当前待办状态为\n'+stateStr+'\n 无法开始待办哦')
-            self.beginBtn.setChecked(not initial)
-        else:
     def switchThing(self):
         state=self.task.state
         text=self.switchBtn.text()
