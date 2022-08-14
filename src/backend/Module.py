@@ -147,7 +147,8 @@ class User:
 
     # done
     def addTask(self, title: str, content: str, time: datetime.datetime,
-                 importance=Importance.normal, state=State.notStarted, species = Species.other):
+                 importance=Importance.normal, species = Species.other):
+        state = State.notStarted
         task = Task(title, content, time, importance, state, species)
         ymStr = time.strftime("%Y%m")
 
