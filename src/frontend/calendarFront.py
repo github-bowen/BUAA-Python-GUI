@@ -44,6 +44,19 @@ class CalenWindow(QMainWindow):
         self.setFixedSize(self.width, self.height)
         self.calendar.setGridVisible(True)
         self.calendar.clicked[QDate].connect(self.dateDisplay)
+        # https://jingyan.baidu.com/article/b907e6270f080906e6891c65.html
+        self.calendar.setStyleSheet('''QWidget{
+                            color: black;
+                            background-color: white;
+                            selection-color: white;
+                            selection-background-color: #4CAF50;
+                            alternate-background-color: #C8E6C9;
+                             }''')
+        qtcf = QtGui.QTextCharFormat()
+        qtcf.setForeground(QtGui.QColor("#015F17"))
+        # qtcf.setBackground(QtGui.QColor("#BDBDBD"))
+        self.calendar.setWeekdayTextFormat(Qt.Saturday, qtcf)
+        self.calendar.setWeekdayTextFormat(Qt.Sunday, qtcf)
         self.dateLabel = QLabel(self)
         date = self.calendar.selectedDate()
         self.dateLabel.setText(self.dateToStr(date))
@@ -68,22 +81,22 @@ class CalenWindow(QMainWindow):
         # 管理任务的添加，放到了主函数中，唤醒子窗口
         self.addNewTask = QtWidgets.QAction(self)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("../Icon/新建方案.png"))
+        icon.addPixmap(QtGui.QPixmap("../Icon/icon2/新建方案.svg"))
         self.addNewTask.setIcon(icon)
         self.addNewTask.setObjectName("addNewTask")
         self.filterTask = QtWidgets.QAction(self)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("../Icon/筛选.png"))
+        icon1.addPixmap(QtGui.QPixmap("../Icon/icon2/筛选.svg"))
         self.filterTask.setIcon(icon1)
         self.filterTask.setObjectName("fliterTask")
         self.refreshTask = QtWidgets.QAction(self)
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap("../Icon/刷新.png"))
+        icon2.addPixmap(QtGui.QPixmap("../Icon/icon2/刷新.svg"))
         self.refreshTask.setIcon(icon2)
         self.refreshTask.setObjectName("refreshTask")
         self.dispatchTask = QtWidgets.QAction(self)
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap("../Icon/调度.png"))
+        icon3.addPixmap(QtGui.QPixmap("../Icon/icon2/调度.svg"))
         self.dispatchTask.setIcon(icon3)
         self.dispatchTask.setObjectName("dispatchTask")
         self.toolBar.addAction(self.addNewTask)
