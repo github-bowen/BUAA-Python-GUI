@@ -24,7 +24,7 @@ class CalenWindow(QMainWindow):
     def __init__(self, username, password):
         super().__init__()
 
-        self.width, self.height = 1000, 500
+        self.width, self.height = 900, 500
         changeStyle.run(self, "calendar", self.width, self.height)
 
         self.user = loginUser(username, password)
