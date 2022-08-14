@@ -191,7 +191,7 @@ class LoginWindow(QWidget):
         self.resize(self.width, self.height)
         self.setFixedSize(self.width, self.height)
         self.center()
-        self.setWindowTitle("任务调度器-登录")
+        self.setWindowTitle("任务管理器-登录")
         self.show()
 
     def center(self):  # 让当前窗口居中，该部分直接copy的

@@ -57,7 +57,7 @@ class EditDailyTaskDialog(EditTaskDialog):
         # print(type(task.time.time()))
         self.timeLE.setTime(task.time.time())
         self.timeLE.setDisplayFormat("hh:mm")
-        self.setWindowTitle('编辑日常待办')
+        self.setWindowTitle('任务管理器-编辑日常待办')
         self.sureBtn.clicked.connect(self.checkDate)
         addTask.AddTaskDialog.dialogLayOut(self)
 
@@ -94,7 +94,7 @@ class EditNormalTaskDialog(EditTaskDialog):
         self.timeLE.setDateTime(task.time)
         self.timeLE.setDisplayFormat("yyyy-MM-dd-hh:mm")
         self.titleLbl = QLabel('普通待办名称：')
-        self.setWindowTitle('编辑普通待办')
+        self.setWindowTitle('任务管理器-编辑普通待办')
         self.sureBtn.clicked.connect(self.checkDate)
         addTask.AddTaskDialog.dialogLayOut(self)
 

@@ -199,10 +199,3 @@ class NormalTaskLabel(TaskLabel):
             self.editNormalTaskDialog.show()
 
 
-# 测试
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    date = datetime.now()
-    task = Task('检查', '', date, importance=Importance.normal, speices=Species.sport)
-    #text = DailyTaskLabel(task)
-    app.exec_()
