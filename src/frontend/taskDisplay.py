@@ -108,7 +108,7 @@ class DisplayWidget(QWidget):
         if dateChanged:
             # print(date.__class__)
             print(1)
-            dtdt = datetime.datetime(date.year(), date.month(), date.day(), 1, 0, 0)
+            dtdt = datetime.datetime(date.year(), date.month(), date.day(), 0, 0, 0)
             self.displayingDate = dtdt
             self.displayingTasks = self.getTaskOfDate(dtdt)
         else:
@@ -159,7 +159,7 @@ class DisplayWidget(QWidget):
 
     def generateTaskWidget(self, task):
         if isinstance(task, DailyTask):
-            taskLabel = DailyTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
+            taskLabel = DailyTaskLabel(date=self.displayingDate, task=task, user=self.user, calenWindow=self.calenWindow)
         else:
             taskLabel = NormalTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
         return taskLabel

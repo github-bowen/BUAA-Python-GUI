@@ -375,6 +375,8 @@ class Task:
     def __hash__(self):
         return hash(self.id)
 
+    def getState(self, date):
+        return self.state
     @staticmethod
     def parseTask(dict):
         # dict -> Task
@@ -434,11 +436,14 @@ class DailyTask(Task):
 
     # 获取某一天的状态
     def getState(self, date):
-        if (date < datetime.datetime.today()):
+        print(date)
+        now = datetime.datetime.today()
+        today = datetime.datetime(now.year, now.month, now.day)
+        if (date < today):
             if date in self.finishEddate:
                 return State.finished
             return State.expired
-        elif date > datetime.datetime.today():
+        elif date > today:
             return State.notStarted
         else:
             return self.state

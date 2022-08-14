@@ -22,17 +22,18 @@ from src.frontend.qssLoader import QSSLoader
 
 
 class TaskLabel(QWidget):
-    def __init__(self, task: Task, user, calenWindow):
+    def __init__(self, task: Task, user, calenWindow, date = None):
         super().__init__()
         self.calenWindow = calenWindow
         self.user = user
         self.task = task
+        self.date = date
         self.initUi()
 
     def initUi(self):
         state = self.task.state
-        if isinstance(self.task, DailyTask):
-            state = self.task.getState(datetime.today())
+        if isinstance(self.task, DailyTask) and self.date != None:
+            state = self.task.getState(self.date)
         title = self.task.title
         content=self.task.content
         importance = self.task.importance
@@ -65,16 +66,16 @@ class TaskLabel(QWidget):
 
         self.switchBtn=QCheckBox('开始',self)
         self.switchBtn.toggle()
-        if self.task.state==State.notStarted:
+        if self.task.getState(self.date) ==State.notStarted:
             self.switchBtn.setChecked(False)
             self.switchBtn.setText('开始')
-        elif self.task.state==State.inProgress:
+        elif self.task.getState(self.date)==State.inProgress:
             self.switchBtn.setChecked(False)
             self.switchBtn.setText('完成')
-        elif self.task.state==State.finished:
+        elif self.task.getState(self.date)==State.finished:
             self.switchBtn.setChecked(True)
             self.switchBtn.setText('完成')
-        elif self.task.state == State.expired:
+        elif self.task.getState(self.date) == State.expired:
             self.switchBtn.setChecked(False)
             self.switchBtn.setText('开始')
         self.switchBtn.clicked.connect(self.switchThing)
@@ -100,14 +101,14 @@ class TaskLabel(QWidget):
         self.setLayout(self.taskGrid)
 
     def switchThing(self):
-        state=self.task.state
+        state=self.task.getState(self.date)
         text=self.switchBtn.text()
         if state==State.notStarted:
             assert text=='开始'
             self.switchBtn.setChecked(False)
             self.switchBtn.setText('完成')
             self.user.setTaskBegin(self.task)
-            self.stateLabel.setText(stateDict[self.task.state])
+            self.stateLabel.setText(stateDict[self.task.getState(self.date)])
         elif state==State.inProgress:
             assert text=='完成'
             self.switchBtn.setChecked(True)
@@ -115,7 +116,7 @@ class TaskLabel(QWidget):
             self.finishMsg.show()
             self.finishMsg.button(QMessageBox.Yes).clicked.connect(self.canFinish)
             self.finishMsg.button(QMessageBox.No).clicked.connect(self.cancelFinish)
-            self.stateLabel.setText(stateDict[self.task.state])
+            self.stateLabel.setText(stateDict[self.task.getState(self.date)])
         elif state==State.finished:
             assert text == '完成'
             addTask.showWarning('当前待办已完成\n ' +' \n无法重复完成待办哦')
@@ -131,7 +132,7 @@ class TaskLabel(QWidget):
     def canFinish(self):
         #self.calenWindow.taskDisplay(None, False)
         self.user.setTaskEnd(self.task)
-        self.stateLabel.setText(stateDict[self.task.state])
+        self.stateLabel.setText(stateDict[self.task.getState(self.date)])
 
     def cancelFinish(self):
         initial = self.switchBtn.isChecked()
@@ -171,12 +172,12 @@ class deletWindow(QMessageBox):
 
 
 class DailyTaskLabel(TaskLabel):
-    def __init__(self, task,user,calenWindow):
-        super().__init__(task, user,calenWindow)
+    def __init__(self, date, task,user,calenWindow):
+        super().__init__(task, user,calenWindow, date=date)
         self.editBtn.clicked.connect(self.checkState)
 
     def checkState(self):
-        if self.task.state==State.finished:
+        if self.task.getState(self.date)==State.finished:
             addTask.showWarning('\n当前待办已完成\n不能编辑哦')
         else:
             self.editDailyTaskDialog = editTask.EditDailyTaskDialog(self.user,self.calenWindow,self.task)
@@ -190,7 +191,7 @@ class NormalTaskLabel(TaskLabel):
         self.editBtn.clicked.connect(self.checkState)
 
     def checkState(self):
-        if self.task.state==State.finished:
+        if self.task.getState(self.date)==State.finished:
             addTask.showWarning('当前待办已完成\n不能编辑哦')
         else:
             self.editNormalTaskDialog = editTask.EditNormalTaskDialog(self.user, self.calenWindow, self.task)
