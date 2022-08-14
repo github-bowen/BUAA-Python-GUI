@@ -12,12 +12,15 @@ from src.backend.species import str2Species
 from PyQt5.QtWidgets import QLabel, QDateTimeEdit, QTimeEdit
 import addTask
 
-def _checkDate(self, name: str, start, end, importance: str, dailyType: bool):
+def _checkDate(self, name: str, start:datetime, end:datetime,
+               importance: str,species:str, dailyType: bool):
     #dailyTime=datetime.datetime(2022,8,13,start.hour(),start.minute())
     if len(name.strip()) == 0:
         addTask.showWarning("\n待办名称为空，\n请重新输入！")
     elif importance.strip() == "选取":
         addTask.showWarning("\n待办重要性未选择，\n请重新选择！")
+    elif species.strip() == "选取":
+        addTask.showWarning("\n待办类别未选择，\n请重新选择！")
     elif dailyType and self.task.time.time()!=start.time() and \
             self.user.isTimeBusy(start):
         addTask.showWarning("\n 添加日常任务失败！\n 该时段已有任务哦！\n")
@@ -76,10 +79,10 @@ class EditDailyTaskDialog(EditTaskDialog):
 
     def checkDate(self):
         # importanceSelected = self.importanceBtn.is
-        name, start, importance = self.titleLE.text() \
-            , self.timeLE.time(), self.importanceBtn.text()
+        name, start, importance,species = self.titleLE.text() \
+            , self.timeLE.time(), self.importanceBtn.text(),self.sortBtn.text()
         newTime=datetime.datetime(2022,8,13,start.hour(),start.minute())
-        _checkDate(self, name, newTime,datetime.datetime.now(), importance, True)
+        _checkDate(self, name, newTime,datetime.datetime.now(), importance,species, True)
 
 
 # 添加"一般任务"的子窗口
@@ -108,10 +111,10 @@ class EditNormalTaskDialog(EditTaskDialog):
         self.calWindow.taskDisplay(date=None, dateChange=False)
 
     def checkDate(self):
-        name, end, importance = self.titleLE.text() \
-            , self.timeLE.dateTime(), self.importanceBtn.text()
+        name, end, importance,species = self.titleLE.text() \
+            , self.timeLE.dateTime(), self.importanceBtn.text(),self.sortBtn.text()
         date = end.date()
         time = end.time()
         newTime = datetime.datetime(date.year(), date.month(), date.day(), time.hour(), time.minute())
         start = datetime.datetime.now()
-        _checkDate(self, name, start, newTime, importance, False)
+        _checkDate(self, name, start, newTime, importance,species, False)

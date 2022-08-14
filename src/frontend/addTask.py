@@ -23,14 +23,19 @@ def showWarning(text: str):
     warningForIllegalDate.exec_()
 
 
-def _checkDate(self, name: str, start, end, importance: str, dailyType: bool):
+def _checkDate(self, name: str, start:datetime, end:datetime,
+               importance: str,species:str, dailyType: bool):
+    print("can in")
     if len(name.strip()) == 0:
         showWarning("\n待办名称为空，\n请重新输入！")
     elif importance.strip() == "选取":
         showWarning("\n待办重要性未选择，\n请重新选择！")
-    elif dailyType and self.user.isTimeBusy(datetime.datetime(2022, 8, 13, start.hour(), start.minute())):
+    elif species.strip() == "选取":
+        showWarning("\n待办类别未选择，\n请重新选择！")
+    elif dailyType and self.user.isTimeBusy(start):
         showWarning("\n 添加日常任务失败！\n 该时段已有任务哦！\n")
     elif dailyType:
+        print("before add")
         self.addDailyTask()
         self.close()
     elif start < end:
@@ -178,10 +183,10 @@ class AddDailyTaskDialog(AddTaskDialog):
 
     def checkDate(self):
         # importanceSelected = self.importanceBtn.is
-        name, start, importance = self.titleLE.text() \
-            , self.timeLE.time(), self.importanceBtn.text()
-        end = 0
-        _checkDate(self, name, start, end, importance, True)
+        name, start, importance, species = self.titleLE.text() \
+            , self.timeLE.time(), self.importanceBtn.text(), self.sortBtn.text()
+        startTime = datetime.datetime(2022, 8, 13, start.hour(), start.minute())
+        _checkDate(self, name, startTime, datetime.datetime.now(), importance, species, True)
 
 
 # 添加"一般任务"的子窗口
@@ -211,10 +216,13 @@ class AddNormalTaskDialog(AddTaskDialog):
         self.calWindow.taskDisplay(date=None, dateChange=False)  # 加完dailyTask后调用该函数刷新显示(显示的日期不变）
 
     def checkDate(self):
-        name, end, importance = self.titleLE.text() \
-            , self.timeLE.dateTime(), self.importanceBtn.text()
+        name, end, importance, species = self.titleLE.text() \
+            , self.timeLE.dateTime(), self.importanceBtn.text(), self.sortBtn.text()
+        date = end.date()
+        time = end.time()
+        endTime = datetime.datetime(date.year(), date.month(), date.day(), time.hour(), time.minute())
         start = datetime.datetime.now()
-        _checkDate(self, name, start, end, importance, False)
+        _checkDate(self, name, start, endTime, importance, species, False)
 
 
 class TaskAddingWarning(QMessageBox):  # 可以传入警告信息！

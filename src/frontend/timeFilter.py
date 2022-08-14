@@ -80,9 +80,9 @@ class TimeFilter(QWidget):
                 endDate.year(), endDate.month(), endDate.day(),
                 endTime.hour(), endTime.minute())
             print("before creating TimeFilterDisplay")
-            timeFilterDisplay = TimeFilterDisplay(
+            self.timeFilterDisplay = TimeFilterDisplay(
                 self.user, beginDatetime, endDatetime, self.calenWindow)
-            timeFilterDisplay.show()
+            self.timeFilterDisplay.show()
             print("after creatingTimeFilterDisplay")
             self.close()
 
