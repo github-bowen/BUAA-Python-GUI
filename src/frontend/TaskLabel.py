@@ -54,15 +54,16 @@ class TaskLabel(QWidget):
         self.icon = QLabel()
         iconName = str(species)
         if importance == Importance.high:
-            iconName = iconName + " (2)"
-        elif importance == Importance.normal:
-            iconName = iconName + " (3)"
-        elif importance == Importance.low:
             iconName = iconName + " (1)"
+        elif importance == Importance.normal:
+            iconName = iconName + " (2)"
+        elif importance == Importance.low:
+            iconName = iconName + " (3)"
         else:
             addTask.showWarning("重要性传入有误!")
-        self.icon.setPixmap(QPixmap("../Icon/taskSort/%s.png" % iconName).scaled(50, 50))
-        self.icon.setToolTip("内容：" + content)
+
+        self.icon.setPixmap(QPixmap("../Icon/taskSort2/%s.svg" % iconName).scaled(50, 50))
+        self.icon.setToolTip("内容："+content)
 
         # 控制格式
         timeStr = "{:02d}:{:02d}".format(time.hour, time.minute)
