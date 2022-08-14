@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QGridLayout, QCalendarWidg
 from src.backend.method import loginUser
 from src.frontend.addTask import AddNormalTaskDialog, TaskAddingWarning, SelectTaskDialog, AddDailyTaskDialog
 from src.frontend.qssLoader import QSSLoader
-from src.frontend.timeFliter import TimeFliter
+from src.frontend.timeFilter import TimeFilter
 from taskDisplay import DisplayWidget
 import changeStyle
 
@@ -211,8 +211,8 @@ if __name__ == "__main__":
         # addNormalTaskDialog.sureBtn.clicked.connect(calWindow.taskDisplay)
 
         # 筛选任务的界面
-        timeFliter = TimeFliter(username, password)
-        calWindow.fliterTask.triggered.connect(timeFliter.show)
+        timeFilter = TimeFilter(username, password)
+        calWindow.fliterTask.triggered.connect(timeFilter.show)
 
         # 刷新任务
         calWindow.refreshTask.triggered.connect(calWindow.refreshEvent)

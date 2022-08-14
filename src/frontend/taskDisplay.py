@@ -24,7 +24,7 @@ class DisplayWidget(QWidget):
         self.taskNum = len(self.displayingTasks)
 
         if self.taskNum > 0:
-            widget = QLabel("今日待办如下：")
+            widget = QLabel("所选日期待办如下：")
             font = QFont()
             font.setPointSize(12)
             font.setBold(True)
@@ -97,7 +97,7 @@ class DisplayWidget(QWidget):
 
         print(2)
         if self.taskNum > 0:
-            widget = QLabel("待办如下：")
+            widget = QLabel("所选日期待办如下：")
             font = QFont()
             font.setPointSize(12)
             font.setBold(True)
@@ -118,7 +118,7 @@ class DisplayWidget(QWidget):
 
 
     def displayNoTaskToday(self, first=True):  # 显示下面的提示文字
-        label = QLabel("今日暂无待办哦～")
+        label = QLabel("所选日期暂无待办哦～")
         font = QFont()
         font.setPointSize(16)
         font.setBold(True)
