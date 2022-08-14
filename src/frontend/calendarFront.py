@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QGridLayout, QCalendarWidg
 
 from src.backend.method import loginUser
 from src.frontend.addTask import AddNormalTaskDialog, TaskAddingWarning, SelectTaskDialog, AddDailyTaskDialog
+from src.frontend.dispatch import Dispatcher
 from src.frontend.qssLoader import QSSLoader
 from src.frontend.timeFilter import TimeFilter
 from taskDisplay import DisplayWidget
@@ -23,7 +24,7 @@ class CalenWindow(QMainWindow):
     def __init__(self, username, password):
         super().__init__()
 
-        self.width, self.height = 1000, 500
+        self.width, self.height = 900, 500
         changeStyle.run(self, "calendar", self.width, self.height)
 
         self.user = loginUser(username, password)
@@ -151,6 +152,17 @@ class CalenWindow(QMainWindow):
     def refreshEvent(self):  # 点击刷新后触发执行的方法
         self.taskDisplay(None, False)
 
+    def dispatch(self):
+        print("333333333")
+        self.dispatcher = Dispatcher(user=calWindow.user, calenWindow=calWindow)
+        print("222222222")
+        self.dispatcher.layout = QVBoxLayout(self.dispatcher)
+        self.dispatcher.layout.addWidget(self.dispatcher.scroll)
+        self.tempWidget = QWidget()
+        self.tempWidget.setLayout(self.dispatcher.layout)
+        print("111111111")
+        self.tempWidget.show()
+
     def dateToStr(self, date):
         return \
             '这一天是 ' + str(date.year()) + ' 年 ' \
@@ -231,6 +243,9 @@ if __name__ == "__main__":
 
         # 刷新任务
         calWindow.refreshTask.triggered.connect(calWindow.refreshEvent)
+
+        # 调度任务的界面
+        calWindow.dispatchTask.triggered.connect(calWindow.dispatch)
 
         app.exec_()
         app.closeAllWindows()

@@ -13,7 +13,7 @@ def run(widget: QWidget, who: str, width: int, height: int):
     backGroundLabel.setScaledContents(True)  # QMovie适应QLabel大小
 
     # 感觉2比较好看
-    QApplication.setStyle(QStyleFactory.keys()[2])  # TODO:这里可以选择0-3三种样式，不知道windows系统上哪个好看
+    QApplication.setStyle(QStyleFactory.keys()[0])  # TODO:这里可以选择0-3三种样式，不知道windows系统上哪个好看
     # widget.setWindowOpacity(0.5)  # 透明度
     # widget.setWindowFlags(Qt.WindowContextHelpButtonHint)
 

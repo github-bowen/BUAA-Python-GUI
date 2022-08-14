@@ -188,6 +188,8 @@ class User:
     # 获取 [start, end] （闭区间) 的所有代办
     def getTaskOfPeriod(self, startDay:datetime.datetime = None, endDay:datetime.datetime = None):
         tb = self.todoDb.tables()
+        if "daily" in tb:
+            tb.remove("daily")
         tb = sorted(tb)
         if (len(tb) == 0) :
             return []
@@ -206,7 +208,6 @@ class User:
             res = set()
             i = startDay
             while True:
-
                 if i.strftime("%Y%m") > tb[-1]:
                     break
                 res = res.union( self.getTasksOfDay(i))
@@ -307,8 +308,9 @@ class User:
 
     # 根据任务的ddl和重要性调度任务，返回任务执行列表
     def scheduleTasks(self):
-        ts = self.getUnstartedTasks()
+        ts = self.getTaskToday()
 
+        print(len(ts))
         '''
         权重取决于任务的重要性和当前时间距离ddl的时间，公式暂时定为 power = importance / time
         '''
@@ -318,8 +320,10 @@ class User:
         dict = {}
         for t in ts:
             if t.time < datetime.datetime.now():
-                self.setTaskExpired(t)
+                if t.state == State.notStarted:
+                    self.setTaskExpired(t)
                 continue
+
             dict[t] = computePower(t)
         dict = sorted(dict.keys(), key=(lambda x : dict[x]), reverse=True)
         return list(dict)
