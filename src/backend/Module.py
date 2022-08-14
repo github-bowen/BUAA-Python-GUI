@@ -282,7 +282,7 @@ class User:
         else:
             ymStr = task.time.strftime("%Y%m")
             assert ymStr in self.calendarMap.keys()
-            self.calendarMap[ymStr].editTask(task, newTitle, newContent, newTime, newImportance, newSpices)
+            self.calendarMap[ymStr].editTask(task, newTitle, newContent, newTime, newImportance, newSpices, newState)
 
     def setTaskBegin(self, task):
         # ymStr = task.time.strftime("%Y%m")
@@ -292,16 +292,13 @@ class User:
     def setTaskEnd(self, task):
         # ymStr = task.time.strftime("%Y%m")
         # assert ymStr in self.calendarMap.keys()
+        print(1123)
         self.editTask(task, newState=State.finished)
         if isinstance(task, DailyTask):
-            print(11)
             task.addFinishedDate(datetime.datetime.today())
             # self.dailyTaskTable.get()
-            print(task.state)
             dict = task.toDict()
-            print(14)
             self.dailyTaskTable.update({"fd": dict["fd"]}, db.where("id") == task.id)
-            print(13)
 
     def setTaskExpired(self, task):
         # ymStr = task.time.strftime("%Y%m")
@@ -432,7 +429,7 @@ class DailyTask(Task):
         return d
 
     def addFinishedDate(self, date : datetime.datetime):
-        self.finishEddate.append(date)
+        self.finishEddate.append(getDay(date))
 
     # 获取某一天的状态
     def getState(self, date):
@@ -447,6 +444,11 @@ class DailyTask(Task):
             return State.notStarted
         else:
             return self.state
+
+# 从time获取date（时间置为0
+def getDay(time: datetime.datetime):
+    return datetime.datetime(time.year, time.month, time.day)
+
 if __name__ == "__main__":
     u = User("1")
     # u.addTask("qc", "learn chapter 5", datetime.datetime(2022, 8, 20))
