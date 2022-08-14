@@ -436,7 +436,7 @@ class DailyTask(Task):
 
     # 获取某一天的状态
     def getState(self, date):
-        print(date)
+        date = datetime.datetime(date.year, date.month, date.day)
         now = datetime.datetime.today()
         today = datetime.datetime(now.year, now.month, now.day)
         if (date < today):
