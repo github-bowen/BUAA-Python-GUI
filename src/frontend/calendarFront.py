@@ -111,7 +111,7 @@ class CalenWindow(QMainWindow):
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("self", "任务管理器-主页面"))
-        self.toolBar.setWindowTitle(_translate("self", "toolBar"))
+        self.toolBar.setWindowTitle(_translate("self", "工具栏"))
         self.addNewTask.setText(_translate("self", "添加新待办"))
         self.addNewTask.setToolTip(_translate("self", "点击添加新的待办事项"))
         self.addNewTask.setShortcut(_translate("self", "Ctrl+N"))
@@ -161,6 +161,7 @@ class CalenWindow(QMainWindow):
         self.tempWidget = QWidget()
         self.tempWidget.setLayout(self.dispatcher.layout)
         print("111111111")
+        self.tempWidget.setWindowTitle("每日任务自动调度")
         self.tempWidget.show()
 
     def dateToStr(self, date):
