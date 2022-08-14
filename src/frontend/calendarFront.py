@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QGridLayout, QCalendarWidg
 from src.backend.method import loginUser
 from src.frontend.addTask import AddNormalTaskDialog, TaskAddingWarning, SelectTaskDialog, AddDailyTaskDialog
 from src.frontend.qssLoader import QSSLoader
-from src.frontend.timeFliter import TimeFliter
+from src.frontend.timeFilter import TimeFilter
 from taskDisplay import DisplayWidget
 import changeStyle
 
@@ -110,6 +110,10 @@ class CalenWindow(QMainWindow):
         self.dispatchTask.setText(_translate("self", "调度任务列表"))
         self.dispatchTask.setToolTip(_translate("self", "点击调度未来任务列表"))
         self.dispatchTask.setShortcut(_translate("self", "Ctrl+D"))
+
+    def tasksDisplay(self, beginDatetime, endDatetime):
+        # TODO: 筛选时间段，不知道在哪显示
+        pass
 
     # 所有回到日历主页面的按钮都应触发该函数，考虑引入缓存
     # TODO: 记录下要显示的date，然后销毁当前日历对象，重新new一个
@@ -211,8 +215,8 @@ if __name__ == "__main__":
         # addNormalTaskDialog.sureBtn.clicked.connect(calWindow.taskDisplay)
 
         # 筛选任务的界面
-        timeFliter = TimeFliter(username, password)
-        calWindow.fliterTask.triggered.connect(timeFliter.show)
+        timeFilter = TimeFilter(user=calWindow.user, calenWindow=calWindow)
+        calWindow.fliterTask.triggered.connect(timeFilter.show)
 
         # 刷新任务
         calWindow.refreshTask.triggered.connect(calWindow.refreshEvent)

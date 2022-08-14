@@ -24,7 +24,7 @@ class DisplayWidget(QWidget):
         self.taskNum = len(self.displayingTasks)
 
         if self.taskNum > 0:
-            widget = QLabel("今日待办如下：")
+            widget = QLabel("所选日期待办如下：")
             font = QFont()
             font.setPointSize(12)
             font.setBold(True)
@@ -57,6 +57,10 @@ class DisplayWidget(QWidget):
             for task in self.displayingTasks:
                 widget = self.generateTaskWidget(task)
                 self.formLayout.addRow(widget)
+<<<<<<< HEAD
+=======
+
+>>>>>>> 29307d1a0ecee4a41e149d0ff5d3c71cfbd310ab
             self.groupBox.setLayout(self.formLayout)
         else:
             self.displayNoTaskToday()
@@ -108,7 +112,7 @@ class DisplayWidget(QWidget):
         if dateChanged:
             # print(date.__class__)
             print(1)
-            dtdt = datetime.datetime(date.year(), date.month(), date.day(), 1,0,0)
+            dtdt = datetime.datetime(date.year(), date.month(), date.day(), 1, 0, 0)
             self.displayingDate = dtdt
             self.displayingTasks = self.getTaskOfDate(dtdt)
         else:
@@ -117,7 +121,7 @@ class DisplayWidget(QWidget):
 
         print(2)
         if self.taskNum > 0:
-            widget = QLabel("待办如下：")
+            widget = QLabel("所选日期待办如下：")
             font = QFont()
             font.setPointSize(12)
             font.setBold(True)
@@ -131,14 +135,13 @@ class DisplayWidget(QWidget):
             # self.groupBox.setLayout(self.formLayout)
         else:
             self.displayNoTaskToday(False)
-        
+
         self.groupBox.repaint()
         self.scroll.repaint()
         self.repaint()
 
-
     def displayNoTaskToday(self, first=True):  # 显示下面的提示文字
-        label = QLabel("今日暂无待办哦～")
+        label = QLabel("所选日期暂无待办哦～")
         font = QFont()
         font.setPointSize(16)
         font.setBold(True)
@@ -159,11 +162,11 @@ class DisplayWidget(QWidget):
         return self.user.getTaskToday()
 
     def generateTaskWidget(self, task):
-            if isinstance(task, DailyTask):
-                taskLabel = DailyTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
-            else:
-                taskLabel = NormalTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
-            return taskLabel
+        if isinstance(task, DailyTask):
+            taskLabel = DailyTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
+        else:
+            taskLabel = NormalTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
+        return taskLabel
 
     def getAllDateTasks(self) -> list:
         return self.user.getAllTasks()
