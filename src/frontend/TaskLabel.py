@@ -22,7 +22,6 @@ class TaskLabel(QWidget):
     def __init__(self, task: Task, user, calenWindow):
         super().__init__()
         self.calenWindow = calenWindow
-        # self.user = loginUser(username, password)
         self.user = user
         self.task = task
         self.initUi()
@@ -105,16 +104,10 @@ class TaskLabel(QWidget):
         # todo 记录开始时间？
 
     def finishThing(self):
-        # TODO：同时触发calenderFront的taskDisplay函数
-        if not self.beginBtn.isChecked():
-            # 保持按钮的原有状态
-            initial = self.finishBtn.isChecked()
-            addTask.showWarning("\n 当前任务尚未开始\n 无法完成哦")
-            self.finishBtn.setChecked(not initial)
-        elif self.task.state!=State.inProgress:
+        if self.task.state!=State.inProgress:
             initial = self.finishBtn.isChecked()
             stateStr = stateDict[self.task.state]
-            addTask.showWarning('当前待办状态为\n' + stateStr + '\n 无法完成待办哦')
+            addTask.showWarning('当前待办状态为\n ' + stateStr + ' \n无法完成待办哦')
             self.finishBtn.setChecked(not initial)
         else:
             self.finishMsg = finishWindow(self.task.title)
@@ -135,8 +128,8 @@ class TaskLabel(QWidget):
 
     def deleteThing(self):
         self.user.deleteTask(self.task)
-        #self.calenWindow.taskDisplay(None, False)
-        self.calenWindow.refreshEvent()
+        self.calenWindow.taskDisplay(None, False)
+        #self.calenWindow.refreshEvent()
 
 class finishWindow(QMessageBox):
     def __init__(self, title: str):
