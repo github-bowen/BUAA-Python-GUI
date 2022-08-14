@@ -1,4 +1,4 @@
-# 点击工具栏的刷新按钮所显示的页面
+# 点击工具栏的筛选按钮所显示的页面
 import sys
 
 from src.backend.method import *
