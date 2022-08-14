@@ -271,6 +271,7 @@ class User:
                 task.importance = newImportance
                 refreshDict["importance"] = newImportance.value
             if newState != None:
+                task.state = newState
                 refreshDict["state"] =newState.value
             if newSpices != None:
                 task.species = newSpices
@@ -296,8 +297,10 @@ class User:
             print(11)
             task.addFinishedDate(datetime.datetime.today())
             # self.dailyTaskTable.get()
-            print(12)
-            self.dailyTaskTable.update({"fd": task.toDict()["fd"]}, db.where("id") == task.id)
+            print(task.state)
+            dict = task.toDict()
+            print(14)
+            self.dailyTaskTable.update({"fd": dict["fd"]}, db.where("id") == task.id)
             print(13)
 
     def setTaskExpired(self, task):
@@ -406,15 +409,16 @@ class DailyTask(Task):
         super().__init__(title, content, time,
                                         importance, state, speices, id)
         if finisheddate is None:
-            finisheddate = set()
+            finisheddate = []
         self.finishEddate = finisheddate
 
     @staticmethod
     def parseTask(dict):
         # dict -> Task
         time = datetime.datetime.fromtimestamp(dict["time"])
+        fds = [datetime.datetime.fromtimestamp(_) for _ in dict["fd"]]
         task = DailyTask(dict["title"], dict["content"], time, Importance(dict["importance"]),
-                     State(dict["state"]), Species(dict["species"]), dict["id"], dict["fd"])
+                     State(dict["state"]), Species(dict["species"]), dict["id"], fds)
         print(task.__class__)
         assert isinstance(task, DailyTask)
         return task
@@ -422,11 +426,11 @@ class DailyTask(Task):
     def toDict(self):
         d = super().toDict()
         # finishedDate
-        d["fd"] = [_.timeStamp() for _ in self.finishEddate]
+        d["fd"] = [_.timestamp() for _ in self.finishEddate]
         return d
 
     def addFinishedDate(self, date : datetime.datetime):
-        self.finishEddate.add(date)
+        self.finishEddate.append(date)
 
     # 获取某一天的状态
     def getState(self, date):

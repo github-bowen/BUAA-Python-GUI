@@ -167,10 +167,12 @@ def checkDateExpired():
 
 
 if __name__ == "__main__":
+    #
+    # with open(".name_password.tmp", "r") as f:
+    #     username, password = f.readlines()
+    # os.remove(".name_password.tmp")
 
-    with open(".name_password.tmp", "r") as f:
-        username, password = f.readlines()
-    os.remove(".name_password.tmp")
+    username, password = "1", "111111"
 
     app = QApplication(sys.argv)
 
