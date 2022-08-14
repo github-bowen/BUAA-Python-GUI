@@ -188,6 +188,8 @@ class User:
     # 获取 [start, end] （闭区间) 的所有代办
     def getTaskOfPeriod(self, startDay:datetime.datetime = None, endDay:datetime.datetime = None):
         tb = self.todoDb.tables()
+        if "daily" in tb:
+            tb.remove("daily")
         tb = sorted(tb)
         if (len(tb) == 0) :
             return []
@@ -206,7 +208,6 @@ class User:
             res = set()
             i = startDay
             while True:
-
                 if i.strftime("%Y%m") > tb[-1]:
                     break
                 res = res.union( self.getTasksOfDay(i))
