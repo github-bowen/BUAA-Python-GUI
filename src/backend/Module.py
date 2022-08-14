@@ -135,7 +135,15 @@ class User:
 
     def initDailyTask(self):
         for tt in self.dailyTaskTable.all():
-            self.dailyTasks.append(DailyTask.parseTask(tt))
+            dt = DailyTask.parseTask(tt)
+            self.dailyTasks.append(dt)
+            td = datetime.datetime.today()
+            time = dt.time
+            ttime = datetime.datetime(td.year, td.month, td.day, time.hour, time.minute)
+            if (ttime > dt.time and dt.state != State.notStarted):
+                self.editTask(dt, newState=State.notStarted, newTime=ttime)
+            else:
+                self.editTask(dt, newTime=ttime)
 
     # done
     def addTask(self, title: str, content: str, time: datetime.datetime,
@@ -151,7 +159,9 @@ class User:
 
     def addDailyTask(self, title : str, content : str, startTime : datetime.datetime,
                      importance = Importance.normal, species = Species.other):
-        dtask = DailyTask(title, content, startTime, importance, species)
+        td = datetime.datetime.today()
+        startTime = datetime.datetime(td.year, td.month, td.day, startTime.hour, startTime.minute)
+        dtask = DailyTask(title, content, startTime, importance, State.notStarted, species)
         self.dailyTaskTable.insert(dtask.toDict())
         self.dailyTasks.append(dtask)
 
@@ -241,9 +251,9 @@ class User:
     使用示例：user.editTask(taskToBeEdit, newTime = t) 
     '''
     def editTask(self, task, newTitle = None, newContent = None, newTime = None,
-                 newImportance = None, newSpices = None):
+                 newImportance = None,newState = None,  newSpices = None):
 
-        if task.state == State.daily:
+        if task is DailyTask:
             refreshDict = {}
             # 修改task对象，记录修改
             if newTitle != None:
@@ -254,10 +264,14 @@ class User:
                 refreshDict["content"] = newContent
             if newTime != None:
                 task.time = newTime
+                if newTime > datetime.datetime.now() and task.state == State.expired and newState == None:
+                    newState = State.notStarted
                 refreshDict["time"] = newTime.timestamp()
             if newImportance != None:
                 task.importance = newImportance
                 refreshDict["importance"] = newImportance.value
+            if newState != None:
+                refreshDict["state"] =newState.value
             if newSpices != None:
                 task.species = newSpices
                 refreshDict["species"] = newSpices.value
@@ -270,19 +284,23 @@ class User:
             self.calendarMap[ymStr].editTask(task, newTitle, newContent, newTime, newImportance, newSpices)
 
     def setTaskBegin(self, task):
-        ymStr = task.time.strftime("%Y%m")
-        assert ymStr in self.calendarMap.keys()
-        self.calendarMap[ymStr].editTask(task, newState=State.inProgress)
+        # ymStr = task.time.strftime("%Y%m")
+        # assert ymStr in self.calendarMap.keys()
+        self.editTask(task, newState=State.inProgress)
 
     def setTaskEnd(self, task):
-        ymStr = task.time.strftime("%Y%m")
-        assert ymStr in self.calendarMap.keys()
-        self.calendarMap[ymStr].editTask(task, newState=State.finished)
+        # ymStr = task.time.strftime("%Y%m")
+        # assert ymStr in self.calendarMap.keys()
+        self.editTask(task, newState=State.finished)
+        if task is DailyTask:
+            task.addFinishedDate(datetime.datetime.today())
+            # self.dailyTaskTable.get()
+            self.dailyTaskTable.update({"fd": task.toDict()["fd"]}, db.where("id") == task.id)
 
     def setTaskExpired(self, task):
-        ymStr = task.time.strftime("%Y%m")
-        assert ymStr in self.calendarMap.keys()
-        self.calendarMap[ymStr].editTask(task, newState=State.expired)
+        # ymStr = task.time.strftime("%Y%m")
+        # assert ymStr in self.calendarMap.keys()
+        self.editTask(task, newState=State.expired)
 
     # 根据任务的ddl和重要性调度任务，返回任务执行列表
     def scheduleTasks(self):
@@ -379,19 +397,42 @@ class Task:
 
 class DailyTask(Task):
     def __init__(self, title: str, content: str, time: datetime.datetime,
-                 importance=Importance.normal, state: State = State.notStarted,speices=Species.work, id = -1):
+                 importance=Importance.normal, state: State = State.notStarted,speices=Species.work, id = -1,
+                 finisheddate=None):
         # super(DailyTask, self).__init__()
         super().__init__(title, content, time,
                                         importance, state, speices, id)
+        if finisheddate is None:
+            finisheddate = set()
+        self.finishEddate = finisheddate
 
     @staticmethod
     def parseTask(dict):
         # dict -> Task
         time = datetime.datetime.fromtimestamp(dict["time"])
         task = DailyTask(dict["title"], dict["content"], time, Importance(dict["importance"]),
-                     State(dict["state"]), Species(dict["species"]), dict["id"])
+                     State(dict["state"]), Species(dict["species"]), dict["id"], dict["fd"])
         return task
 
+    def toDict(self):
+        d = super().toDict()
+        # finishedDate
+        d["fd"] = [_.timeStamp() for _ in self.finishEddate]
+        return d
+
+    def addFinishedDate(self, date : datetime.datetime):
+        self.finishEddate.add(date)
+
+    # 获取某一天的状态
+    def getState(self, date):
+        if (date < datetime.datetime.today()):
+            if date in self.finishEddate:
+                return State.finished
+            return State.expired
+        elif date > datetime.datetime.today():
+            return State.notStarted
+        else:
+            return self.state
 if __name__ == "__main__":
     u = User("1")
     # u.addTask("qc", "learn chapter 5", datetime.datetime(2022, 8, 20))

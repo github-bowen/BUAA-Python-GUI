@@ -4,6 +4,7 @@ from datetime import datetime
 from PyQt5.QtCore import pyqtSignal
 
 from src.backend.Module import Task
+from src.backend.Module import DailyTask
 from src.backend.importance import *
 import addTask
 import editTask
@@ -28,6 +29,8 @@ class TaskLabel(QWidget):
 
     def initUi(self):
         state = self.task.state
+        if self.task is DailyTask:
+            state = self.task.getState()
         title = self.task.title
         importance = self.task.importance
         species = self.task.species
@@ -92,7 +95,7 @@ class TaskLabel(QWidget):
         self.setLayout(self.taskGrid)
 
     def beginThing(self):
-        if self.task.state!=State.notStarted and self.task.state!=State.daily:
+        if self.task.state!=State.notStarted and task is not DailyTask:
             initial=self.beginBtn.isChecked()
             stateStr=stateDict[self.task.state]
             addTask.showWarning('当前待办状态为\n'+stateStr+'\n 无法开始待办哦')
