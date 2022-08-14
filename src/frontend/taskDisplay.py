@@ -182,9 +182,7 @@ class DisplayWidget(QWidget):
         return self.user.getTaskToday()
 
     def generateTaskWidget(self, task):
-        print(5)
         if isinstance(task, DailyTask):
-            print(6)
             taskLabel = DailyTaskLabel(date=self.displayingDate, task=task, user=self.user,
                                        calenWindow=self.calenWindow)
         else:
