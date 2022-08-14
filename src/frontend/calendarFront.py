@@ -110,7 +110,7 @@ class CalenWindow(QMainWindow):
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
-        self.setWindowTitle(_translate("self", "代办-日历主页面"))
+        self.setWindowTitle(_translate("self", "任务管理器-主页面"))
         self.toolBar.setWindowTitle(_translate("self", "工具栏"))
         self.addNewTask.setText(_translate("self", "添加新待办"))
         self.addNewTask.setToolTip(_translate("self", "点击添加新的待办事项"))

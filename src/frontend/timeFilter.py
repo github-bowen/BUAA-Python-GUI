@@ -24,7 +24,7 @@ class TimeFilter(QWidget):
         self.timeFliterLayOut()
 
     def initUi(self):
-        self.setWindowTitle("按时段筛选任务")
+        self.setWindowTitle('任务管理器-筛选任务')
         self.titleLbl = QLabel('筛选相应时间段的任务')
         font = QFont()
         font.setPointSize(16)
@@ -33,13 +33,13 @@ class TimeFilter(QWidget):
         self.titleLbl.setFont(font)
         self.beginLbl = QLabel('请选取起始时间:')
         self.beginIcon = QLabel()
-        self.beginIcon.setPixmap(QPixmap("../Icon/时间.png").scaled(50, 40))
+        self.beginIcon.setPixmap(QPixmap("../Icon/时间 (1).png").scaled(40, 40))
         self.beginTE = QDateTimeEdit()
         self.beginTE.setDateTime(QDateTime.currentDateTime())
         self.beginTE.setDisplayFormat("yyyy-MM-dd-hh:mm")
         self.endLbl = QLabel('请选取截止时间:')
         self.endIcon = QLabel()
-        self.endIcon.setPixmap(QPixmap("../Icon/时间 (1).png").scaled(50, 40))
+        self.endIcon.setPixmap(QPixmap("../Icon/时间 (2).png").scaled(40, 40))
         self.endTE = QDateTimeEdit()
         self.endTE.setDateTime(QDateTime.currentDateTime())
         self.endTE.setDisplayFormat("yyyy-MM-dd-hh:mm")
@@ -86,9 +86,9 @@ class TimeFilter(QWidget):
             self.timeFilterDisplay.layout = QVBoxLayout(self.timeFilterDisplay)
             self.timeFilterDisplay.layout.addWidget(self.timeFilterDisplay.scroll)
             self.tempWidget = QWidget()
+            self.tempWidget.setWindowTitle('筛选任务')
             self.tempWidget.setLayout(self.timeFilterDisplay.layout)
             self.tempWidget.show()
-            print("after creatingTimeFilterDisplay")
             self.close()
 
 
