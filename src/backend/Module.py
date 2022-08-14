@@ -308,8 +308,9 @@ class User:
 
     # 根据任务的ddl和重要性调度任务，返回任务执行列表
     def scheduleTasks(self):
-        ts = self.getUnstartedTasks()
+        ts = self.getTaskToday()
 
+        print(len(ts))
         '''
         权重取决于任务的重要性和当前时间距离ddl的时间，公式暂时定为 power = importance / time
         '''
@@ -319,8 +320,10 @@ class User:
         dict = {}
         for t in ts:
             if t.time < datetime.datetime.now():
-                self.setTaskExpired(t)
+                if t.state == State.notStarted:
+                    self.setTaskExpired(t)
                 continue
+
             dict[t] = computePower(t)
         dict = sorted(dict.keys(), key=(lambda x : dict[x]), reverse=True)
         return list(dict)
