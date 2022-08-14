@@ -82,7 +82,11 @@ class TimeFilter(QWidget):
             print("before creating TimeFilterDisplay")
             self.timeFilterDisplay = TimeFilterDisplay(
                 self.user, beginDatetime, endDatetime, self.calenWindow)
-            self.timeFilterDisplay.show()
+            self.timeFilterDisplay.layout = QVBoxLayout(self.timeFilterDisplay)
+            self.timeFilterDisplay.layout.addWidget(self.timeFilterDisplay.scroll)
+            self.tempWidget = QWidget()
+            self.tempWidget.setLayout(self.timeFilterDisplay.layout)
+            self.tempWidget.show()
             print("after creatingTimeFilterDisplay")
             self.close()
 
@@ -162,6 +166,7 @@ class TimeFilterDisplay(QMainWindow):
         self.scroll.setFixedHeight(400)  # 对应CalenWindow高度
         self.layout = QVBoxLayout(self)
         self.layout.addWidget(self.scroll)
+        # self.show()
 
     def generateTaskWidget(self, task: Task):
         if isinstance(task, DailyTask):
