@@ -2,7 +2,7 @@ import re
 import sys
 
 from PyQt5.QtCore import Qt, QCoreApplication
-from PyQt5.QtGui import QFont, QIcon, QCursor, QMovie
+from PyQt5.QtGui import QFont, QIcon, QCursor, QMovie, QPixmap
 from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QApplication, QDesktopWidget, \
     QWidget, QMessageBox, QInputDialog, QCheckBox, QAction, QToolButton, QFrame, QSplitter, QSizePolicy
@@ -54,10 +54,15 @@ class LoginWindow(QWidget):
         """
 
         # 创建标签、文本框、按钮
+        self.usernameIcon=QLabel()
+        # todo:加了个图标 看在你们电脑上效果咋样
+        self.usernameIcon.setPixmap(QPixmap("../Icon/用户.svg").scaled(40,40))
         self.usernameLabel = QLabel('用户名:')
         font = QFont()
         font.setPointSize(self.fontSize)
         self.usernameLabel.setFont(font)
+        self.passwordIcon = QLabel()
+        self.passwordIcon.setPixmap(QPixmap("../Icon/密码.svg").scaled(40,40))
         self.passwordLabel = QLabel('密码:')
         font = QFont()
         font.setPointSize(self.fontSize)
@@ -154,8 +159,10 @@ class LoginWindow(QWidget):
         topEmpty.setFixedWidth(0)
         # topEmptyLabel.setFixedHeight(100)
         grid.addWidget(topEmpty, 0, 0)
+        #grid.addWidget(self.usernameIcon, 1, 0)
         grid.addWidget(self.usernameLabel, 1, 0)
         grid.addWidget(self.usernameEdit, 1, 1, 1, 3)
+        #grid.addWidget(self.passwordIcon, 2, 0)
         grid.addWidget(self.passwordLabel, 2, 0)
         grid.addWidget(self.passwordEdit, 2, 1, 1, 3)
         grid.addWidget(self.rememberPasswordBox, 3, 0)

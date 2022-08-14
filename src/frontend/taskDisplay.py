@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QWidget, QScrollArea, QVBoxLayout, \
 
 from TaskLabel import TaskLabel, NormalTaskLabel, DailyTaskLabel
 from src.backend.Module import DailyTask
+from src.frontend.qssLoader import QSSLoader
 
 
 class DisplayWidget(QWidget):
@@ -162,19 +163,26 @@ class DisplayWidget(QWidget):
 
     def displayNoTaskToday(self, first=True):  # 显示下面的提示文字
         label = QLabel("所选日期暂无待办哦～")
+        label.setStyleSheet("QLabel{color:#015F17}")
         font = QFont()
         font.setPointSize(16)
         font.setBold(True)
         # font.setFamily("KaiTi")
         label.setFont(font)
         tipLabel = QLabel("可通过上方工具栏添加待办")
+        tipLabel.setStyleSheet("QLabel{color:#015F17}")
         font.setPointSize(14)
         font.setBold(False)
         tipLabel.setFont(font)
+        tipLabel2=QLabel('          或使用快捷键Ctrl+N创建新代办')
+        tipLabel2.setFont(font)
+        tipLabel2.setStyleSheet("QLabel{color:#015F17}")
 
         self.formLayout.addWidget(label)
         self.formLayout.addWidget(QLabel())
         self.formLayout.addWidget(tipLabel)
+        self.formLayout.addWidget(QLabel())
+        self.formLayout.addWidget(tipLabel2)
         if first:
             self.groupBox.setLayout(self.formLayout)
 

@@ -4,7 +4,7 @@
 import sys
 from datetime import datetime
 
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, Qt
 
 from src.backend.Module import Task, DailyTask
 from src.backend.importance import *
@@ -47,8 +47,15 @@ class TaskLabel(QWidget):
         time = self.task.time
 
         self.stateLabel = QLabel(stateDict[state])
+        self.stateLabel.setAlignment(Qt.AlignCenter)
         self.nameLabel = QLabel(title)
         self.nameLabel.setToolTip("内容：" + content)
+        self.nameFont=QFont()
+        #self.nameFont.setPointSize(12)
+        self.nameFont.setFamily('STKaiti')
+        #self.nameFont.setBold(True)
+        self.nameLabel.setFont(self.nameFont)
+        self.nameLabel.setAlignment(Qt.AlignCenter)
 
         # 由重要性和种类得图标颜色
         self.icon = QLabel()
@@ -82,6 +89,9 @@ class TaskLabel(QWidget):
         elif self.task.getState(self.date) == State.finished:
             self.switchBtn.setChecked(True)
             self.switchBtn.setText('完成')
+            self.nameLabel.setStyleSheet("QLabel{color:grey}")
+            self.stateLabel.setStyleSheet("QLabel{color:grey}")
+            self.timeLabel.setStyleSheet("QLabel{color:grey}")
         elif self.task.getState(self.date) == State.expired:
             self.switchBtn.setChecked(False)
             self.switchBtn.setText('开始')
@@ -140,6 +150,10 @@ class TaskLabel(QWidget):
             self.finishMsg.button(QMessageBox.Yes).clicked.connect(self.canFinish)
             self.finishMsg.button(QMessageBox.No).clicked.connect(self.cancelFinish)
             self.stateLabel.setText(stateDict[self.task.getState(self.date)])
+            self.nameLabel.setFont(self.nameFont)
+            self.nameLabel.setStyleSheet("QLabel{color:grey}")
+            self.stateLabel.setStyleSheet("QLabel{color:grey}")
+            self.timeLabel.setStyleSheet("QLabel{color:grey}")
         elif state == State.finished:
             assert text == '完成'
             addTask.showWarning('当前待办已完成\n ' + ' \n无法重复完成待办哦')
@@ -200,7 +214,9 @@ class DailyTaskLabel(TaskLabel):
         self.editBtn.clicked.connect(self.checkState)
 
     def checkState(self):
-        if self.task.getState(self.date) == State.finished:
+        if self.task.getState(self.date) == State.expired:
+            addTask.showWarning('\n该待办已过期\n不能编辑哦')
+        elif self.task.getState(self.date) == State.finished:
             addTask.showWarning('\n当前待办已完成\n不能编辑哦')
         else:
             self.editDailyTaskDialog = editTask.EditDailyTaskDialog(self.user, self.calenWindow, self.task)
