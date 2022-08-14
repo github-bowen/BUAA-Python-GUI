@@ -71,11 +71,11 @@ class CalenWindow(QMainWindow):
         icon.addPixmap(QtGui.QPixmap("../Icon/新建方案.png"))
         self.addNewTask.setIcon(icon)
         self.addNewTask.setObjectName("addNewTask")
-        self.fliterTask = QtWidgets.QAction(self)
+        self.filterTask = QtWidgets.QAction(self)
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap("../Icon/筛选.png"))
-        self.fliterTask.setIcon(icon1)
-        self.fliterTask.setObjectName("fliterTask")
+        self.filterTask.setIcon(icon1)
+        self.filterTask.setObjectName("fliterTask")
         self.refreshTask = QtWidgets.QAction(self)
         icon2 = QtGui.QIcon()
         icon2.addPixmap(QtGui.QPixmap("../Icon/刷新.png"))
@@ -87,7 +87,7 @@ class CalenWindow(QMainWindow):
         self.dispatchTask.setIcon(icon3)
         self.dispatchTask.setObjectName("dispatchTask")
         self.toolBar.addAction(self.addNewTask)
-        self.toolBar.addAction(self.fliterTask)
+        self.toolBar.addAction(self.filterTask)
         self.toolBar.addAction(self.refreshTask)
         self.toolBar.addAction(self.dispatchTask)
 
@@ -101,9 +101,9 @@ class CalenWindow(QMainWindow):
         self.addNewTask.setText(_translate("self", "添加新待办"))
         self.addNewTask.setToolTip(_translate("self", "点击添加新的待办事项"))
         self.addNewTask.setShortcut(_translate("self", "Ctrl+N"))
-        self.fliterTask.setText(_translate("self", "筛选"))
-        self.fliterTask.setToolTip(_translate("self", "点击按时间过滤任务"))
-        self.fliterTask.setShortcut(_translate("self", "Ctrl+Shift+L"))
+        self.filterTask.setText(_translate("self", "筛选"))
+        self.filterTask.setToolTip(_translate("self", "点击按时间过滤任务"))
+        self.filterTask.setShortcut(_translate("self", "Ctrl+Shift+L"))
         self.refreshTask.setText(_translate("self", "刷新"))
         self.refreshTask.setToolTip(_translate("self", "点击刷新任务列表"))
         self.refreshTask.setShortcut(_translate("self", "F5"))
@@ -214,7 +214,7 @@ if __name__ == "__main__":
 
         # 筛选任务的界面
         timeFilter = TimeFilter(user=calWindow.user, calenWindow=calWindow)
-        calWindow.fliterTask.triggered.connect(timeFilter.show)
+        calWindow.filterTask.triggered.connect(timeFilter.show)
 
         # 刷新任务
         calWindow.refreshTask.triggered.connect(calWindow.refreshEvent)
