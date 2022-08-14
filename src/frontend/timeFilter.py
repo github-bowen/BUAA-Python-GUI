@@ -9,11 +9,14 @@ from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QApplication, QDesktopWidget, \
     QWidget, QMessageBox, QInputDialog, QMainWindow, QCalendarWidget, QFormLayout, QDateTimeEdit, QTimeEdit, QTextEdit
 
+from src.frontend import addTask
+
 
 class TimeFilter(QWidget):
-    def __init__(self, username, password):
+    def __init__(self, user, calenWindow):
         super().__init__()
-        self.user = loginUser(username, password)
+        self.user = user
+        self.calenWindow = calenWindow
         self.initUi()
         self.timeFliterLayOut()
 
@@ -29,13 +32,15 @@ class TimeFilter(QWidget):
         self.beginIcon.setPixmap(QPixmap("../Icon/时间.png").scaled(50, 40))
         self.beginTE = QDateTimeEdit()
         self.beginTE.setDateTime(QDateTime.currentDateTime())
+        self.beginTE.setDisplayFormat("yyyy-MM-dd-hh:mm")
         self.endLbl = QLabel('请选取截止时间:')
         self.endIcon = QLabel()
         self.endIcon.setPixmap(QPixmap("../Icon/时间 (1).png").scaled(50, 40))
         self.endTE = QDateTimeEdit()
         self.endTE.setDateTime(QDateTime.currentDateTime())
+        self.endTE.setDisplayFormat("yyyy-MM-dd-hh:mm")
         self.sureBtn = QPushButton('确定')
-        self.sureBtn.clicked.connect(self.display)
+        self.sureBtn.clicked.connect(self.checkDateAndDisplay)
         # todo:显示一个taskDisplay
         self.cancelBtn = QPushButton('取消')
         self.cancelBtn.clicked.connect(self.close)
@@ -57,5 +62,19 @@ class TimeFilter(QWidget):
         self.grid.addLayout(self.hbox, 5, 0)
         self.setLayout(self.grid)
 
-    def display(self):
-        pass
+    def checkDateAndDisplay(self):
+        begin, end = self.beginTE.dateTime(), self.endTE.dateTime()
+        if begin >= end:
+            addTask.showWarning("起始日期不能超\n"
+                                "过截止日期哦～")
+        else:
+            beginDate, beginTime = begin.date(), begin.time()
+            endDate, endTime = end.date(), end.time()
+            beginDatetime = datetime.datetime(
+                beginDate.year(), beginDate.month(), beginDate.day(),
+                beginTime.hour(), beginTime.minute())
+            endDatetime = datetime.datetime(
+                endDate.year(), endDate.month(), endDate.day(),
+                endTime.hour(), endTime.minute())
+            self.calenWindow.tasksDisplay(beginDatetime, endDatetime)
+            self.close()

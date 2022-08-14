@@ -36,7 +36,6 @@ class DisplayWidget(QWidget):
                 widget = self.generateTaskWidget(task)
                 self.formLayout.addRow(widget)
 
-
             self.groupBox.setLayout(self.formLayout)
         else:
             self.displayNoTaskToday()
@@ -88,7 +87,7 @@ class DisplayWidget(QWidget):
         if dateChanged:
             # print(date.__class__)
             print(1)
-            dtdt = datetime.datetime(date.year(), date.month(), date.day(), 1,0,0)
+            dtdt = datetime.datetime(date.year(), date.month(), date.day(), 1, 0, 0)
             self.displayingDate = dtdt
             self.displayingTasks = self.getTaskOfDate(dtdt)
         else:
@@ -111,11 +110,10 @@ class DisplayWidget(QWidget):
             # self.groupBox.setLayout(self.formLayout)
         else:
             self.displayNoTaskToday(False)
-        
+
         self.groupBox.repaint()
         self.scroll.repaint()
         self.repaint()
-
 
     def displayNoTaskToday(self, first=True):  # 显示下面的提示文字
         label = QLabel("所选日期暂无待办哦～")
@@ -132,11 +130,11 @@ class DisplayWidget(QWidget):
         return self.user.getTaskToday()
 
     def generateTaskWidget(self, task):
-            if isinstance(task, DailyTask):
-                taskLabel = DailyTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
-            else:
-                taskLabel = NormalTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
-            return taskLabel
+        if isinstance(task, DailyTask):
+            taskLabel = DailyTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
+        else:
+            taskLabel = NormalTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
+        return taskLabel
 
     def getAllDateTasks(self) -> list:
         return self.user.getAllTasks()
