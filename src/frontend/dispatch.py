@@ -1,12 +1,12 @@
 # 点击工具栏的调度按钮所显示的页面
 from src.backend.method import *
 from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtCore import QDate, QDateTime, QTime
+from PyQt5.QtCore import QDate, QDateTime, QTime, Qt
 from PyQt5.QtGui import QIcon, QFont, QPixmap
 from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QApplication, QDesktopWidget, \
     QWidget, QMessageBox, QInputDialog, QMainWindow, QCalendarWidget, QFormLayout, QDateTimeEdit, QTimeEdit, QTextEdit, \
-    QGroupBox, QScrollArea
+    QGroupBox, QScrollArea, QFrame, QSizePolicy
 
 from src.frontend import addTask
 from src.frontend.TaskLabel import DailyTaskLabel, NormalTaskLabel
@@ -81,6 +81,8 @@ class Dispatcher(QWidget):
         self.scroll.setFixedHeight(400)  # 对应CalenWindow高度
         self.layout = QVBoxLayout(self)
         self.layout.addWidget(self.scroll)
+
+        self.disableHorizontalScroll()
         # self.show()
 
     def generateTaskWidget(self, task: Task):
@@ -90,4 +92,18 @@ class Dispatcher(QWidget):
         else:
             taskLabel = NormalTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
         return taskLabel
+
+    def disableHorizontalScroll(self):
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setFrameStyle(QFrame.NoFrame)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        """
+        self.m_scrollAreaWidgetContents = QWidget(self)
+        self.m_scrollAreaWidgetContents.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+
+        baseLayout = QVBoxLayout(self.m_scrollAreaWidgetContents)
+        self.scroll.setWidget(self.m_scrollAreaWidgetContents)
+        self.m_scrollAreaWidgetContents.installEventFilter(self)
+        """
 
