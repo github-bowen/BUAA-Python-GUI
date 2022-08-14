@@ -13,19 +13,21 @@ from PyQt5.QtWidgets import QLabel, QDateTimeEdit, QTimeEdit
 import addTask
 
 def _checkDate(self, name: str, start, end, importance: str, dailyType: bool):
-    dailyTime=datetime.datetime(2022,8,13,start.hour(),start.minute())
+    #dailyTime=datetime.datetime(2022,8,13,start.hour(),start.minute())
     if len(name.strip()) == 0:
         addTask.showWarning("\n待办名称为空，\n请重新输入！")
     elif importance.strip() == "选取":
         addTask.showWarning("\n待办重要性未选择，\n请重新选择！")
-    elif dailyType and self.task.time.time()!=dailyTime.time() and \
-            self.user.isTimeBusy(dailyTime):
+    elif dailyType and self.task.time.time()!=start.time() and \
+            self.user.isTimeBusy(start):
         addTask.showWarning("\n 添加日常任务失败！\n 该时段已有任务哦！\n")
     elif dailyType :
         self.editDailyTask()
         self.close()
     elif start < end:
+        print('1')
         self.editNormalTask()
+        print('2')
         self.close()
     else:
         addTask.showWarning("添加待办失败！\n截止时间不能在当前时间之前哦！\n(*>﹏<*)")
@@ -101,7 +103,7 @@ class EditNormalTaskDialog(EditTaskDialog):
         date=end.date()
         time=end.time()
         newTime=datetime.datetime(date.year(),date.month(),date.day(),time.hour(),time.minute())
-        self.user.editTask(name, content, newTime, importance, species)
+        self.user.editTask(self.task,name, content, newTime, importance, species)
         #self.calWindow.refreshEvent()
         #self.calWindow.taskDisplay(date=None, dateChange=False)
 
