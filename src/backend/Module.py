@@ -379,17 +379,17 @@ class Task:
 
 class DailyTask(Task):
     def __init__(self, title: str, content: str, time: datetime.datetime,
-                 importance=Importance.normal, speices=Species.work, id = -1):
+                 importance=Importance.normal, state: State = State.notStarted,speices=Species.work, id = -1):
         # super(DailyTask, self).__init__()
         super().__init__(title, content, time,
-                                        importance, State.daily, speices, id)
+                                        importance, state, speices, id)
 
     @staticmethod
     def parseTask(dict):
         # dict -> Task
         time = datetime.datetime.fromtimestamp(dict["time"])
         task = DailyTask(dict["title"], dict["content"], time, Importance(dict["importance"]),
-                     Species(dict["species"]), dict["id"])
+                     State(dict["state"]), Species(dict["species"]), dict["id"])
         return task
 
 if __name__ == "__main__":
