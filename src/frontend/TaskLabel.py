@@ -11,7 +11,7 @@ from src.backend.importance import *
 import addTask
 import editTask
 
-from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtGui import QPixmap, QIcon, QFont
 from PyQt5.QtWidgets import QLabel, QPushButton, QGridLayout, \
     QApplication, QWidget, QCheckBox, QMessageBox, QTimeEdit
 
@@ -22,8 +22,14 @@ from src.frontend.qssLoader import QSSLoader
 
 
 class TaskLabel(QWidget):
-    def __init__(self, task: Task, user, calenWindow, date = None):
+    def __init__(self, task: Task, user, calenWindow, date=None):
         super().__init__()
+        self.deleteBtn = None
+        self.switchBtn = None
+        self.editBtn = None
+        self.timeLabel = None
+        self.nameLabel = None
+        self.stateLabel = None
         self.calenWindow = calenWindow
         self.user = user
         self.task = task
@@ -32,17 +38,17 @@ class TaskLabel(QWidget):
 
     def initUi(self):
         state = self.task.state
-        if isinstance(self.task, DailyTask) and self.date != None:
+        if isinstance(self.task, DailyTask) and self.date is not None:
             state = self.task.getState(self.date)
         title = self.task.title
-        content=self.task.content
+        content = self.task.content
         importance = self.task.importance
         species = self.task.species
         time = self.task.time
 
         self.stateLabel = QLabel(stateDict[state])
         self.nameLabel = QLabel(title)
-        self.nameLabel.setToolTip("内容："+content)
+        self.nameLabel.setToolTip("内容：" + content)
 
         # 由重要性和种类得图标颜色
         self.icon = QLabel()
@@ -56,7 +62,7 @@ class TaskLabel(QWidget):
         else:
             addTask.showWarning("重要性传入有误!")
         self.icon.setPixmap(QPixmap("../Icon/taskSort/%s.png" % iconName).scaled(50, 50))
-        self.icon.setToolTip("内容："+content)
+        self.icon.setToolTip("内容：" + content)
 
         # 控制格式
         timeStr = "{:02d}:{:02d}".format(time.hour, time.minute)
@@ -64,15 +70,15 @@ class TaskLabel(QWidget):
 
         self.editBtn = QPushButton('编辑')
 
-        self.switchBtn=QCheckBox('开始',self)
+        self.switchBtn = QCheckBox('开始', self)
         self.switchBtn.toggle()
-        if self.task.getState(self.date) ==State.notStarted:
+        if self.task.getState(self.date) == State.notStarted:
             self.switchBtn.setChecked(False)
             self.switchBtn.setText('开始')
-        elif self.task.getState(self.date)==State.inProgress:
+        elif self.task.getState(self.date) == State.inProgress:
             self.switchBtn.setChecked(False)
             self.switchBtn.setText('完成')
-        elif self.task.getState(self.date)==State.finished:
+        elif self.task.getState(self.date) == State.finished:
             self.switchBtn.setChecked(True)
             self.switchBtn.setText('完成')
         elif self.task.getState(self.date) == State.expired:
@@ -90,7 +96,20 @@ class TaskLabel(QWidget):
                              }''')
 
         self.taskLayOut()
+        self.setFinishedTasks()  # 给"已完成"的任务弄上删除线
         # self.show()
+
+    def setFinishedTasks(self):
+        if self.task.state == State.finished:
+            font = QFont()
+            font.setStrikeOut(True)
+
+            self.deleteBtn.setFont(font)
+            self.switchBtn.setFont(font)
+            self.editBtn.setFont(font)
+            self.timeLabel.setFont(font)
+            self.nameLabel.setFont(font)
+            self.stateLabel.setFont(font)
 
     def taskLayOut(self):
         self.taskGrid = QGridLayout(self)
@@ -104,49 +123,49 @@ class TaskLabel(QWidget):
         self.setLayout(self.taskGrid)
 
     def switchThing(self):
-        state=self.task.getState(self.date)
-        text=self.switchBtn.text()
-        if state==State.notStarted:
-            assert text=='开始'
+        state = self.task.getState(self.date)
+        text = self.switchBtn.text()
+        if state == State.notStarted:
+            assert text == '开始'
             self.switchBtn.setChecked(False)
             self.switchBtn.setText('完成')
             self.user.setTaskBegin(self.task)
             self.stateLabel.setText(stateDict[self.task.getState(self.date)])
-        elif state==State.inProgress:
-            assert text=='完成'
+        elif state == State.inProgress:
+            assert text == '完成'
             self.switchBtn.setChecked(True)
             self.finishMsg = finishWindow(self.task.title)
             self.finishMsg.show()
             self.finishMsg.button(QMessageBox.Yes).clicked.connect(self.canFinish)
             self.finishMsg.button(QMessageBox.No).clicked.connect(self.cancelFinish)
             self.stateLabel.setText(stateDict[self.task.getState(self.date)])
-        elif state==State.finished:
+        elif state == State.finished:
             assert text == '完成'
-            addTask.showWarning('当前待办已完成\n ' +' \n无法重复完成待办哦')
+            addTask.showWarning('当前待办已完成\n ' + ' \n无法重复完成待办哦')
             self.switchBtn.setChecked(True)
-        else: # 已过期的任务
-            assert text=='开始'
+        else:  # 已过期的任务
+            assert text == '开始'
             self.switchBtn.setChecked(False)
-            if isinstance(self.task,DailyTask):
+            if isinstance(self.task, DailyTask):
                 addTask.showWarning('过期的日常待办无法开始哦')
             else:
                 addTask.showWarning('当前待办已过期，可以重新编辑时间后再开始哦')
 
     def canFinish(self):
-        #self.calenWindow.taskDisplay(None, False)
+        # self.calenWindow.taskDisplay(None, False)
         self.user.setTaskEnd(self.task)
         self.stateLabel.setText(stateDict[self.task.getState(self.date)])
 
     def cancelFinish(self):
         initial = self.switchBtn.isChecked()
-        #self.calenWindow.taskDisplay(None, False)
+        # self.calenWindow.taskDisplay(None, False)
         self.switchBtn.setChecked(not initial)
-
 
     def deleteThing(self):
         self.user.deleteTask(self.task)
         self.calenWindow.taskDisplay(None, False)
-        #self.calenWindow.refreshEvent()
+        # self.calenWindow.refreshEvent()
+
 
 class finishWindow(QMessageBox):
     def __init__(self, title: str):
@@ -175,30 +194,28 @@ class deletWindow(QMessageBox):
 
 
 class DailyTaskLabel(TaskLabel):
-    def __init__(self, date, task,user,calenWindow):
-        super().__init__(task, user,calenWindow, date=date)
+    def __init__(self, date, task, user, calenWindow):
+        super().__init__(task, user, calenWindow, date=date)
         self.editBtn.clicked.connect(self.checkState)
 
     def checkState(self):
-        if self.task.getState(self.date)==State.finished:
+        if self.task.getState(self.date) == State.finished:
             addTask.showWarning('\n当前待办已完成\n不能编辑哦')
         else:
-            self.editDailyTaskDialog = editTask.EditDailyTaskDialog(self.user,self.calenWindow,self.task)
+            self.editDailyTaskDialog = editTask.EditDailyTaskDialog(self.user, self.calenWindow, self.task)
             self.editDailyTaskDialog.sureBtn.clicked.connect(self.editDailyTaskDialog.checkDate)
             self.editDailyTaskDialog.show()
 
 
 class NormalTaskLabel(TaskLabel):
-    def __init__(self, task,user,calenWindow):
-        super().__init__(task, user,calenWindow)
+    def __init__(self, task, user, calenWindow):
+        super().__init__(task, user, calenWindow)
         self.editBtn.clicked.connect(self.checkState)
 
     def checkState(self):
-        if self.task.getState(self.date)==State.finished:
+        if self.task.getState(self.date) == State.finished:
             addTask.showWarning('当前待办已完成\n不能编辑哦')
         else:
             self.editNormalTaskDialog = editTask.EditNormalTaskDialog(self.user, self.calenWindow, self.task)
             self.editNormalTaskDialog.sureBtn.clicked.connect(self.editNormalTaskDialog.checkDate)
             self.editNormalTaskDialog.show()
-
-
