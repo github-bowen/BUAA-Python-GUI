@@ -111,10 +111,6 @@ class CalenWindow(QMainWindow):
         self.dispatchTask.setToolTip(_translate("self", "点击调度未来任务列表"))
         self.dispatchTask.setShortcut(_translate("self", "Ctrl+D"))
 
-    def tasksDisplay(self, beginDatetime, endDatetime):
-        # TODO: 筛选时间段，不知道在哪显示
-        pass
-
     # 所有回到日历主页面的按钮都应触发该函数，考虑引入缓存
     # TODO: 记录下要显示的date，然后销毁当前日历对象，重新new一个
     def taskDisplay(self, date, dateChange: bool):
@@ -172,7 +168,7 @@ if __name__ == "__main__":
     #     username, password = f.readlines()
     # os.remove(".name_password.tmp")
 
-    username, password = "1", "111111"
+    username, password = "test", "test1234"
 
     app = QApplication(sys.argv)
 

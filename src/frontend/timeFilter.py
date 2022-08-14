@@ -76,5 +76,9 @@ class TimeFilter(QWidget):
             endDatetime = datetime.datetime(
                 endDate.year(), endDate.month(), endDate.day(),
                 endTime.hour(), endTime.minute())
-            self.calenWindow.tasksDisplay(beginDatetime, endDatetime)
+            TimeFilter.__display(beginDatetime, endDatetime)
             self.close()
+
+    @staticmethod
+    def __display(beginDatetime, endDatetime):
+        pass
