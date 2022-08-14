@@ -67,19 +67,14 @@ class EditDailyTaskDialog(EditTaskDialog):
         def editTask(self, task, newTitle=None, newContent=None, newTime=None,
                      newImportance=None, newSpices=None):
         '''
-        print("come in")
         name, content,start, importanceStr,speciesStr = self.titleLE.text(),self.contentTE.toPlainText() \
             , self.timeLE.time(), self.importanceBtn.text(),self.sortBtn.text()
         importance=str2Importmance[importanceStr]
         species=str2Species[speciesStr]
         newTime=datetime.datetime(2022,8,13,start.hour(),start.minute())
-        print("before user edit")
-        self.user.editTask(self.task,name,content,newTime,importance,species)
-        print('end user edit')
+        self.user.editTask(self.task,name,content,newTime,importance,None, species)
         #self.calWindow.refreshEvent()
-        print("before taskDisplay")
         self.calWindow.taskDisplay(date=None, dateChange=False)
-        print("before endDisplay")
 
 
     def checkDate(self):
@@ -111,7 +106,7 @@ class EditNormalTaskDialog(EditTaskDialog):
         date=end.date()
         time=end.time()
         newTime=datetime.datetime(date.year(),date.month(),date.day(),time.hour(),time.minute())
-        self.user.editTask(self.task,name, content, newTime, importance, species)
+        self.user.editTask(self.task,name, content, newTime, importance, None, species)
         #self.calWindow.refreshEvent()
         self.calWindow.taskDisplay(date=None, dateChange=False)
 
