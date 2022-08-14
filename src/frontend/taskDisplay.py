@@ -3,7 +3,7 @@ import datetime
 from PyQt5.QtCore import Qt, QObject, QEvent
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QScrollArea, QVBoxLayout, \
-    QGroupBox, QLabel, QPushButton, QFormLayout, QApplication, QFrame, QSizePolicy
+    QGroupBox, QLabel, QPushButton, QFormLayout, QApplication, QFrame, QSizePolicy, QGridLayout, QHBoxLayout
 
 from TaskLabel import TaskLabel, NormalTaskLabel, DailyTaskLabel
 from src.backend.Module import DailyTask
@@ -32,11 +32,35 @@ class DisplayWidget(QWidget):
             widget.setFont(font)
             self.formLayout.addRow(widget)
 
+            titleFont=QFont()
+            titleFont.setBold(True)
+            titleWidget=QWidget()
+            hbox=QHBoxLayout()
+            sortLabel=QLabel('类别')
+            stateLabel=QLabel('状态')
+            nameLabel=QLabel('名称')
+            timeLabel=QLabel('时间')
+            sortLabel.setFont(titleFont)
+            stateLabel.setFont(titleFont)
+            nameLabel.setFont(titleFont)
+            timeLabel.setFont(titleFont)
+
+            hbox.addWidget(sortLabel)
+            hbox.addWidget(stateLabel)
+            hbox.addWidget(nameLabel)
+            hbox.addWidget(timeLabel)
+            for i in range(4):
+                hbox.addWidget(QLabel())
+            titleWidget.setLayout(hbox)
+            self.formLayout.addRow(titleWidget)
+
             for task in self.displayingTasks:
                 widget = self.generateTaskWidget(task)
                 self.formLayout.addRow(widget)
+<<<<<<< HEAD
+=======
 
-
+>>>>>>> 29307d1a0ecee4a41e149d0ff5d3c71cfbd310ab
             self.groupBox.setLayout(self.formLayout)
         else:
             self.displayNoTaskToday()
@@ -88,7 +112,7 @@ class DisplayWidget(QWidget):
         if dateChanged:
             # print(date.__class__)
             print(1)
-            dtdt = datetime.datetime(date.year(), date.month(), date.day(), 1,0,0)
+            dtdt = datetime.datetime(date.year(), date.month(), date.day(), 1, 0, 0)
             self.displayingDate = dtdt
             self.displayingTasks = self.getTaskOfDate(dtdt)
         else:
@@ -111,11 +135,10 @@ class DisplayWidget(QWidget):
             # self.groupBox.setLayout(self.formLayout)
         else:
             self.displayNoTaskToday(False)
-        
+
         self.groupBox.repaint()
         self.scroll.repaint()
         self.repaint()
-
 
     def displayNoTaskToday(self, first=True):  # 显示下面的提示文字
         label = QLabel("所选日期暂无待办哦～")
@@ -124,7 +147,14 @@ class DisplayWidget(QWidget):
         font.setBold(True)
         # font.setFamily("KaiTi")
         label.setFont(font)
+        tipLabel=QLabel("可通过上方工具栏添加待办")
+        font.setPointSize(14)
+        font.setBold(False)
+        tipLabel.setFont(font)
+
         self.formLayout.addWidget(label)
+        self.formLayout.addWidget(QLabel())
+        self.formLayout.addWidget(tipLabel)
         if first:
             self.groupBox.setLayout(self.formLayout)
 
@@ -132,11 +162,11 @@ class DisplayWidget(QWidget):
         return self.user.getTaskToday()
 
     def generateTaskWidget(self, task):
-            if isinstance(task, DailyTask):
-                taskLabel = DailyTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
-            else:
-                taskLabel = NormalTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
-            return taskLabel
+        if isinstance(task, DailyTask):
+            taskLabel = DailyTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
+        else:
+            taskLabel = NormalTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
+        return taskLabel
 
     def getAllDateTasks(self) -> list:
         return self.user.getAllTasks()
