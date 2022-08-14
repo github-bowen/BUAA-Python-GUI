@@ -1,4 +1,5 @@
 # 点击工具栏的筛选按钮所显示的页面
+import datetime
 import sys
 
 from src.backend.method import *
@@ -7,9 +8,11 @@ from PyQt5.QtCore import QDate, QDateTime, QTime
 from PyQt5.QtGui import QIcon, QFont, QPixmap
 from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QApplication, QDesktopWidget, \
-    QWidget, QMessageBox, QInputDialog, QMainWindow, QCalendarWidget, QFormLayout, QDateTimeEdit, QTimeEdit, QTextEdit
+    QWidget, QMessageBox, QInputDialog, QMainWindow, QCalendarWidget, QFormLayout, QDateTimeEdit, QTimeEdit, QTextEdit, \
+    QGroupBox, QScrollArea
 
 from src.frontend import addTask
+from src.frontend.TaskLabel import DailyTaskLabel, NormalTaskLabel
 
 
 class TimeFilter(QWidget):
@@ -76,9 +79,94 @@ class TimeFilter(QWidget):
             endDatetime = datetime.datetime(
                 endDate.year(), endDate.month(), endDate.day(),
                 endTime.hour(), endTime.minute())
-            TimeFilter.__display(beginDatetime, endDatetime)
+            print("before creating TimeFilterDisplay")
+            timeFilterDisplay = TimeFilterDisplay(
+                self.user, beginDatetime, endDatetime, self.calenWindow)
+            timeFilterDisplay.show()
+            print("after creatingTimeFilterDisplay")
             self.close()
 
-    @staticmethod
-    def __display(beginDatetime, endDatetime):
-        pass
+
+class TimeFilterDisplay(QMainWindow):
+    def __init__(self, user, beginDatetime: datetime.datetime,
+                 endDatetime: datetime.datetime, calenWindow):
+        super(TimeFilterDisplay, self).__init__()
+        self.scroll = QScrollArea()
+        self.user = user
+        self.beginDatetime = beginDatetime
+        self.endDatetime = endDatetime
+        self.calenWindow = calenWindow
+        self.displayingTasks = None
+        self.initUI()
+
+    def initUI(self):
+        self.formLayout = QFormLayout()
+        self.groupBox = QGroupBox()
+
+        self.displayingTasks = self.user.getTaskOfPeriod(
+            self.beginDatetime, self.endDatetime)
+        self.taskNum = len(self.displayingTasks)
+
+        if self.taskNum > 0:
+            widget = QLabel(str(self.beginDatetime)
+                            + "到" + str(self.endDatetime) + "的待办如下：")
+            font = QFont()
+            font.setPointSize(12)
+            font.setBold(True)
+            # font.setFamily("KaiTi")
+            widget.setFont(font)
+            self.formLayout.addRow(widget)
+
+            titleFont = QFont()
+            titleFont.setBold(True)
+            titleWidget = QWidget()
+            hbox = QHBoxLayout()
+            sortLabel = QLabel('类别')
+            stateLabel = QLabel('状态')
+            nameLabel = QLabel('名称')
+            timeLabel = QLabel('时间')
+            sortLabel.setFont(titleFont)
+            stateLabel.setFont(titleFont)
+            nameLabel.setFont(titleFont)
+            timeLabel.setFont(titleFont)
+
+            hbox.addWidget(sortLabel)
+            hbox.addWidget(stateLabel)
+            hbox.addWidget(nameLabel)
+            hbox.addWidget(timeLabel)
+            for i in range(4):
+                hbox.addWidget(QLabel())
+            titleWidget.setLayout(hbox)
+            self.formLayout.addRow(titleWidget)
+
+            for task in self.displayingTasks:
+                widget = self.generateTaskWidget(task)
+                self.formLayout.addRow(widget)
+            self.groupBox.setLayout(self.formLayout)
+        else:
+            label = QLabel(str(self.beginDatetime)
+                           + "到" + str(self.endDatetime) + "暂无待办哦～")
+            font = QFont()
+            font.setPointSize(16)
+            font.setBold(True)
+            # font.setFamily("KaiTi")
+            label.setFont(font)
+
+            self.formLayout.addWidget(label)
+            self.formLayout.addWidget(QLabel())
+            self.groupBox.setLayout(self.formLayout)
+
+        # self.disableHorizontalScroll()
+        self.scroll.setWidget(self.groupBox)
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setFixedHeight(400)  # 对应CalenWindow高度
+        self.layout = QVBoxLayout(self)
+        self.layout.addWidget(self.scroll)
+
+    def generateTaskWidget(self, task: Task):
+        if isinstance(task, DailyTask):
+            taskLabel = DailyTaskLabel(date=task.time, task=task, user=self.user,
+                                       calenWindow=self.calenWindow)
+        else:
+            taskLabel = NormalTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
+        return taskLabel
