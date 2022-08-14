@@ -24,6 +24,7 @@ class TimeFilter(QWidget):
         self.timeFliterLayOut()
 
     def initUi(self):
+        self.setWindowTitle("按时段筛选任务")
         self.titleLbl = QLabel('筛选相应时间段的任务')
         font = QFont()
         font.setPointSize(16)
