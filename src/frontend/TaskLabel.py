@@ -101,7 +101,7 @@ class TaskLabel(QWidget):
         # self.show()
 
     def setFinishedTasks(self):
-        if self.task.state == State.finished:
+        if self.task.getState(self.date) == State.finished:
             font = QFont()
             font.setStrikeOut(True)
 
