@@ -32,7 +32,7 @@ class Calendar:
         # 从monthTodoTable中读取，存入 monthtodo中
         for tt in self.monthTodoTable.all():
             task = Task.parseTask(tt)
-            if (task.time < datetime.datetime.now()):
+            if (task.time < datetime.datetime.now() and task.state != State.finished):
                 self.editTask(task, newState=State.expired)
             day = task.time.day
 
