@@ -10,7 +10,7 @@ from src.backend.importance import str2Importmance
 from src.backend.method import *
 from PyQt5 import QtGui, QtWidgets, QtCore
 from PyQt5.QtCore import QDate, QDateTime, QTime
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QApplication, QDesktopWidget, \
     QWidget, QMessageBox, QInputDialog, QMainWindow, QCalendarWidget, QFormLayout, QDateTimeEdit, QTimeEdit, QTextEdit
@@ -34,7 +34,6 @@ def _checkDate(self, name: str, start:datetime, end:datetime,
     elif dailyType and self.user.isTimeBusy(start):
         showWarning("\n 添加日常任务失败！\n 该时段已有任务哦！\n")
     elif dailyType:
-        print("before add")
         self.addDailyTask()
         self.close()
     elif start < end:
@@ -48,16 +47,33 @@ class SelectTaskDialog(QMessageBox):  # 选择添加"日常任务"还是"一般�
     def __init__(self, calWindow):
         self.calWindow = calWindow
         super().__init__()
+        self.setStyleSheet("QLabel{"
+                             "min-width: 270px;"
+                             "min-height: 260px; "
+                             "}")
         self.setWindowTitle("任务管理器-待办类型选择")
         self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        self.setText("请选择要新建待办的类型：\n"
-                     "日常任务为每日固定的任务\n"
+        self.setText("请选择新建待办类型：\n"
+                     "日常任务为每日固定任务\n"
                      "(每天都会显示，任务时段需要在一天内)")
-        self.setIconPixmap(QtGui.QPixmap("../Icon/记录.png").scaled(250, 250))
+        font=QFont()
+        font.setPointSize(12)
+        self.setFont(font)
+        self.setIconPixmap(QtGui.QPixmap("../Icon/暂无记录.svg").scaled(250, 250))
         self.button_dailyTask = self.button(QMessageBox.Yes)
         self.button_normalTask = self.button(QMessageBox.No)
         self.button_dailyTask.setText("日常任务")
         self.button_normalTask.setText("一般任务")
+        self.button_dailyTask.clicked.connect(self.addDaily)
+        self.button_normalTask.clicked.connect(self.addNormal)
+
+    def addDaily(self):
+        self.addDailyDialog=AddDailyTaskDialog(self.calWindow.user,self.calWindow)
+        self.addDailyDialog.show()
+
+    def addNormal(self):
+        self.addNormalDialog=AddNormalTaskDialog(self.calWindow.user,self.calWindow)
+        self.addNormalDialog.show()
 
 
 class AddTaskDialog(QWidget):
@@ -98,6 +114,7 @@ class AddTaskDialog(QWidget):
         self.sortBtn.clicked.connect(self.getSortItem)
 
         self.sureBtn = QPushButton('确认')
+
 
     def dialogLayOut(self):
         dialogGrid = QGridLayout()
@@ -164,6 +181,7 @@ class AddDailyTaskDialog(AddTaskDialog):
         self.timeLE.setTime(QTime.currentTime())  # 设置一开始显示时的起始时间为当前时间
         self.timeLE.setDisplayFormat("hh:mm")
         self.setWindowTitle('任务管理器-创建新的日常待办')
+        self.sureBtn.clicked.connect(self.checkDate)
 
     def addDailyTask(self):
         '''
@@ -202,6 +220,7 @@ class AddNormalTaskDialog(AddTaskDialog):
         self.timeLE.setDisplayFormat("yyyy-MM-dd-hh:mm")
         self.titleLbl = QLabel('普通待办名称：')
         self.setWindowTitle('任务管理器-创建新的普通待办')
+        self.sureBtn.clicked.connect(self.checkDate)
 
     def addNormalTask(self):
         name, content, end, importanceStr, speciesStr = self.titleLE.text(), self.contentTE.toPlainText()\
@@ -224,11 +243,19 @@ class AddNormalTaskDialog(AddTaskDialog):
         _checkDate(self, name, start, endTime, importance, species, False)
 
 
+
 class TaskAddingWarning(QMessageBox):  # 可以传入警告信息！
     def __init__(self, text):
         super().__init__()
+        self.setStyleSheet("QLabel{"
+                           "min-width: 240px;"
+                           "min-height: 260px; "
+                           "}")
         self.setText(text)
-        self.setIconPixmap(QtGui.QPixmap("../Icon/不小心迷路了.png").scaled(250, 250))
+        font = QFont()
+        font.setPointSize(12)
+        self.setFont(font)
+        self.setIconPixmap(QtGui.QPixmap("../Icon/不小心迷路了.svg").scaled(250, 250))
         # self.setIcon(QMessageBox.Information)
         self.setWindowTitle("提示")
         self.setStandardButtons(QMessageBox.Yes)

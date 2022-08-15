@@ -4,12 +4,12 @@ import sys
 
 from src.backend.method import *
 from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtCore import QDate, QDateTime, QTime
+from PyQt5.QtCore import QDate, QDateTime, QTime, Qt
 from PyQt5.QtGui import QIcon, QFont, QPixmap
 from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QApplication, QDesktopWidget, \
     QWidget, QMessageBox, QInputDialog, QMainWindow, QCalendarWidget, QFormLayout, QDateTimeEdit, QTimeEdit, QTextEdit, \
-    QGroupBox, QScrollArea
+    QGroupBox, QScrollArea, QFrame, QSizePolicy, QDateEdit
 
 from src.frontend import addTask
 from src.frontend.TaskLabel import DailyTaskLabel, NormalTaskLabel
@@ -26,23 +26,24 @@ class TimeFilter(QWidget):
     def initUi(self):
         self.setWindowTitle('任务管理器-筛选任务')
         self.titleLbl = QLabel('筛选相应时间段的任务')
+        #self.setStyleSheet('''QWidget{background-color:#ffffff;}''')
         font = QFont()
         font.setPointSize(16)
         font.setBold(True)
-        font.setFamily("KaiTi")
+        #font.setFamily("KaiTi")
         self.titleLbl.setFont(font)
         self.beginLbl = QLabel('请选取起始时间:')
         self.beginIcon = QLabel()
         self.beginIcon.setPixmap(QPixmap("../Icon/时间 (1).png").scaled(40, 40))
-        self.beginTE = QDateTimeEdit()
-        self.beginTE.setDateTime(QDateTime.currentDateTime())
-        self.beginTE.setDisplayFormat("yyyy-MM-dd-hh:mm")
+        self.beginTE = QDateEdit()
+        self.beginTE.setDate(QDate.currentDate())
+        self.beginTE.setDisplayFormat("yyyy-MM-dd")
         self.endLbl = QLabel('请选取截止时间:')
         self.endIcon = QLabel()
         self.endIcon.setPixmap(QPixmap("../Icon/时间 (2).png").scaled(40, 40))
-        self.endTE = QDateTimeEdit()
-        self.endTE.setDateTime(QDateTime.currentDateTime())
-        self.endTE.setDisplayFormat("yyyy-MM-dd-hh:mm")
+        self.endTE = QDateEdit()
+        self.endTE.setDate(QDate.currentDate())
+        self.endTE.setDisplayFormat("yyyy-MM-dd")
         self.sureBtn = QPushButton('确定')
         self.sureBtn.clicked.connect(self.checkDateAndDisplay)
         # todo:显示一个taskDisplay
@@ -67,20 +68,21 @@ class TimeFilter(QWidget):
         self.setLayout(self.grid)
 
     def checkDateAndDisplay(self):
-        begin, end = self.beginTE.dateTime(), self.endTE.dateTime()
+        begin, end = self.beginTE.date(), self.endTE.date()
         if begin >= end:
             addTask.showWarning("起始日期不能超\n"
                                 "过截止日期哦～")
         else:
-            beginDate, beginTime = begin.date(), begin.time()
-            endDate, endTime = end.date(), end.time()
+            beginDate = begin
+            endDate = end
+            print("before beginDateTime")
             beginDatetime = datetime.datetime(
                 beginDate.year(), beginDate.month(), beginDate.day(),
-                beginTime.hour(), beginTime.minute())
+                0, 0)
             endDatetime = datetime.datetime(
                 endDate.year(), endDate.month(), endDate.day(),
-                endTime.hour(), endTime.minute())
-            print("before creating TimeFilterDisplay")
+                0, 0)
+            print('endDatetime')
             self.timeFilterDisplay = TimeFilterDisplay(
                 self.user, beginDatetime, endDatetime, self.calenWindow)
             self.timeFilterDisplay.layout = QVBoxLayout(self.timeFilterDisplay)
@@ -113,8 +115,8 @@ class TimeFilterDisplay(QMainWindow):
         self.taskNum = len(self.displayingTasks)
 
         if self.taskNum > 0:
-            widget = QLabel(str(self.beginDatetime)
-                            + "到" + str(self.endDatetime) + "的待办如下：")
+            widget = QLabel(str(self.beginDatetime.date())
+                            + " 到 " + str(self.endDatetime.date()) + " 的待办如下：")
             font = QFont()
             font.setPointSize(12)
             font.setBold(True)
@@ -161,7 +163,7 @@ class TimeFilterDisplay(QMainWindow):
             self.formLayout.addWidget(QLabel())
             self.groupBox.setLayout(self.formLayout)
 
-        # self.disableHorizontalScroll()
+        self.disableHorizontalScroll()
         self.scroll.setWidget(self.groupBox)
         self.scroll.setWidgetResizable(True)
         self.scroll.setFixedHeight(400)  # 对应CalenWindow高度
@@ -169,10 +171,29 @@ class TimeFilterDisplay(QMainWindow):
         self.layout.addWidget(self.scroll)
         # self.show()
 
+    def disableHorizontalScroll(self):
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setFrameStyle(QFrame.NoFrame)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+        self.m_scrollAreaWidgetContents = QWidget(self)
+        self.m_scrollAreaWidgetContents.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+
+        baseLayout = QVBoxLayout(self.m_scrollAreaWidgetContents)
+        self.scroll.setWidget(self.m_scrollAreaWidgetContents)
+        self.m_scrollAreaWidgetContents.installEventFilter(self)
+
     def generateTaskWidget(self, task: Task):
         if isinstance(task, DailyTask):
-            taskLabel = DailyTaskLabel(date=task.time, task=task, user=self.user,
-                                       calenWindow=self.calenWindow)
+            return
+            #taskLabel = DailyTaskLabel(date=task.time, task=task, user=self.user,
+                                       #calenWindow=self.calenWindow)
         else:
             taskLabel = NormalTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
+            time=task.time
+            #print("begin"+str(time.month))
+            timeStr = "{:4d}-{:02d}-{:02d} {:02d}:{:02d}".format(time.year,time.month,time.day,time.hour,time.minute)
+            #print("finish ")
+            taskLabel.timeLabel.setText(timeStr)
         return taskLabel
