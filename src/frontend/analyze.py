@@ -40,30 +40,32 @@ class AnalyzeWindow(QMainWindow):
         series = QPieSeries()
         data = self.user.getTaskSpeciesOfToday()
         # todo 下面这句注释掉
-        # data = {Species.work:10, Species.sport : 20, Species.fun:30, Species.other : 22, Species.study:40}
+        # data = {Species.work:0, Species.sport : 20, Species.fun:30, Species.other : 22, Species.study:40}
 
         for k in data.keys():
             series.append(speciesDict[k], data[k])
 
-        slice0 = QPieSlice()
-        slice0 = series.slices()[0]
-        slice0.setLabelVisible(True)
+        dv = list(data.values())
+        for i in range(5):
+            slice0 = QPieSlice()
+            slice0 = series.slices()[i]
+            slice0.setLabelVisible(dv[i] != 0)
 
-        slice1 = QPieSlice()
-        slice1 = series.slices()[1]
-        slice1.setLabelVisible(True)
-
-        slice2 = QPieSlice()
-        slice2 = series.slices()[2]
-        slice2.setLabelVisible(True)
-
-        slice3 = QPieSlice()
-        slice3 = series.slices()[3]
-        slice3.setLabelVisible(True)
-
-        slice4 = QPieSlice()
-        slice4 = series.slices()[4]
-        slice4.setLabelVisible(True)
+        # slice1 = QPieSlice()
+        # slice1 = series.slices()[1]
+        # slice1.setLabelVisible(True)
+        #
+        # slice2 = QPieSlice()
+        # slice2 = series.slices()[2]
+        # slice2.setLabelVisible(True)
+        #
+        # slice3 = QPieSlice()
+        # slice3 = series.slices()[3]
+        # slice3.setLabelVisible(True)
+        #
+        # slice4 = QPieSlice()
+        # slice4 = series.slices()[4]
+        # slice4.setLabelVisible(True)
 
 
         chart = QChart()
