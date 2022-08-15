@@ -250,7 +250,7 @@ if __name__ == "__main__":
         calWindow.dispatchTask.triggered.connect(calWindow.dispatch)
 
         analyze = AnalyzeWindow(calWindow.user)
-        calWindow.analyzeTask.triggered.connect(analyze.show)
+        calWindow.analyzeTask.triggered.connect(analyze.refresh)
 
         app.exec_()
         app.closeAllWindows()
