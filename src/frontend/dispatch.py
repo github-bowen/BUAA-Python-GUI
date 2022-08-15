@@ -71,7 +71,7 @@ class Dispatcher(QWidget):
                 self.formLayout.addRow(widget)
             self.groupBox.setLayout(self.formLayout)
         else:
-            label = QLabel("今日暂无可执行的待办，不需要进行调度哦～")
+            label = QLabel("今日暂无可执行的待办\n\t\t不需要进行调度哦～")
             font = QFont()
             font.setPointSize(16)
             font.setBold(True)
