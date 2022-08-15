@@ -157,8 +157,9 @@ class User:
         dict = {}
         for _ in Species:
             dict[_] = 0
+        print(dict)
         for t in tasks:
-            dict[t.state] += 1
+            dict[t.species] += 1
         return dict
 
     def initDailyTask(self):
