@@ -9,7 +9,7 @@ from PyQt5.QtGui import QIcon, QFont, QPixmap
 from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QApplication, QDesktopWidget, \
     QWidget, QMessageBox, QInputDialog, QMainWindow, QCalendarWidget, QFormLayout, QDateTimeEdit, QTimeEdit, QTextEdit, \
-    QGroupBox, QScrollArea, QFrame, QSizePolicy
+    QGroupBox, QScrollArea, QFrame, QSizePolicy, QDateEdit
 
 from src.frontend import addTask
 from src.frontend.TaskLabel import DailyTaskLabel, NormalTaskLabel
@@ -26,23 +26,24 @@ class TimeFilter(QWidget):
     def initUi(self):
         self.setWindowTitle('任务管理器-筛选任务')
         self.titleLbl = QLabel('筛选相应时间段的任务')
+        self.setStyleSheet('''QWidget{background-color:#FFFFFF;}''')
         font = QFont()
         font.setPointSize(16)
         font.setBold(True)
-        font.setFamily("KaiTi")
+        #font.setFamily("KaiTi")
         self.titleLbl.setFont(font)
         self.beginLbl = QLabel('请选取起始时间:')
         self.beginIcon = QLabel()
         self.beginIcon.setPixmap(QPixmap("../Icon/时间 (1).png").scaled(40, 40))
-        self.beginTE = QDateTimeEdit()
-        self.beginTE.setDateTime(QDateTime.currentDateTime())
-        self.beginTE.setDisplayFormat("yyyy-MM-dd-hh:mm")
+        self.beginTE = QDateEdit()
+        self.beginTE.setDate(QDate.currentDate())
+        self.beginTE.setDisplayFormat("yyyy-MM-dd")
         self.endLbl = QLabel('请选取截止时间:')
         self.endIcon = QLabel()
         self.endIcon.setPixmap(QPixmap("../Icon/时间 (2).png").scaled(40, 40))
-        self.endTE = QDateTimeEdit()
-        self.endTE.setDateTime(QDateTime.currentDateTime())
-        self.endTE.setDisplayFormat("yyyy-MM-dd-hh:mm")
+        self.endTE = QDateEdit()
+        self.endTE.setDate(QDate.currentDate())
+        self.endTE.setDisplayFormat("yyyy-MM-dd")
         self.sureBtn = QPushButton('确定')
         self.sureBtn.clicked.connect(self.checkDateAndDisplay)
         # todo:显示一个taskDisplay
@@ -67,20 +68,21 @@ class TimeFilter(QWidget):
         self.setLayout(self.grid)
 
     def checkDateAndDisplay(self):
-        begin, end = self.beginTE.dateTime(), self.endTE.dateTime()
+        begin, end = self.beginTE.date(), self.endTE.date()
         if begin >= end:
             addTask.showWarning("起始日期不能超\n"
                                 "过截止日期哦～")
         else:
-            beginDate, beginTime = begin.date(), begin.time()
-            endDate, endTime = end.date(), end.time()
+            beginDate = begin
+            endDate = end
+            print("before beginDateTime")
             beginDatetime = datetime.datetime(
                 beginDate.year(), beginDate.month(), beginDate.day(),
-                beginTime.hour(), beginTime.minute())
+                0, 0)
             endDatetime = datetime.datetime(
                 endDate.year(), endDate.month(), endDate.day(),
-                endTime.hour(), endTime.minute())
-            print("before creating TimeFilterDisplay")
+                0, 0)
+            print('endDatetime')
             self.timeFilterDisplay = TimeFilterDisplay(
                 self.user, beginDatetime, endDatetime, self.calenWindow)
             self.timeFilterDisplay.layout = QVBoxLayout(self.timeFilterDisplay)
