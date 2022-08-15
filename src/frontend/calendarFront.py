@@ -218,9 +218,7 @@ if __name__ == "__main__":
         calWindow.setStyleSheet(styleSheet)
         '''
 
-        # 添加任务设计的widget和弹窗messagebox
-        addNormalTaskDialog = AddNormalTaskDialog(calWindow.user, calWindow)
-        addDailyTaskDialog = AddDailyTaskDialog(calWindow.user, calWindow)
+
         # 在已过日期添加任务显示warning
         warningForExpiredDate = TaskAddingWarning("添加任务请求失败！\n"
                                                   "不能在已经过了的日期添加任务哦！"
@@ -230,13 +228,6 @@ if __name__ == "__main__":
 
         calWindow.addNewTask.triggered.connect(checkDateExpired)
 
-        selectTaskDialog.button_dailyTask.clicked.connect(addDailyTaskDialog.show)
-        addDailyTaskDialog.sureBtn.clicked.connect(addDailyTaskDialog.checkDate)
-        # addDailyTaskDialog.sureBtn.clicked.connect(calWindow.taskDisplay)
-
-        selectTaskDialog.button_normalTask.clicked.connect(addNormalTaskDialog.show)
-        addNormalTaskDialog.sureBtn.clicked.connect(addNormalTaskDialog.checkDate)
-        # addNormalTaskDialog.sureBtn.clicked.connect(calWindow.taskDisplay)
 
         # 筛选任务的界面
         timeFilter = TimeFilter(user=calWindow.user, calenWindow=calWindow)

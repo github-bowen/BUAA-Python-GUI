@@ -52,7 +52,7 @@ class TaskLabel(QWidget):
         self.nameLabel.setToolTip("内容：" + content)
         self.nameFont=QFont()
         #self.nameFont.setPointSize(12)
-        self.nameFont.setFamily('STKaiti')
+        #self.nameFont.setFamily('STKaiti')
         #self.nameFont.setBold(True)
         self.nameLabel.setFont(self.nameFont)
         self.nameLabel.setAlignment(Qt.AlignCenter)
@@ -98,10 +98,7 @@ class TaskLabel(QWidget):
         elif self.task.getState(self.date) == State.finished:
             self.switchBtn.setChecked(True)
             self.switchBtn.setText('完成')
-            self.nameLabel.setStyleSheet("QLabel{color:grey}")
-            self.stateLabel.setStyleSheet("QLabel{color:grey}")
-            self.timeLabel.setStyleSheet("QLabel{color:grey}")
-            self.setFinishedTasks()  # 给"已完成"的任务弄上删除线
+            self.setFinishedTasks()  # 给"已完成"的任务弄上删除线 and 变灰
         elif self.task.getState(self.date) == State.expired:
             self.switchBtn.setChecked(False)
             self.switchBtn.setText('开始')
@@ -113,12 +110,16 @@ class TaskLabel(QWidget):
     def setFinishedTasks(self):
             font = QFont()
             font.setStrikeOut(True)
-            self.deleteBtn.setFont(font)
             self.switchBtn.setFont(font)
             self.editBtn.setFont(font)
             self.timeLabel.setFont(font)
             self.nameLabel.setFont(font)
             self.stateLabel.setFont(font)
+            self.nameLabel.setStyleSheet("QLabel{color:grey}")
+            self.stateLabel.setStyleSheet("QLabel{color:grey}")
+            self.timeLabel.setStyleSheet("QLabel{color:grey}")
+            self.editBtn.setStyleSheet("QLabel{color:grey}")
+            self.switchBtn.setStyleSheet("QLabel{color:grey}")
 
     def taskLayOut(self):
         self.taskGrid = QGridLayout(self)
@@ -149,9 +150,6 @@ class TaskLabel(QWidget):
             self.finishMsg.button(QMessageBox.No).clicked.connect(self.cancelFinish)
             self.stateLabel.setText(stateDict[self.task.getState(self.date)])
             self.nameLabel.setFont(self.nameFont)
-            self.nameLabel.setStyleSheet("QLabel{color:grey}")
-            self.stateLabel.setStyleSheet("QLabel{color:grey}")
-            self.timeLabel.setStyleSheet("QLabel{color:grey}")
             self.setFinishedTasks()  # 给"已完成"的任务弄上删除线
         elif state == State.finished:
             assert text == '完成'
@@ -186,8 +184,11 @@ class finishWindow(QMessageBox):
         super().__init__()
         self.setWindowTitle("确认完成操作")
         self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        self.setText("确认完成待办\n \"%s\" 吗？" % title)
-        self.setIconPixmap(QPixmap("../Icon/记录.png").scaled(250, 250))
+        self.setText("\n\n是否确认完成待办\n \"%s\"" % title)
+        font = QFont()
+        font.setPointSize(12)
+        self.setFont(font)
+        self.setIconPixmap(QPixmap("../Icon/搜索无结果.svg").scaled(250, 250))
         self.sureBtn = self.button(QMessageBox.Yes)
         self.sureBtn.setText("确认")
         self.cancelBtn = self.button(QMessageBox.No)
@@ -199,8 +200,11 @@ class deletWindow(QMessageBox):
         super().__init__()
         self.setWindowTitle("确认删除操作")
         self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        self.setText("确认删除待办\n \"%s\" 吗？" % title)
-        self.setIconPixmap(QPixmap("../Icon/记录.png").scaled(250, 250))
+        self.setText("\n\n\n是否确认删除待办\n \"%s\"" % title)
+        font = QFont()
+        font.setPointSize(12)
+        self.setFont(font)
+        self.setIconPixmap(QPixmap("../Icon/搜索无结果.svg").scaled(250, 250))
         self.sureBtn = self.button(QMessageBox.Yes)
         self.sureBtn.setText("确认")
         self.cancelBtn = self.button(QMessageBox.No)
