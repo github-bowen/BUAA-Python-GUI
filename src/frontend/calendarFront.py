@@ -12,6 +12,7 @@ from src.frontend.addTask import AddNormalTaskDialog, TaskAddingWarning, SelectT
 from src.frontend.dispatch import Dispatcher
 from src.frontend.qssLoader import QSSLoader
 from src.frontend.timeFilter import TimeFilter
+from analyze import *
 from taskDisplay import DisplayWidget
 import changeStyle
 
@@ -100,10 +101,19 @@ class CalenWindow(QMainWindow):
         icon3.addPixmap(QtGui.QPixmap("../Icon/icon2/调度.svg"))
         self.dispatchTask.setIcon(icon3)
         self.dispatchTask.setObjectName("dispatchTask")
+
+
+        self.analyzeTask = QtWidgets.QAction(self)
+        icon4 = QtGui.QIcon()
+        icon4.addPixmap(QtGui.QPixmap("../Icon/icon2/统计.svg"))
+        self.analyzeTask.setIcon(icon4)
+        self.analyzeTask.setObjectName("analyzeTask")
+
         self.toolBar.addAction(self.addNewTask)
         self.toolBar.addAction(self.filterTask)
         self.toolBar.addAction(self.refreshTask)
         self.toolBar.addAction(self.dispatchTask)
+        self.toolBar.addAction(self.analyzeTask)
 
         self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self)
@@ -238,6 +248,9 @@ if __name__ == "__main__":
 
         # 调度任务的界面
         calWindow.dispatchTask.triggered.connect(calWindow.dispatch)
+
+        analyze = AnalyzeWindow(calWindow.user)
+        calWindow.analyzeTask.triggered.connect(analyze.show)
 
         app.exec_()
         app.closeAllWindows()
