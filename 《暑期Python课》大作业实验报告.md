@@ -88,18 +88,20 @@ todo
 
   在日历主界面中，左上方为工具栏：
 
-  ![微信截图_20220815184303](F:\Desktop\University File\second\SummerPython\calendar\微信截图_20220815184303.png)
+  ![微信截图_20220815184303](%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20220815184303-16605699114731.png)
+
+  
 
   图标从左向右依次对应着 `添加任务` 、`筛选任务` 、`刷新任务`以及`调度任务`四项功能。
 
   - **添加任务**：依托于`addTask.py`文件，点击工具栏相应按钮后，触发`SelectTaskDialog`控件的显示，询问用户是添加日常任务还是一般任务
 
-    ![select](F:\Desktop\University File\second\SummerPython\calendar\select.png)
+    ![select](select-16605699833382.png)
 
     点击不同的按钮触发各自相应的对话框，分别为继承自`AddTaskDialog`类的`AddDailyTaskDialog`类和`AddNormalTaskDialog`类。
     用户需要在页面上依次填写所创建待办的名称，详情，重要性以及类别，页面如下图所示
 
-    ![创建新的日常待办](F:\Desktop\University File\second\SummerPython\calendar\创建新的日常待办.png)
+    ![创建新的日常待办](forReport/创建新的日常待办.png)
 
     日常任务和一般任务二者对话框的区别在于：用户在一般任务页面填入的是截止时间（包括年月日及小时分钟）而在日常任务页面只填入该任务在每日应开始的具体时刻。
     用户输入完任务的有关属性，点击对话框的确认按钮将触发`checkDate`函数，以判断所输入各数据的有效性，通过有效性检验后，系统根据属性创建`taskLabel`，自动调用`taskDisplay`，将任务显示在主界面右侧，详细设计见4.1
@@ -110,7 +112,7 @@ todo
 
     由于筛选基于日期，而日常任务在每天均会出现，因此此处得到一般任务列表
 
-    ![筛选](F:\Desktop\University File\second\SummerPython\calendar\筛选.png)
+    ![筛选](筛选-16605701028283.png)
 
     
 
@@ -159,6 +161,8 @@ todo
 ### 4.1 任务的显示
 
 4.1.1 任务标签的设计
+
+
 
 4.1.2 主界面任务布局
 
