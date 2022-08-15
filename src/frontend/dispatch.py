@@ -2,19 +2,21 @@
 from src.backend.method import *
 from PyQt5 import QtGui, QtWidgets, QtCore
 from PyQt5.QtCore import QDate, QDateTime, QTime, Qt
-from PyQt5.QtGui import QIcon, QFont, QPixmap
+from PyQt5.QtGui import QIcon, QFont, QPixmap, QPainter, QPalette, QBrush
 from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QApplication, QDesktopWidget, \
     QWidget, QMessageBox, QInputDialog, QMainWindow, QCalendarWidget, QFormLayout, QDateTimeEdit, QTimeEdit, QTextEdit, \
     QGroupBox, QScrollArea, QFrame, QSizePolicy
 
-from src.frontend import addTask
+from src.frontend import addTask, changeStyle
 from src.frontend.TaskLabel import DailyTaskLabel, NormalTaskLabel
 
 
 class Dispatcher(QWidget):
     def __init__(self, user, calenWindow):
         super(Dispatcher, self).__init__()
+        #self.width(),self.height()=800,800
+        #changeStyle.run(self, "dispatch", 800,450)
         self.scroll = QScrollArea()
         self.user = user
         self.calenWindow = calenWindow
@@ -24,6 +26,11 @@ class Dispatcher(QWidget):
     def initUI(self):
         self.formLayout = QFormLayout()
         self.groupBox = QGroupBox()
+        '''
+        self.backgroundLabel=QLabel()
+        self.backgroundLabel.setPixmap(QPixmap("../Icon/工作安排.png"))
+        self.backgroundLabel.autoFillBackground()
+        '''
 
         self.displayingTasks = self.user.scheduleTasks()
         self.taskNum = len(self.displayingTasks)

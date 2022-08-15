@@ -80,6 +80,15 @@ class TaskLabel(QWidget):
 
         self.switchBtn = QCheckBox('开始', self)
         self.switchBtn.toggle()
+        self.deleteBtn = QPushButton()
+        self.deleteBtn.setIcon(QIcon("../Icon/删除1.png"))
+        self.deleteMsg = deletWindow(title)
+        self.deleteBtn.clicked.connect(self.deleteMsg.show)
+        self.deleteMsg.button(QMessageBox.Yes).clicked.connect(self.deleteThing)
+        self.deleteBtn.setStyleSheet('''QWidget{
+                                    border: none;
+                                     }''')
+
         if self.task.getState(self.date) == State.notStarted:
             self.switchBtn.setChecked(False)
             self.switchBtn.setText('开始')
@@ -92,29 +101,18 @@ class TaskLabel(QWidget):
             self.nameLabel.setStyleSheet("QLabel{color:grey}")
             self.stateLabel.setStyleSheet("QLabel{color:grey}")
             self.timeLabel.setStyleSheet("QLabel{color:grey}")
+            self.setFinishedTasks()  # 给"已完成"的任务弄上删除线
         elif self.task.getState(self.date) == State.expired:
             self.switchBtn.setChecked(False)
             self.switchBtn.setText('开始')
         self.switchBtn.clicked.connect(self.switchThing)
 
-        self.deleteBtn = QPushButton()
-        self.deleteBtn.setIcon(QIcon("../Icon/删除1.png"))
-        self.deleteMsg = deletWindow(title)
-        self.deleteBtn.clicked.connect(self.deleteMsg.show)
-        self.deleteMsg.button(QMessageBox.Yes).clicked.connect(self.deleteThing)
-        self.deleteBtn.setStyleSheet('''QWidget{
-                            border: none;
-                             }''')
-
         self.taskLayOut()
-        self.setFinishedTasks()  # 给"已完成"的任务弄上删除线
         # self.show()
 
     def setFinishedTasks(self):
-        if self.task.getState(self.date) == State.finished:
             font = QFont()
             font.setStrikeOut(True)
-
             self.deleteBtn.setFont(font)
             self.switchBtn.setFont(font)
             self.editBtn.setFont(font)
@@ -154,6 +152,7 @@ class TaskLabel(QWidget):
             self.nameLabel.setStyleSheet("QLabel{color:grey}")
             self.stateLabel.setStyleSheet("QLabel{color:grey}")
             self.timeLabel.setStyleSheet("QLabel{color:grey}")
+            self.setFinishedTasks()  # 给"已完成"的任务弄上删除线
         elif state == State.finished:
             assert text == '完成'
             addTask.showWarning('当前待办已完成\n ' + ' \n无法重复完成待办哦')

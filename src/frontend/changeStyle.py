@@ -20,9 +20,15 @@ def run(widget: QWidget, who: str, width: int, height: int):
     if who == "login":  # 设置登录页面背景
         backGroundLabel.setPixmap(QPixmap("../img/loginBG.png"))
         backGroundLabel.resize(width, height)
-    else:  # 设置日历页面背景
+    elif who == 'calendar':  # 设置日历页面背景
         backGroundLabel.setStyleSheet('''QWidget{background-color:#FFFFFF;}''')
         # backGroundLabel.setPixmap(QPixmap("../img/p3.jpg"))
         backGroundLabel.resize(width, height)
         # backGroundLabel.setWindowOpacity(1)
         pass  # TODO:日历界面好像不好放背景图，感觉放上去大部分都被挡住了，不好看
+    '''
+        elif who == 'dispatch':
+        print('can in run')
+        backGroundLabel.setPixmap(QPixmap("../img/loginBG.png"))
+        backGroundLabel.resize(width, height)
+    '''
