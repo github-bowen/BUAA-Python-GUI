@@ -1,0 +1,10 @@
+Operating System: Manjaro Linux
+KDE Plasma Version: 5.24.6
+KDE Frameworks Version: 5.96.0
+Qt Version: 5.15.5
+Kernel Version: 5.15.60-1-MANJARO (64-bit)
+Graphics Platform: X11
+Processors: 12 × AMD Ryzen 5 4600U with Radeon Graphics
+Memory: 15.0 GiB of RAM
+Graphics Processor: AMD RENOIR
+
