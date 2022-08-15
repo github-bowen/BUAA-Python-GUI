@@ -35,14 +35,12 @@ class AnalyzeWindow(QMainWindow):
         widget=QWidget()
         widget.setLayout(analyzGrid)
         self.setCentralWidget(widget)
-        self.show()
-
 
     def create_piechart(self):
         series = QPieSeries()
         data = self.user.getTaskSpeciesOfToday()
         # todo 下面这句注释掉
-        data = {Species.work:10, Species.sport : 20, Species.fun:30, Species.other : 22, Species.study:40}
+        # data = {Species.work:10, Species.sport : 20, Species.fun:30, Species.other : 22, Species.study:40}
 
         for k in data.keys():
             series.append(speciesDict[k], data[k])
@@ -96,16 +94,15 @@ class AnalyzeWindow(QMainWindow):
         data = self.user.getTaskNumOfLastWeek()
         days:[datetime.datetime] = list(data.keys())
         x_values = [1, 2, 3, 4, 5, 6, 7]
-        # y_values = list(data.values())
+        y_values = list(data.values())
 
-        y_values = [1, 2, 4, 3, 1, 3, 5]
+        # y_values = [1, 2, 4, 3, 1, 3, 5]
         for value in range(0, len(x_values)):
             line_series.append(x_values[value], y_values[value])
         chart.addSeries(line_series)  # Add line series to chart instance
 
         axis_x = QCategoryAxis(
             chart, labelsPosition=QCategoryAxis.AxisLabelsPositionOnValue)
-
         axis_x.setTickCount(8)
         for i in range(7):
             axis_x.append(days[i].strftime("%m-%d"), i + 1)
@@ -133,7 +130,7 @@ class AnalyzeWindow(QMainWindow):
 
         #self.setCentralWidget(chartview)
 
-user = User("test")
-App = QApplication(sys.argv)
-window = AnalyzeWindow(user)
-sys.exit(App.exec_())
+# user = User("test")
+# App = QApplication(sys.argv)
+# window = AnalyzeWindow(user)
+# sys.exit(App.exec_())
