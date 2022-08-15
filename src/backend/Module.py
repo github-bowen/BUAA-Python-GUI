@@ -180,7 +180,12 @@ class User:
             res = []
         # debugPrint(str(len(res)))
 
-        return res + self.dailyTasks
+        for dt in self.dailyTasks:
+            if dt.createDate <= day:
+                if (dt.time < datetime.datetime.now() and dt.state != State.finished):
+                    self.setTaskExpired(dt)
+                res.append(dt)
+        return res
 
     # 获取未完成的任务
     # def getTaskUnfinished(self):
@@ -361,7 +366,8 @@ class User:
 # 暂且使用time 分别代表日常任务的起始时间和普通任务的结束时间
 class Task:
     def __init__(self, title: str, content: str, time: datetime.datetime,
-                 importance=Importance.normal, state=State.notStarted,speices=Species.work, id = -1):
+                 importance=Importance.normal, state=State.notStarted,speices=Species.work, id = -1,
+                 createDate = None):
         self.title = title
         self.content = content
         self.time = time
@@ -370,9 +376,11 @@ class Task:
         self.species = speices
         # 每个task有唯一的编号
         if (id == -1):
+            self.createDate = getDay(datetime.datetime.now())
             self.id = hash(title + content + str(time.timestamp()) + str(importance) + str(state) + str(speices))
         else:
             self.id = id
+            self.createDate = createDate
 
     def __hash__(self):
         return hash(self.id)
@@ -383,8 +391,9 @@ class Task:
     def parseTask(dict):
         # dict -> Task
         time = datetime.datetime.fromtimestamp(dict["time"])
+        createDate = datetime.datetime.fromtimestamp(dict["createDate"])
         task = Task(dict["title"], dict["content"], time, Importance(dict["importance"]),
-                    State(dict["state"]), Species(dict["species"]), dict["id"])
+                    State(dict["state"]), Species(dict["species"]), dict["id"], createDate)
         return task
 
     def toDict(self):
@@ -394,7 +403,8 @@ class Task:
                 "importance" : self.importance.value,
                 "state" : self.state.value,
                 "species" : self.species.value,
-                "id" : self.id
+                "id" : self.id,
+                "createDate" : self.createDate.timestamp()
                 }
         return dict
 
@@ -408,10 +418,11 @@ class Task:
 class DailyTask(Task):
     def __init__(self, title: str, content: str, time: datetime.datetime,
                  importance=Importance.normal, state: State = State.notStarted,speices=Species.work, id = -1,
+                 createDate = None,
                  finisheddate=None):
         # super(DailyTask, self).__init__()
         super().__init__(title, content, time,
-                                        importance, state, speices, id)
+                                        importance, state, speices, id, createDate)
         if finisheddate is None:
             finisheddate = []
         self.finishEddate = finisheddate
@@ -421,9 +432,10 @@ class DailyTask(Task):
         # dict -> Task
         time = datetime.datetime.fromtimestamp(dict["time"])
         fds = [datetime.datetime.fromtimestamp(_) for _ in dict["fd"]]
+        createDate =  datetime.datetime.fromtimestamp(dict["createDate"])
         task = DailyTask(dict["title"], dict["content"], time, Importance(dict["importance"]),
-                     State(dict["state"]), Species(dict["species"]), dict["id"], fds)
-        print(task.__class__)
+                     State(dict["state"]), Species(dict["species"]), dict["id"], createDate, fds)
+        # print(task.__class__)
         assert isinstance(task, DailyTask)
         return task
 
