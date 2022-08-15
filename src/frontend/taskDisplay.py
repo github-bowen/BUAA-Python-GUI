@@ -3,11 +3,10 @@ import datetime
 from PyQt5.QtCore import Qt, QObject, QEvent
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QScrollArea, QVBoxLayout, \
-    QGroupBox, QLabel, QPushButton, QFormLayout, QApplication, QFrame, QSizePolicy, QGridLayout, QHBoxLayout
+    QGroupBox, QLabel, QFormLayout, QFrame, QSizePolicy, QHBoxLayout
 
-from TaskLabel import TaskLabel, NormalTaskLabel, DailyTaskLabel
+from TaskLabel import NormalTaskLabel, DailyTaskLabel
 from src.backend.Module import DailyTask
-from src.frontend.qssLoader import QSSLoader
 
 
 class DisplayWidget(QWidget):
@@ -104,11 +103,11 @@ class DisplayWidget(QWidget):
 
     def refreshAndDisplay(self, date, dateChanged: bool):
         # DisplayWidget.clearLayout(self.formLayout)
-        print(0)
+        #print(0)
 
         if dateChanged:
             # print(date.__class__)
-            print(1)
+            #print(1)
             dtdt = datetime.datetime(date.year(), date.month(), date.day(), 0, 0, 0)
             self.displayingDate = dtdt
             self.displayingTasks = self.getTaskOfDate(dtdt)
@@ -116,7 +115,7 @@ class DisplayWidget(QWidget):
             self.displayingTasks = self.getTaskOfDate(self.displayingDate)
         self.taskNum = len(self.displayingTasks)
 
-        print(2)
+        #print(2)
         if self.taskNum > 0:
             widget = QLabel("所选日期待办如下：")
             font = QFont()
@@ -148,7 +147,7 @@ class DisplayWidget(QWidget):
             titleWidget.setLayout(hbox)
             self.formLayout.addRow(titleWidget)
 
-            print(3)
+            #print(3)
             for task in self.displayingTasks:
                 widget = self.generateTaskWidget(task)
                 self.formLayout.addRow(widget)
@@ -156,7 +155,7 @@ class DisplayWidget(QWidget):
         else:
             self.displayNoTaskToday(False)
 
-        print(4)
+        #print(4)
         self.groupBox.repaint()
         self.scroll.repaint()
         self.repaint()

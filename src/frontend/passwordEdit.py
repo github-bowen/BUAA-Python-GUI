@@ -1,6 +1,6 @@
 from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtGui import QIcon, QCursor, QFocusEvent, QPixmap
-from PyQt5.QtWidgets import QLineEdit, QWidget, QAction, QToolButton
+from PyQt5.QtWidgets import QLineEdit, QAction, QToolButton
 
 
 class PasswordEdit(QLineEdit):

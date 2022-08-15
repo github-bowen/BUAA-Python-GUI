@@ -2,10 +2,10 @@ import re
 import sys
 
 from PyQt5.QtCore import Qt, QCoreApplication
-from PyQt5.QtGui import QFont, QIcon, QCursor, QMovie, QPixmap
+from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
-    QGridLayout, QVBoxLayout, QHBoxLayout, QApplication, QDesktopWidget, \
-    QWidget, QMessageBox, QInputDialog, QCheckBox, QAction, QToolButton, QFrame, QSplitter, QSizePolicy
+    QGridLayout, QHBoxLayout, QApplication, QDesktopWidget, \
+    QWidget, QMessageBox, QInputDialog, QCheckBox, QFrame, QSplitter, QSizePolicy
 
 from src.backend.method import *
 from passwordEdit import PasswordEdit

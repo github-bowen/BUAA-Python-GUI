@@ -2,18 +2,16 @@
 # @Time :2022/8/15 19:26
 # @Author:banana889
 # @File : analyze.py
-import datetime
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QGridLayout
-import sys
+from PyQt5.QtWidgets import QMainWindow, QGridLayout
 from PyQt5.QtChart import *
 from src.backend.species import *
 from src.backend.Module import *
 
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QVBoxLayout
 from PyQt5.QtChart import QChart, QChartView, QLineSeries, QValueAxis
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter, QColor
+from PyQt5.QtGui import QPainter
 
 
 

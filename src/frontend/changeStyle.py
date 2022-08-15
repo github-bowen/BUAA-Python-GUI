@@ -1,4 +1,4 @@
-from PyQt5.QtGui import QPalette, QBrush, QPixmap
+from PyQt5.QtGui import QPalette, QPixmap
 from PyQt5.QtWidgets import QApplication, QWidget, QStyleFactory, QLabel, QSizePolicy
 
 

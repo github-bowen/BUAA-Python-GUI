@@ -157,7 +157,7 @@ class User:
         dict = {}
         for _ in Species:
             dict[_] = 0
-        print(dict)
+        #print(dict)
         for t in tasks:
             dict[t.species] += 1
         return dict
@@ -328,7 +328,7 @@ class User:
     def setTaskEnd(self, task):
         # ymStr = task.time.strftime("%Y%m")
         # assert ymStr in self.calendarMap.keys()
-        print(1123)
+        #print(1123)
         self.editTask(task, newState=State.finished)
         if isinstance(task, DailyTask):
             task.addFinishedDate(datetime.datetime.today())
@@ -345,7 +345,7 @@ class User:
     def scheduleTasks(self):
         ts = self.getTaskToday()
 
-        print(len(ts))
+        #print(len(ts))
         '''
         权重取决于任务的重要性和当前时间距离ddl的时间，公式暂时定为 power = importance / time
         '''

@@ -1,18 +1,14 @@
 # 点击工具栏的筛选按钮所显示的页面
-import datetime
-import sys
-
 from src.backend.method import *
-from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtCore import QDate, QDateTime, QTime, Qt
-from PyQt5.QtGui import QIcon, QFont, QPixmap
-from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
-    QGridLayout, QVBoxLayout, QHBoxLayout, QApplication, QDesktopWidget, \
-    QWidget, QMessageBox, QInputDialog, QMainWindow, QCalendarWidget, QFormLayout, QDateTimeEdit, QTimeEdit, QTextEdit, \
+from PyQt5.QtCore import QDate, Qt
+from PyQt5.QtGui import  QFont, QPixmap
+from PyQt5.QtWidgets import  QLabel, QPushButton, \
+    QGridLayout, QVBoxLayout, QHBoxLayout, \
+    QWidget, QMainWindow,  QFormLayout, \
     QGroupBox, QScrollArea, QFrame, QSizePolicy, QDateEdit
 
 from src.frontend import addTask
-from src.frontend.TaskLabel import DailyTaskLabel, NormalTaskLabel
+from src.frontend.TaskLabel import  NormalTaskLabel
 
 
 class TimeFilter(QWidget):
@@ -75,14 +71,14 @@ class TimeFilter(QWidget):
         else:
             beginDate = begin
             endDate = end
-            print("before beginDateTime")
+            #print("before beginDateTime")
             beginDatetime = datetime.datetime(
                 beginDate.year(), beginDate.month(), beginDate.day(),
                 0, 0)
             endDatetime = datetime.datetime(
                 endDate.year(), endDate.month(), endDate.day(),
                 0, 0)
-            print('endDatetime')
+            #print('endDatetime')
             self.timeFilterDisplay = TimeFilterDisplay(
                 self.user, beginDatetime, endDatetime, self.calenWindow)
             self.timeFilterDisplay.layout = QVBoxLayout(self.timeFilterDisplay)

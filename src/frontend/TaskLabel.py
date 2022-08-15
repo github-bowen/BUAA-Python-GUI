@@ -1,10 +1,8 @@
 # 未完成 进行中 已完成 已过期
 # 未完成和已过期显示开始
 # 进行中和已完成显示结束
-import sys
-from datetime import datetime
 
-from PyQt5.QtCore import pyqtSignal, Qt
+from PyQt5.QtCore import Qt
 
 from src.backend.Module import Task, DailyTask
 from src.backend.importance import *
@@ -13,12 +11,8 @@ import editTask
 
 from PyQt5.QtGui import QPixmap, QIcon, QFont
 from PyQt5.QtWidgets import QLabel, QPushButton, QGridLayout, \
-    QApplication, QWidget, QCheckBox, QMessageBox, QTimeEdit
-
-from src.backend.method import loginUser
-from src.backend.species import Species
+     QWidget, QCheckBox, QMessageBox
 from src.backend.state import stateDict, State
-from src.frontend.qssLoader import QSSLoader
 
 
 class TaskLabel(QWidget):

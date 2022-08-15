@@ -8,12 +8,11 @@
 """
 from src.backend.importance import str2Importmance
 from src.backend.method import *
-from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtCore import QDate, QDateTime, QTime
-from PyQt5.QtGui import QIcon, QFont
-from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
-    QGridLayout, QVBoxLayout, QHBoxLayout, QApplication, QDesktopWidget, \
-    QWidget, QMessageBox, QInputDialog, QMainWindow, QCalendarWidget, QFormLayout, QDateTimeEdit, QTimeEdit, QTextEdit
+from PyQt5 import QtGui
+from PyQt5.QtCore import QDateTime, QTime
+from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QLabel, QLineEdit, QPushButton, \
+    QGridLayout, QWidget, QMessageBox, QInputDialog, QDateTimeEdit, QTimeEdit, QTextEdit
 
 from src.backend.species import str2Species
 
@@ -194,7 +193,7 @@ class AddDailyTaskDialog(AddTaskDialog):
         startTime = datetime.datetime(2022, 8, 13, start.hour(), start.minute())
         importance = str2Importmance[importanceStr]
         species = str2Species[speciesStr]
-        print('hhh')
+        #print('hhh')
         self.user.addDailyTask(name, content, startTime, importance, species)
         self.calWindow.taskDisplay(date=None, dateChange=False)  # 加完dailyTask后调用该函数刷新显示(显示的日期不变）
 

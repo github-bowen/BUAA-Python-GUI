@@ -1,21 +1,18 @@
-# 星期x的对照表
-import datetime
-import os
 import sys
 
 from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtCore import QCoreApplication, Qt, QDate
-from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QGridLayout, QCalendarWidget, QLabel, QWidget, QApplication, qApp
+from PyQt5.QtCore import QDate
+from PyQt5.QtWidgets import QCalendarWidget, QLabel, QApplication
 
 from src.backend.method import loginUser
-from src.frontend.addTask import AddNormalTaskDialog, TaskAddingWarning, SelectTaskDialog, AddDailyTaskDialog
+from src.frontend.addTask import TaskAddingWarning, SelectTaskDialog
 from src.frontend.dispatch import Dispatcher
-from src.frontend.qssLoader import QSSLoader
 from src.frontend.timeFilter import TimeFilter
 from analyze import *
 from taskDisplay import DisplayWidget
 import changeStyle
 
+# 星期x的对照表
 weekDayLis = ['一', '二', '三', '四', '五', '六', '日']
 
 
@@ -155,7 +152,7 @@ class CalenWindow(QMainWindow):
         fl = self.displayWidget.formLayout
         for i in range(len(fl)):
             fl.removeRow(0)
-        print("before refresh")
+        #print("before refresh")
         self.displayWidget.refreshAndDisplay(date, dateChange)
         pass
 
@@ -163,14 +160,14 @@ class CalenWindow(QMainWindow):
         self.taskDisplay(None, False)
 
     def dispatch(self):
-        print("333333333")
+        #print("333333333")
         self.dispatcher = Dispatcher(user=calWindow.user, calenWindow=calWindow)
-        print("222222222")
+        #print("222222222")
         self.dispatcher.layout = QVBoxLayout(self.dispatcher)
         self.dispatcher.layout.addWidget(self.dispatcher.scroll)
         self.tempWidget = QWidget()
         self.tempWidget.setLayout(self.dispatcher.layout)
-        print("111111111")
+        #print("111111111")
         self.tempWidget.setWindowTitle("每日任务自动调度")
         self.tempWidget.show()
 
