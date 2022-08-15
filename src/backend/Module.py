@@ -133,6 +133,34 @@ class User:
         self.initDailyTask()
         # self.initCalendarMap(
 
+    # 获取过去7天完成的任务数量，返回{datetime:int}，按照日期从小到大排序
+    def getTaskNumOfLastWeek(self):
+        d = datetime.datetime.today() + datetime.timedelta(days=-6)
+        dict = {}
+        for i in range(7):
+            dict[d] = self.getFinishTaskNumOfDay(d)
+            d += datetime.timedelta(days=+1)
+        return dict
+
+    def getFinishTaskNumOfDay(self, date: datetime.datetime):
+        tasks = self.getTasksOfDay(date)
+        i = 0
+        for _ in tasks:
+            if _.getState(date) == State.finished:
+                i += 1
+        # i = tasks.count(lambda x : x.getState(date) == State.finished)
+        return i
+
+    # 获取今天的各种任务占比 返回 {Species : int}
+    def getTaskSpeciesOfToday(self):
+        tasks = self.getTaskToday()
+        dict = {}
+        for _ in Species:
+            dict[_] = 0
+        for t in tasks:
+            dict[t.state] += 1
+        return dict
+
     def initDailyTask(self):
         for tt in self.dailyTaskTable.all():
             dt = DailyTask.parseTask(tt)
@@ -467,7 +495,7 @@ def getDay(time: datetime.datetime):
     return datetime.datetime(time.year, time.month, time.day)
 
 if __name__ == "__main__":
-    u = User("1")
+    u = User("test")
     # u.addTask("qc", "learn chapter 5", datetime.datetime(2022, 8, 20))
     # u.addTask("compiler", "final", datetime.datetime(2022, 8,20), importance=Importance.high)
     # u.addTask("数学建模", "", datetime.datetime(2022, 9, 15), importance=Importance.high)
@@ -479,6 +507,9 @@ if __name__ == "__main__":
     tasks = u.getTasksOfDay(day)
     for _ in tasks:
         print(_.toDict())
+
+    a = u.getTaskNumOfLastWeek()
+    print(a)
     #
     # u.addTask("py hw", "backend oid calendar", datetime.datetime.today())
 
