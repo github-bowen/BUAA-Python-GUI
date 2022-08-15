@@ -21,9 +21,12 @@ class AnalyzeWindow(QMainWindow):
     def __init__(self, user):
         super().__init__()
         self.user = user
+
+    def refresh(self):
         self.create_piechart()
         self.create_Serieschart()
         self.init_Ui()
+        self.show()
 
     def init_Ui(self):
         self.setWindowTitle("数据分析")
