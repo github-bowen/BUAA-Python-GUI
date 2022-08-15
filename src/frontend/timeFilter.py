@@ -26,7 +26,7 @@ class TimeFilter(QWidget):
     def initUi(self):
         self.setWindowTitle('任务管理器-筛选任务')
         self.titleLbl = QLabel('筛选相应时间段的任务')
-        self.setStyleSheet('''QWidget{background-color:#FFFFFF;}''')
+        #self.setStyleSheet('''QWidget{background-color:#ffffff;}''')
         font = QFont()
         font.setPointSize(16)
         font.setBold(True)
@@ -115,8 +115,8 @@ class TimeFilterDisplay(QMainWindow):
         self.taskNum = len(self.displayingTasks)
 
         if self.taskNum > 0:
-            widget = QLabel(str(self.beginDatetime)
-                            + "到" + str(self.endDatetime) + "的待办如下：")
+            widget = QLabel(str(self.beginDatetime.date())
+                            + " 到 " + str(self.endDatetime.date()) + " 的待办如下：")
             font = QFont()
             font.setPointSize(12)
             font.setBold(True)
@@ -186,8 +186,14 @@ class TimeFilterDisplay(QMainWindow):
 
     def generateTaskWidget(self, task: Task):
         if isinstance(task, DailyTask):
-            taskLabel = DailyTaskLabel(date=task.time, task=task, user=self.user,
-                                       calenWindow=self.calenWindow)
+            return
+            #taskLabel = DailyTaskLabel(date=task.time, task=task, user=self.user,
+                                       #calenWindow=self.calenWindow)
         else:
             taskLabel = NormalTaskLabel(task=task, user=self.user, calenWindow=self.calenWindow)
+            time=task.time
+            #print("begin"+str(time.month))
+            timeStr = "{:4d}-{:02d}-{:02d} {:02d}:{:02d}".format(time.year,time.month,time.day,time.hour,time.minute)
+            #print("finish ")
+            taskLabel.timeLabel.setText(timeStr)
         return taskLabel
