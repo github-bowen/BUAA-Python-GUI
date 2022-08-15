@@ -4,12 +4,12 @@ import sys
 
 from src.backend.method import *
 from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtCore import QDate, QDateTime, QTime
+from PyQt5.QtCore import QDate, QDateTime, QTime, Qt
 from PyQt5.QtGui import QIcon, QFont, QPixmap
 from PyQt5.QtWidgets import qApp, QLabel, QLineEdit, QPushButton, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QApplication, QDesktopWidget, \
     QWidget, QMessageBox, QInputDialog, QMainWindow, QCalendarWidget, QFormLayout, QDateTimeEdit, QTimeEdit, QTextEdit, \
-    QGroupBox, QScrollArea
+    QGroupBox, QScrollArea, QFrame, QSizePolicy
 
 from src.frontend import addTask
 from src.frontend.TaskLabel import DailyTaskLabel, NormalTaskLabel
@@ -161,13 +161,26 @@ class TimeFilterDisplay(QMainWindow):
             self.formLayout.addWidget(QLabel())
             self.groupBox.setLayout(self.formLayout)
 
-        # self.disableHorizontalScroll()
+        self.disableHorizontalScroll()
         self.scroll.setWidget(self.groupBox)
         self.scroll.setWidgetResizable(True)
         self.scroll.setFixedHeight(400)  # 对应CalenWindow高度
         self.layout = QVBoxLayout(self)
         self.layout.addWidget(self.scroll)
         # self.show()
+
+    def disableHorizontalScroll(self):
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setFrameStyle(QFrame.NoFrame)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+        self.m_scrollAreaWidgetContents = QWidget(self)
+        self.m_scrollAreaWidgetContents.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+
+        baseLayout = QVBoxLayout(self.m_scrollAreaWidgetContents)
+        self.scroll.setWidget(self.m_scrollAreaWidgetContents)
+        self.m_scrollAreaWidgetContents.installEventFilter(self)
 
     def generateTaskWidget(self, task: Task):
         if isinstance(task, DailyTask):
