@@ -4,7 +4,7 @@
 # @File : analyze.py
 import datetime
 
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QGridLayout
 import sys
 from PyQt5.QtChart import *
 from src.backend.species import *
@@ -16,15 +16,27 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QColor
 
 
-class Window(QMainWindow):
+
+class AnalyzeWindow(QMainWindow):
     def __init__(self, user):
         super().__init__()
         self.user = user
+        self.create_piechart()
+        self.create_Serieschart()
+        self.init_Ui()
+
+    def init_Ui(self):
         self.setWindowTitle("数据分析")
         self.setGeometry(100, 100, 1280, 600)
+        analyzGrid=QGridLayout(self)
+        analyzGrid.setSpacing(25)
+        analyzGrid.addWidget(self.chartview1,0,1)
+        analyzGrid.addWidget(self.chartview2,0,2)
+        widget=QWidget()
+        widget.setLayout(analyzGrid)
+        self.setCentralWidget(widget)
         self.show()
-        self.create_piechart()
-        # self.create_Serieschart()
+
 
     def create_piechart(self):
         series = QPieSeries()
@@ -66,11 +78,11 @@ class Window(QMainWindow):
         chart.legend().setVisible(True)
         chart.legend().setAlignment(Qt.AlignBottom)
 
-        chartview = QChartView(chart)
-        chartview.setRenderHint(QPainter.Antialiasing)
+        self.chartview1 = QChartView(chart)
+        self.chartview1.setRenderHint(QPainter.Antialiasing)
         # chartview.setStyleSheet("QLabel{color:#015F17}")
 
-        self.setCentralWidget(chartview)
+        #self.setCentralWidget(chartview)
 
     # 绘制折线图
     def create_Serieschart(self):
@@ -116,12 +128,12 @@ class Window(QMainWindow):
         # chart.createDefaultAxes()
         chart.setAnimationOptions(QChart.SeriesAnimations)
 
-        chartview = QChartView(chart)
-        chartview.setRenderHint(QPainter.Antialiasing)
+        self.chartview2 = QChartView(chart)
+        self.chartview2.setRenderHint(QPainter.Antialiasing)
 
-        self.setCentralWidget(chartview)
+        #self.setCentralWidget(chartview)
 
 user = User("test")
 App = QApplication(sys.argv)
-window = Window(user)
+window = AnalyzeWindow(user)
 sys.exit(App.exec_())
