@@ -1,4 +1,4 @@
-# Calender in Python
+# Calendar GUI App in Python
 
 ## 小组信息
 

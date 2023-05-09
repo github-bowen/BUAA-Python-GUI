@@ -1,4 +1,4 @@
-# Calender in Python
+# Calendar in Python
 
 [中文版](./README_zh.md)
 
