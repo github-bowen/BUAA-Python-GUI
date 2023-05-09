@@ -1,4 +1,4 @@
-# Calendar in Python
+# Calendar GUI App in Python
 
 [中文版](./README_zh.md)
 
@@ -6,7 +6,7 @@
 
 ## 0. Run
 
-Clone the project from the github repository (only branch `main` is needed):
+Clone the project from the github repository (only branch `main` is needed), or download the latest version from [Release](https://github.com/NormalLLer/BUAA-Python-GUI/releases):
 
 ```shell
 git clone -b main --single-branch https://github.com/NormalLLer/BUAA-Python-GUI.git

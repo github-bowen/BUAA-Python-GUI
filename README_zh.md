@@ -6,7 +6,7 @@
 
 ## 零、运行
 
-从github仓库克隆项目（只需要 `main` 分支）：
+从github仓库克隆项目（只需要 `main` 分支），或从 [Release](https://github.com/NormalLLer/BUAA-Python-GUI/releases) 下载最新版本：
 
 ```shell
 git clone -b main --single-branch https://github.com/NormalLLer/BUAA-Python-GUI.git
