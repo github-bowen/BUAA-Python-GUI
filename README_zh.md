@@ -6,10 +6,10 @@
 
 ## 零、运行
 
-从github仓库克隆项目：
+从github仓库克隆项目（只需要 `main` 分支）：
 
 ```shell
-git clone https://github.com/NormalLLer/BUAA-Python-GUI.git
+git clone -b main --single-branch https://github.com/NormalLLer/BUAA-Python-GUI.git
 ```
 
 安装依赖：

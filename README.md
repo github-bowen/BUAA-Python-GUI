@@ -6,10 +6,10 @@
 
 ## 0. Run
 
-Clone the project from the github repository:
+Clone the project from the github repository (only branch `main` is needed):
 
 ```shell
-git clone https://github.com/NormalLLer/BUAA-Python-GUI.git
+git clone -b main --single-branch https://github.com/NormalLLer/BUAA-Python-GUI.git
 ```
 
 Installation dependencies:
